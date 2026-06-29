@@ -1,0 +1,201 @@
+---
+import Base from "../layouts/Base.astro";
+import Banner from "../components/Banner.astro";
+import FeatureSplit from "../components/FeatureSplit.astro";
+import ContactBand from "../components/ContactBand.astro";
+import { site } from "../data/site";
+
+const rutas = [
+  "/img/2026/04/ruta-primer-semestre-2026-la-negra-575x1024.jpg",
+  "/img/2026/04/ruta-segundo-semestre-2026-la-negra-575x1024.jpg",
+  "/img/2025/02/ruta-enero-junio-2025-la-negra-v3-575x1024.jpg",
+  "/img/2025/09/ruta-julio-diciembre-2025-la-negra-575x1024.jpg",
+  "/img/2024/02/ruta-enero-abril-la-negra-2024-OP2-576x1024.jpg",
+  "/img/2024/09/ruta-septiembre-diciembre-la-negra-2024-2-575x1024.jpg",
+  "/img/2023/05/web-ruta-mayo-julio-la-negra-2023-575x1024.jpg",
+  "/img/2024/06/ruta-mayo-julio-la-negra-2024-575x1024.jpg",
+  "/img/2022/12/ruta-enero-2023-575x1024.jpeg",
+  "/img/2022/06/ruta-de-intensivos-la-negra-verano-22-junio-septiembre-2022-575x1024.jpg",
+  "/img/2021/01/ruta-de-intensivos-la-negra-1-trimestre-2021v2c.jpg",
+  "/img/2021/03/ruta-de-intensivos-la-negra-2-trimestre-2021-bachata-tradicional.2.jpg",
+  "/img/2021/06/ruta-de-intensivos-la-negra-junio-agosto-2021-A.jpg",
+  "/img/2021/09/ruta-de-intensivos-la-negra-sep-nov-2021.jpg",
+  "/img/2021/12/ruta-de-intensivos-la-negra-sep-dic-2021-576x1024.jpg",
+];
+---
+<Base
+  title="Evelyn La Negra — Periodista, Dj y profesora de Bachata Dominicana"
+  description="Évelyn «La Negra»: profesora de baile y DJ de ritmos latinos. Clases de salsa y bachata en Barcelona e Ibiza, online y formación de bachata dominicana."
+  transparentHeader={true}
+>
+  <!-- HERO -->
+  <Banner
+    image="/img/2020/11/LA-NEGRA-SALSA-BACHATA-KIZOMBA-EVELYN-VIANA-blanco.jpg"
+    eyebrow="La Negra"
+    title="Évelyn Viana Lovera"
+    subtitle="«LA NEGRA SALSA»"
+    lead="Profesora de baile y deejay · RITMOS LATINOS"
+    cta={{ label: "+ Info", href: "/curriculum/" }}
+    overlay={0.4}
+    tall={true}
+  />
+
+  <!-- SPOTIFY -->
+  <section class="section text-center" style="background:#f7f7f7">
+    <div class="container">
+      <p class="eyebrow">Mi música</p>
+      <h2>TOP 10 Salsa &amp; Bachata</h2>
+      <p>Sígueme en Spotify e Instagram y no te pierdas mis recomendaciones.</p>
+      <p style="display:flex;gap:22px;justify-content:center;align-items:center;margin-top:18px">
+        <a href={site.spotify} target="_blank" rel="noopener" aria-label="Spotify">
+          <img src="/img/2024/12/Spotify_logo_without_text.svg" width="54" height="54" alt="Spotify" style="display:inline-block" />
+        </a>
+        <a class="btn btn--red" href={site.instagram} target="_blank" rel="noopener">Instagram</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- BARCELONA -->
+  <FeatureSplit
+    image="/img/2024/12/clases-bcn-korke-y-judith-576x1024.jpeg"
+    alt="Clases de baile en Barcelona"
+    eyebrow="Escuela en Barcelona"
+    title="LOS JUEVES APRENDE<br>BACHATA TRADICIONAL"
+    lines={[
+      "<strong>BS Dance Center</strong> · Bachata Tradicional · La Negra Salsa",
+      "Carrer de Josep Royo 26 — Santa Adrià de Besòs, <strong>Barcelona</strong>",
+      "<strong>Los jueves · 20:30h</strong>",
+    ]}
+    showContact={true}
+    cta={{ label: "+ Información", href: "/clases-de-baile-en-barcelona/" }}
+  />
+
+  <!-- KEEPER IBIZA -->
+  <FeatureSplit
+    flip={true}
+    image="/img/2026/04/03_mayo_26_keeper_DJLISSJ-768x1365.jpg"
+    alt="Keeper Salsa & Bachata Sunday"
+    eyebrow="Keeper · Ibiza"
+    title="Keeper Salsa &amp; Bachata Sunday"
+    lines={["Todas las fotos de la sesión más salsera y bachatera en <strong>IBIZA</strong>."]}
+    cta={{ label: "Ver fotos", href: "/keeper-galeria/" }}
+  />
+
+  <!-- ESCUELA IBIZA -->
+  <FeatureSplit
+    image="/img/2025/11/IBIZA-clases-nov-dic25-con-horarios-819x1024.png"
+    alt="Clases de baile en Ibiza"
+    eyebrow="Escuela en Ibiza"
+    title="Salsa y Bachata en Ibiza"
+    lines={[
+      "<strong>Davinia Van Praag Dance Academy</strong>",
+      "Calle Sa Real, 1 — <strong>Ibiza</strong>",
+    ]}
+    showContact={true}
+    cta={{ label: "+ Información", href: "/clases-de-baile-en-ibiza/" }}
+  />
+
+  <!-- FORMACIÓN / LIBRO -->
+  <FeatureSplit
+    flip={true}
+    dark={true}
+    image="/img/2021/10/web-ensenanza-de-la-bachata-libro-1024x1024.jpg"
+    alt="Enseñanza de la Bachata Tradicional"
+    eyebrow="Formación"
+    title="ENSEÑANZA DE LA<br>BACHATA TRADICIONAL"
+    lines={["Formación integral para profesores de bachata dominicana."]}
+    cta={{ label: "+ Información", href: "/profesora-bachata-dominicana/" }}
+  />
+
+  <!-- CLASES ONLINE -->
+  <FeatureSplit
+    image="/img/2024/12/los-jueves-zoom-1080X1080-1024x1024.png"
+    alt="Clases online de bachata y salsa"
+    eyebrow="Escuela Online"
+    title="Bachata y Salsa Online"
+    lines={["Clases en directo por Zoom. <strong>Las clases se quedan grabadas.</strong>"]}
+    cta={{ label: "+ Información", href: "/bachata-salsa-online-offline/" }}
+  />
+  <ContactBand />
+
+  <!-- LA NEGRA DANCE FESTIVAL -->
+  <section class="festival">
+    <div class="container festival__inner">
+      <div class="festival__emblem">
+        <img src="/img/2022/10/MUNDIAL-PASOS-LIBRES-generico.jpg" width="220" height="220"
+          alt="La Negra Dance Festival — Mundial de Pasos Libres de Salsa" loading="lazy" />
+      </div>
+      <div class="festival__body">
+        <p class="eyebrow" style="color:var(--red-bright)">Evento</p>
+        <h2 style="color:#fff">La Negra Dance Festival</h2>
+        <p>El <strong>Mundial de Pasos Libres de Salsa</strong> de España: el campeonato pionero en
+          su especialidad, creado por La Negra en 2010. Competición, congreso y mucha pista.</p>
+        <a class="btn btn--red btn--lg" href={site.festival} target="_blank" rel="noopener">Más información</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- RUTA -->
+  <section class="section" style="background:#fafafa">
+    <div class="container text-center">
+      <p class="eyebrow">Agenda</p>
+      <h2>¿Dónde podrás encontrarme?</h2>
+      <div class="img-grid" style="margin-top:30px">
+        {rutas.map((src) => <img src={src} alt="Ruta de clases e intensivos de La Negra" loading="lazy" />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- CAMISETAS -->
+  <section class="text-center" style="background:#111;color:#fff;padding:50px 0 18px">
+    <div class="container">
+      <p class="eyebrow" style="color:var(--red-bright)">Camisetas oficiales · Bachata Dominicana</p>
+      <h2 style="color:#fff;margin:0">CONSIGUE UN <span style="color:var(--red-bright)">10% DESCUENTO</span></h2>
+      <p>Usando el código <strong style="color:#fff;letter-spacing:.1em">EVELYN</strong></p>
+    </div>
+  </section>
+  <div class="camisetas">
+    <Banner
+      image="/img/2021/02/CAMISETA-BACHATA-TRADICIONAL-CHICAS.jpg"
+      title="CHICAS"
+      lead="Camiseta oficial del Método Bachata Tradicional by La Negra."
+      cta={{ label: "Consíguela", href: site.shop, external: true }}
+      overlay={0.35}
+    />
+    <Banner
+      image="/img/2021/02/CAMISETA-BACHATA-TRADICIONAL-CHICOS.jpg"
+      title="CHICOS"
+      lead="Camiseta oficial del Método Bachata Tradicional by La Negra."
+      cta={{ label: "Consíguela", href: site.shop, external: true }}
+      overlay={0.35}
+    />
+  </div>
+
+  <!-- CONTACTO FINAL -->
+  <section class="section text-center">
+    <div class="container">
+      <p class="eyebrow">¿Tienes alguna pregunta?</p>
+      <h2>Te respondo por WhatsApp</h2>
+      <a href={site.whatsapp} target="_blank" rel="noopener" aria-label="WhatsApp">
+        <img src="/img/2019/09/whatsUp200PX.png" width="74" height="74" alt="WhatsApp" style="margin:14px auto" />
+      </a>
+      <p>Puedes contactarme por teléfono <strong><a href={`tel:${site.phone.replace(/\s/g, "")}`}>{site.phone}</a></strong><br>
+        o por email y te contestaré lo antes posible.</p>
+      <p><a class="btn btn--red btn--lg" href="/curriculum/">Conóceme</a></p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .camisetas{display:grid;grid-template-columns:1fr 1fr;gap:0}
+  @media (max-width:760px){.camisetas{grid-template-columns:1fr}}
+
+  .festival{background:#111;color:#cfcfd2;padding:70px 0}
+  .festival__inner{display:grid;grid-template-columns:auto 1fr;gap:48px;align-items:center}
+  .festival__emblem img{width:220px;max-width:38vw;border-radius:18px;background:#fff;padding:10px;box-shadow:0 14px 40px rgba(0,0,0,.4)}
+  .festival__body h2{font-size:2rem;margin:.1em 0 .4em}
+  .festival__body p{margin:0 0 22px;max-width:52ch}
+  @media (max-width:760px){
+    .festival__inner{grid-template-columns:1fr;justify-items:center;text-align:center;gap:28px}
+  }
+</style>

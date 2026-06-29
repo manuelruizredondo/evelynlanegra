@@ -1,0 +1,33 @@
+---
+// Página de navegación de galerías Keeper: cabecera + rejilla de botones.
+const { heading, intro, buttons = [], back } = Astro.props;
+---
+<section class="gallery-hero">
+  <div class="container text-center">
+    <p class="eyebrow" style="color:var(--red-bright)">Galería Keeper</p>
+    <h1>{heading}</h1>
+    {intro && <p class="gallery-hero__intro">{intro}</p>}
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="btn-grid">
+      {buttons.map((b) => (
+        <a class="btn btn--red btn--lg" href={b.href}
+          {...(b.external ? { target: "_blank", rel: "noopener" } : {})}>{b.label}</a>
+      ))}
+    </div>
+    {back && (
+      <p class="text-center" style="margin-top:34px">
+        <a class="btn" href={back.href}>{back.label}</a>
+      </p>
+    )}
+  </div>
+</section>
+
+<style>
+  .gallery-hero{background:#111;color:#fff;padding:90px 0 50px}
+  .gallery-hero h1{color:#fff;font-size:2.6rem}
+  .gallery-hero__intro{max-width:620px;margin:10px auto 0;opacity:.85}
+</style>

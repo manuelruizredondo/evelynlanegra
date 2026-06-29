@@ -1,0 +1,76 @@
+---
+import { nav, site } from "../data/site";
+const { transparent = true } = Astro.props;
+---
+<header class:list={["site-header", { "is-transparent": transparent }]}>
+  <div class="site-header__inner container">
+    <a class="site-header__logo" href="/" aria-label={site.name}>
+      <img src="/img/2019/09/logo-lanegra.png" width="160" height="73" alt={site.name} />
+    </a>
+
+    <nav class="site-nav" aria-label="Principal">
+      {nav.slice(0, 7).map((i) => (
+        <a href={i.href} {...(i.external ? { target: "_blank", rel: "noopener" } : {})}>{i.label}</a>
+      ))}
+    </nav>
+
+    <button class="nav-toggle" data-open-menu aria-label="Abrir menú" aria-controls="mobile-menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <!-- Off-canvas: clase en <body> + transform -->
+  <aside id="mobile-menu" class="mobile-menu" aria-label="Menú">
+    <button class="mobile-menu__close" data-close-menu aria-label="Cerrar menú">&times;</button>
+    <nav>
+      {nav.map((i) => (
+        <a href={i.href} {...(i.external ? { target: "_blank", rel: "noopener" } : {})}>{i.label}</a>
+      ))}
+    </nav>
+  </aside>
+  <button class="menu-overlay" data-close-menu aria-hidden="true" tabindex="-1"></button>
+</header>
+
+<style>
+  .site-header{position:sticky;top:0;z-index:1000;background:#000}
+  .site-header.is-transparent{position:absolute;left:0;right:0;background:transparent}
+  .site-header__inner{display:flex;align-items:center;justify-content:space-between;gap:18px;height:var(--header-h)}
+  .site-header__logo img{height:46px;width:auto}
+  .site-nav{display:flex;gap:18px;flex-wrap:wrap;justify-content:flex-end}
+  .site-nav a{color:#fff;font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;opacity:.92}
+  .site-nav a:hover{opacity:1;text-decoration:none;color:#fff}
+
+  .nav-toggle{display:none;flex-direction:column;gap:5px;background:none;border:0;cursor:pointer;padding:8px}
+  .nav-toggle span{width:26px;height:3px;background:#fff;border-radius:2px}
+
+  /* Off-canvas */
+  .mobile-menu{position:fixed;top:0;right:0;bottom:0;width:300px;max-width:86vw;height:100%;
+    background:#111;color:#fff;z-index:1002;padding:64px 24px 30px;overflow-y:auto;
+    transform:translateX(100%);transition:transform .3s ease;box-shadow:-8px 0 30px rgba(0,0,0,.4)}
+  .mobile-menu nav{display:flex;flex-direction:column}
+  .mobile-menu nav a{color:#fff;padding:12px 2px;border-bottom:1px solid rgba(255,255,255,.12);
+    font-size:.86rem;font-weight:700;text-transform:uppercase;letter-spacing:.02em}
+  .mobile-menu nav a:hover{color:var(--red-bright);text-decoration:none}
+  .mobile-menu__close{position:absolute;top:14px;right:18px;background:none;border:0;color:#fff;font-size:34px;line-height:1;cursor:pointer}
+  .menu-overlay{position:fixed;inset:0;z-index:1001;background:rgba(0,0,0,.55);border:0;
+    opacity:0;visibility:hidden;transition:opacity .3s ease;cursor:pointer}
+
+  :global(body.nav-open) .mobile-menu{transform:translateX(0)}
+  :global(body.nav-open) .menu-overlay{opacity:1;visibility:visible}
+  :global(body.nav-open){overflow:hidden}
+
+  @media (max-width:1024px){
+    .site-nav{display:none}
+    .nav-toggle{display:flex}
+  }
+</style>
+
+<script>
+  const body = document.body;
+  const open = () => body.classList.add("nav-open");
+  const close = () => body.classList.remove("nav-open");
+  document.querySelectorAll("[data-open-menu]").forEach((b) => b.addEventListener("click", open));
+  document.querySelectorAll("[data-close-menu]").forEach((b) => b.addEventListener("click", close));
+  document.querySelectorAll("#mobile-menu a").forEach((a) => a.addEventListener("click", close));
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
+</script>

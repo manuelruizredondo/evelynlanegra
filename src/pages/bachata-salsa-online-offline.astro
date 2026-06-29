@@ -1,0 +1,57 @@
+---
+import Base from "../layouts/Base.astro";
+import Banner from "../components/Banner.astro";
+import ContactForm from "../components/ContactForm.astro";
+import { site } from "../data/site";
+const wa = "https://api.whatsapp.com/send?phone=34659090696&text=Hola%20Evelyn,%20quiero%20info%20de%20las%20clases%20online";
+---
+<Base
+  title="Clases de Bachata y Salsa Online y Offline con La Negra"
+  description="Évelyn La Negra, especializada en bachata dominicana. Clases online en directo por Zoom que se quedan grabadas, y clases particulares."
+  transparentHeader={true}
+>
+  <Banner
+    image="/img/2024/12/los-jueves-zoom-1080X1080-1024x1024.png"
+    eyebrow="Escuela Online"
+    title="Bachata y Salsa Online"
+    subtitle="Clases en directo por Zoom"
+    cta={{ label: "Escríbeme por WhatsApp", href: wa, external: true }}
+    overlay={0.5}
+    tall={true}
+  />
+
+  <section class="section text-center">
+    <div class="container" style="max-width:760px">
+      <p class="eyebrow">Te ofrezco dos cursos</p>
+      <div class="courses">
+        <div class="course"><h3>Bachata Tradicional</h3><p>Nivel medio</p></div>
+        <div class="course"><h3>Salsa · Movimiento Corporal</h3><p>Nivel medio</p></div>
+      </div>
+      <h2 style="margin-top:40px">Las clases se quedan grabadas</h2>
+      <p>¿Sabes cuál es el secreto de nuestras clases? Que puedes verlas cuando quieras: cada sesión
+        se queda grabada para que la repases a tu ritmo.</p>
+    </div>
+  </section>
+
+  <section class="section" style="background:#f7f7f7">
+    <div class="container text-center" style="max-width:680px">
+      <p class="eyebrow">Clases particulares</p>
+      <h2>Precio</h2>
+      <p style="font-size:1.2rem"><strong>40€</strong> · 4h de bachata<br><strong>50€</strong> · 8h de salsa + bachata</p>
+      <p>
+        <a class="btn btn--red btn--lg" href={`tel:${site.phone.replace(/\s/g, "")}`}>{site.phone}</a>
+        &nbsp;
+        <a class="btn btn--lg" href={wa} target="_blank" rel="noopener">WhatsApp</a>
+      </p>
+    </div>
+  </section>
+
+  <ContactForm name="contacto-online" title="Más información" note="Contacta conmigo para recibir más información sobre los cursos y próximas actividades." />
+</Base>
+
+<style>
+  .courses{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:24px}
+  .course{background:#fff;border:1px solid #eee;border-radius:12px;padding:26px;box-shadow:0 6px 22px rgba(0,0,0,.06)}
+  .course h3{color:var(--ink);font-weight:700}
+  @media (max-width:600px){.courses{grid-template-columns:1fr}}
+</style>

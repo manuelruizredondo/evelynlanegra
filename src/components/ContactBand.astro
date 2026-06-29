@@ -1,0 +1,16 @@
+---
+import { site } from "../data/site";
+const { note = "También por WhatsApp", cta } = Astro.props;
+---
+<section class="contact-band">
+  <div class="container">
+    <h2><a href={`tel:${site.phone.replace(/\s/g, "")}`} style="color:#fff">T. {site.phoneShort}</a></h2>
+    <h4>{note}</h4>
+    <a href={site.whatsapp} target="_blank" rel="noopener" aria-label="WhatsApp">
+      <img class="wa" src="/img/2019/09/whatsUp200PX.png" width="64" height="64" alt="WhatsApp" />
+    </a>
+    {cta && (
+      <p><a class="btn btn--red" href={cta.href}>{cta.label}</a></p>
+    )}
+  </div>
+</section>

@@ -1,0 +1,16 @@
+# URLs antiguas de WordPress -> nuevas rutas limpias
+/es/evelyn-viana-lovera            /                                   301
+/es/curriculum                     /curriculum/                        301
+/es/bachata-salsa-online-offline   /bachata-salsa-online-offline/      301
+/es/profesora-bachata-dominicana   /profesora-bachata-dominicana/      301
+/es/logotipos                      /logotipos/                         301
+/es/blog                           /blog/                              301
+/es/keeper-galeria                 /keeper-galeria/                    301
+/es/keeper-galeria-eventos-2025    /keeper-galeria-eventos-2025/       301
+/es/keeper-galeria-eventos-2026    /keeper-galeria-eventos-2026/       301
+/es/clases-de-baile-en-barcelona   /clases-de-baile-en-barcelona/      301
+/es/clases-de-baile-en-ibiza       /clases-de-baile-en-ibiza/          301
+
+# Resto de páginas no migradas -> sitio original en vivo
+/es/*   https://www.lanegrasalsa.com/es/:splat   301
+/en/*   https://www.lanegrasalsa.com/en/:splat   301

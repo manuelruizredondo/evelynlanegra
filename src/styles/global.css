@@ -1,0 +1,118 @@
+/* ===== Fuentes self-hosted (Lato + Dancing Script) ===== */
+@import "/fonts/google-fonts.css";
+
+/* Mona Sans (variable: peso 200-900 + anchura 75-125) — tipografía de landonorris.com */
+@font-face{
+  font-family:"Mona Sans";
+  src:url("/fonts/mona-sans.woff2") format("woff2");
+  font-weight:200 900;
+  font-stretch:75% 125%;
+  font-display:swap;
+}
+
+/* Great Vibes — script de los toques (firma, eyebrows, acentos) */
+@font-face{
+  font-family:"Great Vibes";
+  src:url("/fonts/great-vibes.woff2") format("woff2");
+  font-weight:400;
+  font-display:swap;
+}
+
+/* PP Pangaia Medium Italic — títulos editoriales de eventos (serif itálica) */
+@font-face{
+  font-family:"PP Pangaia";
+  src:url("/fonts/pangaia-italic.woff2") format("woff2");
+  font-weight:500;
+  font-style:italic;
+  font-display:swap;
+}
+
+/* ===== Tokens de marca (extraídos del sitio original) ===== */
+:root{
+  --red:#b20000;          /* CTA principal */
+  --red-bright:#d6122d;
+  --blue:#446084;         /* botón secundario */
+  --ink:#282828;
+  --text:#777777;
+  --link:#037ef1;
+  --white:#ffffff;
+  --black:#000000;
+  --maxw:1080px;
+  --radius:999px;
+  --font:"Lato",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --script:"Great Vibes","Dancing Script",cursive;
+  --header-h:70px;
+}
+
+/* ===== Reset ligero ===== */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  margin:0;font-family:var(--font);font-weight:400;font-size:16px;line-height:1.6;
+  color:var(--text);background:var(--white);overflow-x:hidden;
+}
+img{max-width:100%;height:auto;display:block}
+a{color:var(--link);text-decoration:none}
+a:hover{text-decoration:underline}
+h1,h2,h3,h4{font-family:var(--font);color:var(--ink);line-height:1.2;margin:0 0 .4em}
+h1{font-size:2.4rem;font-weight:700}
+h2{font-size:1.9rem;font-weight:700}
+h3{font-size:1.35rem;font-weight:400}
+h4{font-size:1.05rem;font-weight:700}
+p{margin:0 0 1rem}
+
+/* ===== Layout helpers ===== */
+.container{width:100%;max-width:var(--maxw);margin-inline:auto;padding-inline:20px}
+.section{padding:64px 0}
+.text-center{text-align:center}
+.eyebrow{font-family:var(--script);font-size:1.6rem;color:var(--red);margin:0 0 .2em}
+
+/* ===== Botones tipo píldora ===== */
+.btn{
+  display:inline-block;border:0;cursor:pointer;
+  font-weight:700;font-size:.8rem;letter-spacing:.03em;text-transform:uppercase;
+  padding:13px 30px;border-radius:var(--radius);color:#fff;background:var(--blue);
+  transition:transform .15s ease,filter .15s ease;text-decoration:none;line-height:1;
+}
+.btn:hover{filter:brightness(1.08);transform:translateY(-2px);text-decoration:none;color:#fff}
+.btn--red{background:var(--red)}
+.btn--bright{background:var(--red-bright)}
+.btn--lg{padding:16px 40px;font-size:.9rem}
+.btn--ghost{background:transparent;border:2px solid #fff}
+
+/* ===== Banner full-width (imagen de fondo + overlay + texto) ===== */
+.banner{
+  position:relative;display:flex;align-items:center;justify-content:center;
+  min-height:520px;padding:80px 0;text-align:center;color:#fff;background:#000;
+  background-size:cover;background-position:center;
+}
+.banner::before{content:"";position:absolute;inset:0;background:rgba(0,0,0,var(--ov,.32))}
+.banner__inner{position:relative;z-index:1;max-width:760px;padding-inline:20px}
+.banner h1,.banner h2,.banner h3,.banner h4{color:#fff}
+.banner h2{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:700;margin-bottom:.1em}
+.banner h3{font-weight:400;font-size:clamp(1.1rem,2.5vw,1.5rem)}
+.banner .lead{font-size:1.05rem;opacity:.95}
+.banner--tall{min-height:88vh}
+.banner__cta{margin-top:26px}
+
+/* ===== Tarjeta de contacto (teléfono/WhatsApp) ===== */
+.contact-band{background:var(--ink);color:#fff;text-align:center;padding:48px 0}
+.contact-band h2{color:#fff;font-size:2rem;margin-bottom:.2em}
+.contact-band .wa{width:64px;margin:14px auto}
+
+/* ===== Rejilla de botones (galerías) ===== */
+.btn-grid{display:flex;flex-wrap:wrap;gap:14px;justify-content:center}
+
+/* ===== Rejilla de imágenes (rutas / posters) ===== */
+.img-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.img-grid img{width:100%;border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.12)}
+
+/* ===== Prose (páginas de texto) ===== */
+.prose{max-width:760px;margin-inline:auto}
+.prose h2{margin-top:1.4em}
+.prose iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:8px;margin:1.2rem 0}
+
+@media (max-width:600px){
+  .section{padding:46px 0}
+  .banner{min-height:62vh}
+}

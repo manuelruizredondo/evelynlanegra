@@ -1,0 +1,179 @@
+---
+import Base from "../layouts/Base.astro";
+import { site } from "../data/site";
+---
+<Base
+  title="Sobre Évelyn «La Negra» — periodista, DJ y profesora de bachata dominicana"
+  description="La historia de Évelyn «La Negra»: periodista venezolana, productora, DJ y referencia en la formación de bachata tradicional, radicada en Barcelona desde 1997."
+  transparentHeader={true}
+>
+  <div class="ln">
+
+    <!-- HERO (igual que la home) -->
+    <header class="ln-hero">
+      <img class="ln-hero__img" src="/img/evelynbn.png" alt="Évelyn La Negra" />
+      <div class="ln-hero__name">
+        <span class="he-name">Évelyn</span>
+        <strong class="he-laneg">La Negra</strong>
+        <span class="he-disc">Bachata Tradicional</span>
+      </div>
+      <div class="ln-hero__bottom container">
+        <p class="ln-hero__role">Profesora &amp; DJ · Salsa · Bachata Dominicana</p>
+        <div class="ln-hero__cta">
+          <a class="btn btn--red btn--lg" href={site.whatsapp} target="_blank" rel="noopener">Ven a bailar</a>
+          <a class="btn btn--ghost btn--lg" href="#historia">Su historia</a>
+        </div>
+        <p class="ln-hero__next"><span class="chip"><span class="dot"></span> Sobre Évelyn · La Negra Salsa</span></p>
+      </div>
+    </header>
+
+    <!-- PRESENTACIÓN -->
+    <section class="about-intro" id="historia">
+      <div class="container">
+        <p class="kick">Sobre Évelyn</p>
+        <h2 class="about-quote">
+          No elegí el baile. <em>El baile me eligió a mí.</em> Llegué a Barcelona con una maleta
+          y un sueño, y desde entonces no he parado de mover pistas y corazones por todo el mundo.
+        </h2>
+      </div>
+    </section>
+
+    <!-- VÍDEO a pantalla completa -->
+    <section class="video" id="video">
+      <button class="video__facade" type="button" data-yt="LVEYomg3hjg" aria-label="Reproducir vídeo de Évelyn La Negra">
+        <img class="video__cover" src="/img/evelyn-video-cover.jpg" alt="Évelyn La Negra en directo" />
+        <span class="video__play" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="32" height="32"><path d="M8 5v14l11-7z" fill="#fff"></path></svg>
+        </span>
+      </button>
+    </section>
+
+    <!-- VIDA: imagen parallax izq + texto der -->
+    <section class="about-life">
+      <div class="about-life__media">
+        <img class="about-life__img" data-parallax src="/img/evelyn.png" alt="Évelyn Viana Lovera" />
+      </div>
+      <div class="about-life__text">
+        <p class="kick">Su historia</p>
+        <p class="about-life__lead">De la redacción a la pista — y de la pista al mundo.</p>
+        <p>Crecí entre redacciones y música. Periodista venezolana de formación, empecé escribiendo
+          sobre cultura latina en <strong>La Vanguardia</strong> y dirigiendo la <strong>Revista
+          Salseros</strong>. Pero el ritmo siempre tiró más fuerte que las palabras.</p>
+        <p>En <strong>2010</strong> fundé en Barcelona el <strong>Mundial de Pasos Libres de Salsa</strong>,
+          el primer campeonato del mundo en su especialidad. Desde entonces compagino la enseñanza,
+          la producción de eventos y la cabina como DJ residente.</p>
+        <p>Radicada en Barcelona desde <strong>1997</strong>, hoy soy una <strong>referencia en la
+          formación de bachata tradicional dominicana</strong>. Enseño desde la raíz: la pisada, la
+          musicalidad y el sabor de su origen — en Barcelona, Ibiza y por todo el mundo.</p>
+        <p class="about-life__cta"><a class="btn btn--red btn--lg" href={site.whatsapp} target="_blank" rel="noopener">Ven a una clase</a></p>
+      </div>
+    </section>
+
+  </div>
+</Base>
+
+<style is:global>
+  body:has(.ln){background:#0a0a0a;color:#e9e9ea}
+</style>
+
+<style>
+  .ln{background:#0a0a0a;color:#e9e9ea;--acc:#ff2440;--acc2:#ffc400;--muted:#9a9a9e;--line:rgba(255,255,255,.1);
+    font-family:"Mona Sans","Lato",-apple-system,sans-serif}
+  .ln :global(h2),.ln :global(h3){color:#fff;font-family:"Mona Sans","Lato",sans-serif}
+  .kick{font-size:.72rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--acc);margin:0 0 14px}
+
+  /* HERO (idéntico a la home) */
+  .ln-hero{position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;background:#000}
+  .ln-hero__img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 28%;opacity:.95}
+  .ln-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.6),rgba(0,0,0,.15) 30%,rgba(0,0,0,.35) 70%,#0a0a0a 100%)}
+  .chip{display:inline-flex;align-items:center;gap:9px;background:rgba(0,0,0,.5);border:1px solid var(--line);
+    padding:8px 16px;border-radius:999px;font-size:.74rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#fff}
+  .chip .dot{width:8px;height:8px;border-radius:50%;background:var(--acc2)}
+  .ln-hero__name{position:relative;z-index:2;text-align:center;margin:auto 0;line-height:1;padding-inline:18px;transform:translateY(12vh)}
+  .ln-hero__name .he-name{display:block;font-family:var(--script);font-weight:400;
+    font-size:clamp(2.2rem,6vw,4.2rem);color:#fff;line-height:1}
+  .ln-hero__name .he-laneg{display:block;font-family:"Mona Sans","Lato",sans-serif;
+    font-size:clamp(3.5rem,16vw,11rem);font-weight:900;letter-spacing:-.02em;text-transform:uppercase;
+    color:#fff;line-height:.86;font-variation-settings:"wght" 900,"wdth" 122;margin:-.03em 0}
+  .ln-hero__name .he-disc{display:block;font-family:var(--script);font-weight:400;
+    font-size:clamp(1.4rem,6.5vw,4.8rem);color:var(--acc);line-height:1;max-width:100%}
+  .ln-hero__bottom{position:relative;z-index:2;padding-bottom:40px;text-align:center}
+  .ln-hero__role{font-size:1rem;letter-spacing:.16em;text-transform:uppercase;color:#d8d8da;margin:0 0 20px}
+  .ln-hero__cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:22px}
+  .ln-hero__next{margin:12px 0 0}
+
+  /* PRESENTACIÓN */
+  .about-intro{padding:110px 0 70px;border-top:1px solid var(--line)}
+  .about-quote{font-family:"PP Pangaia",Georgia,serif!important;font-style:italic;font-weight:500;
+    font-size:clamp(1.9rem,4.6vw,3.6rem);line-height:1.18;color:#fff;max-width:24ch;margin:0;letter-spacing:.005em}
+  .about-quote em{font-style:italic;color:var(--acc)}
+
+  /* VÍDEO full-width con facade de YouTube */
+  .video{position:relative;width:100%;background:#000;border-top:1px solid var(--line)}
+  .video__facade{display:block;width:100%;aspect-ratio:16/9;max-height:100vh;position:relative;
+    margin:0;padding:0;border:0;background:#000;cursor:pointer;overflow:hidden}
+  .video__cover{width:100%;height:100%;object-fit:cover;display:block;opacity:.96;transition:opacity .3s,transform 6s ease}
+  .video__facade:hover .video__cover{opacity:1;transform:scale(1.03)}
+  .video__play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+    width:92px;height:92px;border-radius:50%;background:rgba(15,15,15,.5);
+    backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+    display:grid;place-items:center;border:1px solid rgba(255,255,255,.28);transition:transform .2s,background .2s}
+  .video__play svg{margin-left:4px}
+  .video__facade:hover .video__play{transform:translate(-50%,-50%) scale(1.08);background:rgba(0,0,0,.72)}
+  .video :global(iframe){display:block;width:100%;aspect-ratio:16/9;max-height:100vh;border:0}
+
+  /* VIDA: imagen parallax + texto */
+  .about-life{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:stretch;
+    max-width:1200px;margin:0 auto;padding:40px 24px 110px}
+  .about-life__media{position:relative;overflow:hidden;border-radius:18px;min-height:80vh;background:#111}
+  .about-life__img{position:absolute;left:0;top:-12%;width:100%;height:124%;object-fit:cover;
+    object-position:center;will-change:transform}
+  .about-life__text{align-self:center;max-width:46ch}
+  .about-life__lead{font-family:"PP Pangaia",Georgia,serif;font-style:italic;font-size:clamp(1.4rem,2.6vw,2rem);
+    color:#fff;margin:0 0 22px;line-height:1.25}
+  .about-life__text p{color:#c9c9cc;font-size:1.02rem;line-height:1.65;margin:0 0 18px}
+  .about-life__text strong{color:#fff;font-weight:700}
+  .about-life__cta{margin-top:28px}
+
+  @media (max-width:860px){
+    .about-life{grid-template-columns:1fr;gap:32px;padding-bottom:80px}
+    .about-life__media{min-height:70vh}
+    .about-life__text{align-self:start;max-width:none}
+  }
+</style>
+
+<script>
+  // Parallax suave de la imagen (sin librerías)
+  const els = document.querySelectorAll<HTMLElement>("[data-parallax]");
+  let ticking = false;
+  function update() {
+    const vh = window.innerHeight;
+    els.forEach((img) => {
+      const box = img.parentElement!.getBoundingClientRect();
+      const progress = (box.top + box.height / 2 - vh / 2) / vh; // -1 .. 1 aprox
+      img.style.transform = `translateY(${(progress * -8).toFixed(2)}%)`;
+    });
+    ticking = false;
+  }
+  function onScroll() {
+    if (!ticking) { ticking = true; requestAnimationFrame(update); }
+  }
+  if (els.length) {
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    update();
+  }
+
+  // Facade de YouTube: carga el vídeo solo al pulsar el play
+  document.querySelectorAll<HTMLButtonElement>(".video__facade").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const id = btn.dataset.yt;
+      const iframe = document.createElement("iframe");
+      iframe.src = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0&modestbranding=1`;
+      iframe.allow = "autoplay; encrypted-media; fullscreen; picture-in-picture";
+      iframe.allowFullscreen = true;
+      iframe.title = "Évelyn La Negra";
+      btn.replaceWith(iframe);
+    });
+  });
+</script>

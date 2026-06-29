@@ -1,0 +1,33 @@
+---
+// Sección full-width con imagen de fondo, overlay y texto centrado.
+const {
+  image,
+  eyebrow,
+  title,
+  subtitle,
+  lead,
+  cta,           // { label, href, variant }
+  overlay = 0.32,
+  tall = false,
+  id,
+} = Astro.props;
+const style = `background-image:url('${image}');--ov:${overlay}`;
+---
+<section class:list={["banner", { "banner--tall": tall }]} style={style} id={id}>
+  <div class="banner__inner">
+    {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+    {title && <h2 set:html={title} />}
+    {subtitle && <h3 set:html={subtitle} />}
+    {lead && <p class="lead" set:html={lead} />}
+    <slot />
+    {cta && (
+      <p class="banner__cta">
+        <a
+          class:list={["btn", "btn--lg", cta.variant === "blue" ? "" : "btn--red"]}
+          href={cta.href}
+          {...(cta.external ? { target: "_blank", rel: "noopener" } : {})}
+        >{cta.label}</a>
+      </p>
+    )}
+  </div>
+</section>

@@ -1,0 +1,95 @@
+---
+import Base from "../layouts/Base.astro";
+import Banner from "../components/Banner.astro";
+import ContactForm from "../components/ContactForm.astro";
+import { site } from "../data/site";
+const wa = "https://api.whatsapp.com/send?phone=34659090696&text=Hola%20Evelyn,%20quiero%20info%20de%20la%20formacion%20de%20Bachata%20Tradicional";
+
+const clases = [
+  { t: "Clase I · Historia (2h, teórica)", d: "Acepciones del vocablo bachata, los precursores y ritmos que la originaron, origen y evolución de la bachata." },
+  { t: "Clase II · Musicalidad (2h, teórica)", d: "Lenguaje musical básico (pulso, ritmo, compás, tempo), la importancia de los patrones rítmicos e instrumentos." },
+  { t: "Clase III · Desmontando el básico (2h, práctica)", d: "Diferencias entre la bachata auténtica, la moderna y la sensual. Elementos para conseguir un estilo: pisada y conteo." },
+  { t: "Clase IV · Combinaciones y variaciones (2h, práctica)", d: "Sistema lineal, cuadrado y diagonal. Pasos básicos y su musicalidad. El patín como recurso." },
+  { t: "Clase V · Baile en pareja (2h+1, teórico-práctica)", d: "La importancia de los brazos y la conducción. La «dominicana» de competición y en el social." },
+];
+
+const testimonios = [
+  { img: "/img/2021/02/Jose-Luis-Chaves.jpg", name: "José Luis Chaves", sub: "de Chaves y Silvia", text: "Da igual qué estilo bailes… este curso te va a servir sí o sí. No es solo que ya sepas tradicional: también aprendes a respirar y a sentir la música." },
+  { img: "/img/2021/02/Judith-Cordero-Pereiro.jpg", name: "Judith Cordero Pereiro", sub: "", text: "Felices nosotros de poder seguir conociendo las raíces y que lo hagas todo tan fácil. Escucharte es quedarse embobado." },
+  { img: "/img/2021/02/Gigi-Bellomo.jpg", name: "Gigi Bellomo", sub: "", text: "Gracias a esta experiencia puedo decir que hay pocas personas en este mundo que aman lo que hacen como tú." },
+  { img: "/img/2021/02/Sylvia-Pires.jpg", name: "Sylvia Pires", sub: "", text: "Carisma, búsqueda de la perfección, garra, humor, inteligencia, amor y pasión por lo que haces." },
+  { img: "/img/2021/02/Yaimelys-Sonylus.jpg", name: "Yaimelys Sonylus", sub: "", text: "Hice la 1ª formación con esta gran maestra y ya estoy haciendo la 2ª. Es, sin duda, una maestra de maestros." },
+];
+---
+<Base
+  title="Formación · Profesora de Bachata Dominicana · La Negra"
+  description="Especializada en bachata dominicana como DJ, investigadora, conferencista y profesora. Maestra de maestros. Formación integral para profesores."
+  transparentHeader={true}
+>
+  <Banner
+    image="/img/2022/12/ENSENANZA-DE-LA-BACHATA-TRADICIONAL.jpeg"
+    eyebrow="Formación"
+    title="ENSEÑANZA DE LA<br>BACHATA TRADICIONAL"
+    subtitle="Formación integral para profesores"
+    cta={{ label: "+ Info por WhatsApp", href: wa, external: true }}
+    overlay={0.5}
+    tall={true}
+  />
+
+  <section class="section">
+    <div class="container prose">
+      <h2>Bachata Tradicional 1 y 2</h2>
+      <p><strong>Incluye diploma acreditativo</strong> + dossier de 50 páginas de contenido original.</p>
+      <h3>Descripción</h3>
+      <p>Clases online (10 horas) por plataforma Zoom, dossier de 50 páginas de contenido original y
+        correcciones individuales.</p>
+
+      <h3>Contenido</h3>
+      <div class="clases">
+        {clases.map((c) => (
+          <div class="clase"><h4>{c.t}</h4><p>{c.d}</p></div>
+        ))}
+      </div>
+
+      <h3>Horario</h3>
+      <p>5 semanas: dos horas semanales continuas. Mañanas o mediodías a escoger entre miércoles,
+        jueves o domingos (según demanda). Podrían abrirse otros horarios según demanda.</p>
+
+      <h3>Advertencia</h3>
+      <p>Éste no es un título que te convierta en profesor (si entras en el curso es porque ya lo eres).
+        El diploma es un <strong>Certificado de Capacitación</strong> específico que se otorga por haber
+        aprobado con alto rendimiento el programa «Enseñanza de Bachata Dominicana».</p>
+    </div>
+  </section>
+
+  <section class="section" style="background:#111;color:#fff">
+    <div class="container">
+      <h2 class="text-center" style="color:#fff">Testimonios</h2>
+      <p class="text-center" style="opacity:.8">Lee lo que dicen de mí</p>
+      <div class="tgrid">
+        {testimonios.map((t) => (
+          <figure class="tcard">
+            <img src={t.img} alt={t.name} loading="lazy" />
+            <blockquote>«{t.text}»</blockquote>
+            <figcaption><strong>{t.name}</strong>{t.sub && <span> · {t.sub}</span>}</figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <ContactForm name="contacto-formacion" title="Más información" note="Contacta conmigo para recibir más información sobre este curso y próximas actividades." />
+</Base>
+
+<style>
+  .clases{display:grid;gap:14px;margin:14px 0 0}
+  .clase{background:#f7f7f7;border-left:4px solid var(--red);border-radius:8px;padding:16px 18px}
+  .clase h4{margin:0 0 4px;color:var(--ink)}
+  .clase p{margin:0}
+  .tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:22px;margin-top:24px}
+  .tcard{margin:0;background:#1b1b1b;border-radius:12px;padding:22px;text-align:center}
+  .tcard img{width:84px;height:84px;border-radius:50%;object-fit:cover;margin:0 auto 12px}
+  .tcard blockquote{margin:0 0 12px;font-style:italic;color:#eee;font-size:.92rem}
+  .tcard figcaption{color:var(--red-bright);font-size:.85rem}
+  .tcard figcaption span{color:#aaa}
+</style>

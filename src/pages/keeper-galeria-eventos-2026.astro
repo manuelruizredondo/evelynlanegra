@@ -1,0 +1,15 @@
+---
+import Base from "../layouts/Base.astro";
+import GalleryNav from "../components/GalleryNav.astro";
+const buttons = [
+  { label: "15 FEB · Carnaval", href: "https://www.lanegrasalsa.com/es/keeper-15-febrero-2026-carnaval", external: true },
+];
+---
+<Base title="Keeper eventos 2026 · La Negra Salsa" description="Eventos Keeper de 2026: elige una fecha para ver las fotos.">
+  <GalleryNav
+    heading="Keeper · eventos 2026"
+    intro="Elige un evento para ver su galería de fotos."
+    buttons={buttons}
+    back={{ label: "← Volver a Keeper", href: "/keeper-galeria/" }}
+  />
+</Base>

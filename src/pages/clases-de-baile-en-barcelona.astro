@@ -1,0 +1,60 @@
+---
+import Base from "../layouts/Base.astro";
+import Banner from "../components/Banner.astro";
+import FeatureSplit from "../components/FeatureSplit.astro";
+import ContactBand from "../components/ContactBand.astro";
+import ContactForm from "../components/ContactForm.astro";
+---
+<Base
+  title="Clases de baile en Barcelona · #Salsa #Bachata · La Negra"
+  description="Clases de baile en Barcelona: salsa y bachata tradicional con Évelyn La Negra. Prueba gratis, reserva tu plaza."
+  transparentHeader={true}
+>
+  <Banner
+    image="/img/2024/12/clases-bcn-korke-y-judith-576x1024.jpeg"
+    eyebrow="Escuela en Barcelona"
+    title="ÉVELYN VIANA"
+    subtitle="Profesora de bachata tradicional y salsa"
+    overlay={0.5}
+    tall={true}
+  />
+
+  <FeatureSplit
+    image="/img/2024/12/clases-bcn-korke-y-judith-576x1024.jpeg"
+    alt="Clases de baile en Barcelona"
+    eyebrow="Los jueves · Bachata Tradicional"
+    title="Aprende a bailar divirtiéndote"
+    lines={[
+      "Conocida como <strong>Évelyn La Negra</strong>, esta DJ, organizadora, periodista y profesora de salsa y bachata tradicional lleva más de dos décadas enseñando a bailar en Barcelona y alrededor del mundo. ¿Quieres aprender divirtiéndote? Esta es tu escuela.",
+    ]}
+    showContact={true}
+  />
+
+  <section class="section" style="background:#f7f7f7">
+    <div class="container info-cards">
+      <div class="card">
+        <h3>Dónde</h3>
+        <p><strong>BS Dance Center</strong><br>Carrer de Josep Royo 26<br>Santa Adrià de Besòs · Barcelona</p>
+      </div>
+      <div class="card">
+        <h3>Cuándo</h3>
+        <p><strong>Los jueves · 20:30h</strong><br>Bachata Tradicional</p>
+      </div>
+      <div class="card">
+        <h3>Precio</h3>
+        <p><strong>25€ / mes</strong><br>por curso</p>
+      </div>
+    </div>
+  </section>
+
+  <ContactBand />
+
+  <ContactForm name="contacto-barcelona" title="Reserva tu plaza" note="Déjame tus datos y te doy toda la información de horarios y precios." />
+</Base>
+
+<style>
+  .info-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .card{background:#fff;border-radius:12px;padding:26px;text-align:center;box-shadow:0 6px 22px rgba(0,0,0,.07)}
+  .card h3{color:var(--red);font-weight:700;text-transform:uppercase;font-size:.95rem;letter-spacing:.04em}
+  @media (max-width:720px){.info-cards{grid-template-columns:1fr}}
+</style>

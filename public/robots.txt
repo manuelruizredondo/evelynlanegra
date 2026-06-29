@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://lanegrasalsa.netlify.app/sitemap-index.xml

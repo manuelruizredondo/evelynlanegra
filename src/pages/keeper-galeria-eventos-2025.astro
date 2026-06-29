@@ -1,0 +1,25 @@
+---
+import Base from "../layouts/Base.astro";
+import GalleryNav from "../components/GalleryNav.astro";
+const L = "https://www.lanegrasalsa.com/es/";
+const buttons = [
+  { label: "5 ENE · Reyes", href: L + "keeper-5-enero-2025-reyes", external: true },
+  { label: "2 FEB · Eriberto", href: L + "keeper-2-febrero-2025-eriberto", external: true },
+  { label: "2 MAR · Carnaval — Mica y Fran", href: L + "keeper-2-marzo-2025-carnaval-mica-y-fran", external: true },
+  { label: "7 ABR · Adrian", href: L + "keeper-7-abril-2025-adrian", external: true },
+  { label: "4 MAY · Closing", href: L + "keeper-4-mayo-2025-closing", external: true },
+  { label: "17 JUL · Keeper", href: L + "keeper-17-julio-2025", external: true },
+  { label: "5 OCT · Dance4Two", href: L + "keeper-5-octubre-2025-dance4two", external: true },
+  { label: "2 NOV · Juan Camilo", href: L + "keeper-2-noviembre-2025-juan-camilo", external: true },
+  { label: "23 NOV · Keeper", href: L + "keeper-23-noviembre-2025", external: true },
+  { label: "12 DIC · Gala", href: L + "keeper-12-diciembre-2025-gala", external: true },
+];
+---
+<Base title="Keeper eventos 2025 · La Negra Salsa" description="Todos los eventos Keeper de 2025: elige una fecha para ver las fotos.">
+  <GalleryNav
+    heading="Keeper · eventos 2025"
+    intro="Elige un evento para ver su galería de fotos."
+    buttons={buttons}
+    back={{ label: "← Volver a Keeper", href: "/keeper-galeria/" }}
+  />
+</Base>

@@ -1,0 +1,29 @@
+---
+// Formulario de contacto vía Netlify Forms (funciona sin JS).
+const { title = "¿Tienes alguna pregunta?", name = "contacto", note } = Astro.props;
+---
+<section class="section" id="contacto">
+  <div class="container" style="max-width:640px">
+    <h2 class="text-center">{title}</h2>
+    {note && <p class="text-center">{note}</p>}
+    <form name={name} method="POST" action="/gracias/" data-netlify="true" netlify-honeypot="bot-field" class="cform">
+      <input type="hidden" name="form-name" value={name} />
+      <p hidden><label>No rellenar: <input name="bot-field" /></label></p>
+      <label>Nombre<input type="text" name="nombre" required /></label>
+      <label>Email<input type="email" name="email" required /></label>
+      <label>Teléfono<input type="tel" name="telefono" /></label>
+      <label>Mensaje<textarea name="mensaje" rows="5" required></textarea></label>
+      <button class="btn btn--red btn--lg" type="submit">Enviar</button>
+    </form>
+  </div>
+</section>
+
+<style>
+  .cform{display:grid;gap:16px;margin-top:22px}
+  .cform label{display:flex;flex-direction:column;gap:6px;font-weight:700;color:var(--ink);font-size:.85rem}
+  .cform input,.cform textarea{
+    font:inherit;font-weight:400;padding:12px 14px;border:1px solid #ddd;border-radius:8px;width:100%;color:var(--ink);
+  }
+  .cform input:focus,.cform textarea:focus{outline:2px solid var(--red);border-color:var(--red)}
+  .cform button{justify-self:start;border:0}
+</style>

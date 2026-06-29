@@ -1,0 +1,15 @@
+---
+import Base from "../layouts/Base.astro";
+import GalleryNav from "../components/GalleryNav.astro";
+const buttons = [
+  { label: "Keeper eventos 2025", href: "/keeper-galeria-eventos-2025/" },
+  { label: "Keeper eventos 2026", href: "/keeper-galeria-eventos-2026/" },
+];
+---
+<Base title="FOTOS Keeper · La Negra Salsa" description="Galería de fotos de las sesiones Keeper Salsa & Bachata Sunday de La Negra.">
+  <GalleryNav
+    heading="Keeper"
+    intro="Las fotos de la sesión más salsera y bachatera. Elige el año para ver todos los eventos."
+    buttons={buttons}
+  />
+</Base>
