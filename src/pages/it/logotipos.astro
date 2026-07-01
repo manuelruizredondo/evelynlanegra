@@ -1,46 +1,46 @@
 ---
-import Base from "../layouts/Base.astro";
-import PageIntro from "../components/PageIntro.astro";
+import Base from "../../layouts/Base.astro";
+import PageIntro from "../../components/PageIntro.astro";
 const logos = [
-  { src: "/img/2021/02/metodo-la-negra-bachata-tradicional-blanco-1024x1024.jpg", label: "Método La Negra · Bachata Tradicional" },
-  { src: "/img/2021/02/la-negra-logo-fondos-claros.jpg", label: "La Negra · logo (fondos claros)" },
+  { src: "/img/2021/02/metodo-la-negra-bachata-tradicional-blanco-1024x1024.jpg", label: "Método La Negra · Bachata Tradizionale" },
+  { src: "/img/2021/02/la-negra-logo-fondos-claros.jpg", label: "La Negra · logo (sfondi chiari)" },
   { src: "/img/2021/02/JPG-mundial-pasos-libres.jpg", label: "Mundial de Pasos Libres" },
   { src: "/img/2022/10/MUNDIAL-BACHATA-generico.jpg", label: "Mundial de Bachata Tradicional" },
-  { src: "/img/2022/10/MUNDIAL-PASOS-LIBRES-generico.jpg", label: "Mundial de Pasos Libres (genérico)" },
+  { src: "/img/2022/10/MUNDIAL-PASOS-LIBRES-generico.jpg", label: "Mundial de Pasos Libres (generico)" },
 ];
 ---
-<Base title="Logotipos · La Negra" description="Descarga los logotipos oficiales del Método La Negra, Mundial de Pasos Libres y Mundial de Bachata Tradicional.">
+<Base title="Loghi · La Negra" description="Scarica i loghi ufficiali del Método La Negra, Mundial de Pasos Libres e Mundial de Bachata Tradicional.">
   <PageIntro
-    kicker="Marca · Descargas"
-    title="Los <em>logotipos</em> de La Negra."
+    kicker="Brand · Download"
+    title="I <em>loghi</em> di La Negra."
     lead={[
-      "Descarga el logo del Método La Negra · Bachata Tradicional y el resto de elementos gráficos.",
-      "Disponibles en EPS, JPG, PDF y PNG.",
+      "Scarica il logo del Método La Negra · Bachata Tradizionale e gli altri elementi grafici.",
+      "Disponibili in EPS, JPG, PDF e PNG.",
     ]}
-    cue="Descargas"
+    cue="Download"
   />
 
   <section class="section">
     <div class="container">
-      <h2 class="text-center">Logo Método La Negra · Bachata Tradicional</h2>
+      <h2 class="text-center">Logo Método La Negra · Bachata Tradizionale</h2>
       <p class="text-center" style="max-width:640px;margin:0 auto 8px">
-        Rellena el formulario y te enviaré un email con un enlace para descargar el logotipo. Podrás
-        descargar un ZIP con el logotipo en formato EPS, JPG, PDF y PNG. Si no lo recibes, revisa tu
-        carpeta de spam.</p>
+        Compila il modulo e ti invierò un'email con un link per scaricare il logo. Potrai
+        scaricare uno ZIP con il logo in formato EPS, JPG, PDF e PNG. Se non lo ricevi, controlla la
+        cartella spam.</p>
 
-      <form name="logotipos" method="POST" action="/gracias/" data-netlify="true" netlify-honeypot="bot-field" class="cform">
-        <input type="hidden" name="form-name" value="logotipos" />
+      <form name="logotipos-it" method="POST" action="/it/gracias/" data-netlify="true" netlify-honeypot="bot-field" class="cform">
+        <input type="hidden" name="form-name" value="logotipos-it" />
         <p hidden><label>No rellenar: <input name="bot-field" /></label></p>
-        <label>Nombre<input type="text" name="nombre" required /></label>
+        <label>Nome<input type="text" name="nombre" required /></label>
         <label>Email<input type="email" name="email" required /></label>
         <label class="cform__consent">
           <input type="checkbox" name="consentimiento" value="si" required />
-          <span>Acepto la <a href="/privacidad/" target="_blank" rel="noopener">política de privacidad</a>.</span>
+          <span>Accetto l'<a href="/it/privacidad/" target="_blank" rel="noopener">informativa sulla privacy</a>.</span>
         </label>
-        <button class="btn btn--red btn--lg" type="submit">Quiero el logotipo</button>
+        <button class="btn btn--red btn--lg" type="submit">Voglio il logo</button>
       </form>
 
-      <h2 class="text-center" style="margin-top:60px">Otros elementos gráficos</h2>
+      <h2 class="text-center" style="margin-top:60px">Altri elementi grafici</h2>
       <div class="logo-grid">
         {logos.map((l) => (
           <figure class="logo-card">

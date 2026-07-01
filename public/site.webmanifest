@@ -1,0 +1,12 @@
+{
+  "name": "La Negra Salsa",
+  "short_name": "La Negra",
+  "description": "Évelyn «La Negra» — profesora y DJ de salsa y bachata dominicana.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "icons": [
+    { "src": "/favicon.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "any" }
+  ]
+}

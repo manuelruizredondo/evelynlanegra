@@ -1,41 +1,29 @@
 ---
 import { site } from "../data/site";
+import { getLocale, localize, ui } from "../i18n";
 
-const cols = [
-  {
-    title: "",
-    links: [
-      { label: "Home", href: "/" },
-      { label: "Sobre Évelyn", href: "/curriculum/" },
-      { label: "FOTOS Keeper", href: "/keeper-galeria/" },
-      { label: "Spotify", href: "/spotify/" },
-      { label: "Logotipos", href: "/logotipos/" },
-    ],
-  },
-  {
-    title: "Clases",
-    links: [
-      { label: "Clases presenciales", href: "/clases-presenciales/" },
-      { label: "Clases online", href: "/bachata-salsa-online-offline/" },
-      { label: "Máster bachata tradicional", href: "/profesora-bachata-dominicana/" },
-    ],
-  },
-  {
-    title: "Eventos",
-    links: [
-      { label: "La Negra Dance Festival", href: site.festival, external: true },
-      { label: "Keeper eventos 2025", href: "/keeper-galeria-eventos-2025/" },
-      { label: "Keeper eventos 2026", href: "/keeper-galeria-eventos-2026/" },
-    ],
-  },
-];
+const locale = getLocale(Astro.url);
+const t = ui[locale];
+// Resuelve hrefs: el marcador __festival__ apunta al sitio externo; el resto se localiza.
+const resolveHref = (href: string, external?: boolean) =>
+  external ? (href === "__festival__" ? site.festival : href) : localize(href, locale);
+const cols = t.footer.cols.map((c) => ({
+  title: c.title,
+  links: c.links.map((l) => ({
+    label: l.label,
+    href: resolveHref(l.href, (l as any).external),
+    external: (l as any).external ?? false,
+  })),
+}));
+const legal = t.footer.legal.map((l) => ({ label: l.label, href: localize(l.href, locale) }));
+const home = localize("/", locale);
 ---
 <footer class="site-footer">
   <div class="container site-footer__grid">
     <!-- Marca -->
     <div class="site-footer__brand">
-      <img src="/img/2019/09/logo-lanegra.png" width="150" height="68" alt={site.name} />
-      <p>{site.tagline}.</p>
+      <a href={home} aria-label={site.name}><img src="/img/2019/09/logo-lanegra.png" width="150" height="68" alt={site.name} /></a>
+      <p>{t.tagline}.</p>
       <div class="site-footer__social">
         <a href={site.instagram} target="_blank" rel="noopener">Instagram</a>
         <a href={site.spotify} target="_blank" rel="noopener">Spotify</a>
@@ -58,7 +46,7 @@ const cols = [
 
     <!-- Contacto -->
     <div class="site-footer__col">
-      <h3>Contacto</h3>
+      <h3>{t.footer.contactTitle}</h3>
       <ul>
         <li><a href={`tel:${site.phone.replace(/\s/g, "")}`}>T. {site.phoneShort}</a></li>
         <li><a href={site.whatsapp} target="_blank" rel="noopener">WhatsApp</a></li>
@@ -69,7 +57,9 @@ const cols = [
 
   <div class="container site-footer__bar">
     <p>© {new Date().getFullYear()} {site.name}</p>
-    <p class="site-footer__credit">Diseño y desarrollo a partir del sitio original</p>
+    <nav class="site-footer__legal" aria-label="Legal">
+      {legal.map((l) => <a href={l.href}>{l.label}</a>)}
+    </nav>
   </div>
 </footer>
 
@@ -98,6 +88,9 @@ const cols = [
     font-size:.78rem;color:#76767a;
   }
   .site-footer__bar p{margin:0}
+  .site-footer__legal{display:flex;gap:18px;flex-wrap:wrap}
+  .site-footer__legal a{color:#9a9a9e;font-size:.78rem}
+  .site-footer__legal a:hover{color:var(--acc);text-decoration:none}
 
   @media (max-width:900px){
     .site-footer__grid{grid-template-columns:1fr 1fr;gap:32px 28px}

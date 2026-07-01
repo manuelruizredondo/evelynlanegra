@@ -1,0 +1,56 @@
+---
+import Base from "../../layouts/Base.astro";
+import { site } from "../../data/site";
+---
+<Base title="Note legali · La Negra Salsa" description="Note legali e informazioni sul titolare del sito di Évelyn «La Negra».">
+  <section class="section">
+    <div class="container prose legal">
+      <p class="eyebrow">Informazioni legali</p>
+      <h1>Note legali</h1>
+
+      <h2>1. Dati identificativi</h2>
+      <p>In ottemperanza alla Legge spagnola 34/2002, sui Servizi della Società dell'Informazione e del
+        Commercio Elettronico (LSSI-CE), si comunicano i seguenti dati del titolare del sito web:</p>
+      <ul>
+        <li><strong>Titolare:</strong> Évelyn Viana Lovera («La Negra»)</li>
+        <li><strong>NIF/NIE:</strong> [COMPLETAR]</li>
+        <li><strong>Domicilio:</strong> [COMPLETAR] · Barcellona (Spagna)</li>
+        <li><strong>Email:</strong> <a href={`mailto:${site.email}`}>{site.email}</a></li>
+        <li><strong>Telefono:</strong> {site.phone}</li>
+      </ul>
+
+      <h2>2. Oggetto</h2>
+      <p>Il presente sito web ha la finalità di offrire informazioni sulle lezioni, le formazioni e le
+        attività di ballo (salsa e bachata dominicana) tenute dalla titolare, oltre a facilitare il
+        contatto con le persone interessate.</p>
+
+      <h2>3. Condizioni d'uso</h2>
+      <p>L'accesso e l'uso di questo sito attribuiscono la condizione di utente e implicano l'accettazione
+        delle condizioni contenute in queste note legali. L'utente si impegna a fare un uso adeguato dei
+        contenuti e a non utilizzarli per attività illecite.</p>
+
+      <h2>4. Proprietà intellettuale e industriale</h2>
+      <p>Tutti i contenuti del sito (testi, fotografie, loghi, design e codice) sono di proprietà della
+        titolare o di terzi che ne hanno autorizzato l'uso, e sono protetti dalla normativa sulla proprietà
+        intellettuale e industriale. È vietata la loro riproduzione, distribuzione o trasformazione senza
+        autorizzazione espressa.</p>
+
+      <h2>5. Responsabilità</h2>
+      <p>La titolare non è responsabile dei danni che potrebbero derivare dall'uso delle informazioni
+        contenute nel sito, né del contenuto di siti di terzi ai quali si possa accedere tramite link.</p>
+
+      <h2>6. Legislazione applicabile</h2>
+      <p>Le presenti condizioni sono regolate dalla legislazione spagnola. Per qualsiasi controversia, le
+        parti si sottopongono ai tribunali competenti a norma di legge.</p>
+
+      <p class="legal__note">Ultimo aggiornamento: luglio 2026.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .legal h2{margin-top:1.6em}
+  .legal ul{padding-left:1.2em}
+  .legal li{margin-bottom:.4em}
+  .legal__note{margin-top:2em;color:var(--muted);font-size:.9rem}
+</style>

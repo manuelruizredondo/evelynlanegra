@@ -5,4 +5,9 @@ export default defineConfig({
   site: 'https://lanegrasalsa.netlify.app',
   trailingSlash: 'always',
   build: { format: 'directory' },
+  i18n: {
+    defaultLocale: 'es',
+    locales: ['es', 'it'],
+    routing: { prefixDefaultLocale: false },
+  },
 });

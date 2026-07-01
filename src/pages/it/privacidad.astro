@@ -1,0 +1,53 @@
+---
+import Base from "../../layouts/Base.astro";
+import { site } from "../../data/site";
+---
+<Base title="Informativa sulla privacy · La Negra Salsa" description="Come trattiamo i tuoi dati personali sul sito di Évelyn «La Negra».">
+  <section class="section">
+    <div class="container prose legal">
+      <p class="eyebrow">Protezione dei dati</p>
+      <h1>Informativa sulla privacy</h1>
+
+      <p>In conformità con il Regolamento (UE) 2016/679 (GDPR) e la Legge Organica spagnola 3/2018
+        (LOPDGDD), ti informiamo sul trattamento dei tuoi dati personali.</p>
+
+      <h2>1. Titolare del trattamento</h2>
+      <ul>
+        <li><strong>Titolare:</strong> Évelyn Viana Lovera («La Negra»)</li>
+        <li><strong>NIF/NIE:</strong> [COMPLETAR]</li>
+        <li><strong>Email:</strong> <a href={`mailto:${site.email}`}>{site.email}</a></li>
+      </ul>
+
+      <h2>2. Finalità</h2>
+      <p>I dati che ci fornisci tramite i moduli (nome, email, telefono e messaggio) sono trattati per
+        <strong>rispondere alla tua richiesta di informazioni</strong> su lezioni e attività e, se lo
+        autorizzi, per <strong>inviarti novità e date</strong> (newsletter).</p>
+
+      <h2>3. Base giuridica</h2>
+      <p>La base giuridica è il tuo <strong>consenso</strong>, che presti spuntando la casella del modulo e
+        inviandolo. Puoi revocarlo in qualsiasi momento.</p>
+
+      <h2>4. Conservazione</h2>
+      <p>Conserveremo i tuoi dati finché esiste un interesse reciproco o fino a quando non ne richiederai la
+        cancellazione, e per i periodi previsti dalla legge.</p>
+
+      <h2>5. Destinatari</h2>
+      <p>I dati sono gestiti tramite <strong>Netlify</strong> (hosting e gestione dei moduli), fornitore che
+        agisce come responsabile del trattamento. I dati non vengono ceduti a terzi salvo obbligo di legge.</p>
+
+      <h2>6. I tuoi diritti</h2>
+      <p>Puoi esercitare i diritti di accesso, rettifica, cancellazione, opposizione, limitazione e
+        portabilità scrivendo a <a href={`mailto:${site.email}`}>{site.email}</a>. Puoi inoltre presentare
+        reclamo all'<strong>Agenzia Spagnola per la Protezione dei Dati</strong> (aepd.es).</p>
+
+      <p class="legal__note">Ultimo aggiornamento: luglio 2026.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .legal h2{margin-top:1.6em}
+  .legal ul{padding-left:1.2em}
+  .legal li{margin-bottom:.4em}
+  .legal__note{margin-top:2em;color:var(--muted);font-size:.9rem}
+</style>

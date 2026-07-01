@@ -1,50 +1,50 @@
 ---
-import Base from "../layouts/Base.astro";
-import PageIntro from "../components/PageIntro.astro";
-import ContactForm from "../components/ContactForm.astro";
-import { site } from "../data/site";
-const wa = "https://api.whatsapp.com/send?phone=34659090696&text=Hola%20Evelyn,%20quiero%20info%20de%20la%20formacion%20de%20Bachata%20Tradicional";
+import Base from "../../layouts/Base.astro";
+import PageIntro from "../../components/PageIntro.astro";
+import ContactForm from "../../components/ContactForm.astro";
+import { site } from "../../data/site";
+const wa = "https://api.whatsapp.com/send?phone=34659090696&text=Ciao%20Evelyn,%20vorrei%20info%20sulla%20formazione%20di%20Bachata%20Tradizionale";
 
 const clases = [
-  { n: "01", title: "Historia", meta: "2h · Teórica", d: "Acepciones del vocablo bachata, los precursores y ritmos que la originaron, origen y evolución de la bachata." },
-  { n: "02", title: "Musicalidad", meta: "2h · Teórica", d: "Lenguaje musical básico (pulso, ritmo, compás, tempo), la importancia de los patrones rítmicos e instrumentos." },
-  { n: "03", title: "Desmontando el básico", meta: "2h · Práctica", d: "Diferencias entre la bachata auténtica, la moderna y la sensual. Elementos para conseguir un estilo: pisada y conteo." },
-  { n: "04", title: "Combinaciones y variaciones", meta: "2h · Práctica", d: "Sistema lineal, cuadrado y diagonal. Pasos básicos y su musicalidad. El patín como recurso." },
-  { n: "05", title: "Baile en pareja", meta: "2h+1 · Teórico-práctica", d: "La importancia de los brazos y la conducción. La «dominicana» de competición y en el social." },
+  { n: "01", title: "Storia", meta: "2h · Teorica", d: "Accezioni del termine bachata, i precursori e i ritmi che l'hanno originata, origine ed evoluzione della bachata." },
+  { n: "02", title: "Musicalità", meta: "2h · Teorica", d: "Linguaggio musicale di base (battito, ritmo, tempo, tempo musicale), l'importanza dei pattern ritmici e degli strumenti." },
+  { n: "03", title: "Scomponendo il basico", meta: "2h · Pratica", d: "Differenze tra la bachata autentica, quella moderna e quella sensual. Elementi per ottenere uno stile: appoggio del passo e conteggio." },
+  { n: "04", title: "Combinazioni e variazioni", meta: "2h · Pratica", d: "Sistema lineare, quadrato e diagonale. Passi di base e la loro musicalità. Il patín come risorsa." },
+  { n: "05", title: "Ballo di coppia", meta: "2h+1 · Teorico-pratica", d: "L'importanza delle braccia e della guida. La «dominicana» da competizione e nel sociale." },
 ];
 
 const testimonios = [
-  { img: "/img/2021/02/Jose-Luis-Chaves.jpg", name: "José Luis Chaves", sub: "de Chaves y Silvia", text: "Da igual qué estilo bailes… este curso te va a servir sí o sí. No es solo que ya sepas tradicional: también aprendes a respirar y a sentir la música." },
-  { img: "/img/2021/02/Judith-Cordero-Pereiro.jpg", name: "Judith Cordero Pereiro", sub: "", text: "Felices nosotros de poder seguir conociendo las raíces y que lo hagas todo tan fácil. Escucharte es quedarse embobado." },
-  { img: "/img/2021/02/Gigi-Bellomo.jpg", name: "Gigi Bellomo", sub: "", text: "Gracias a esta experiencia puedo decir que hay pocas personas en este mundo que aman lo que hacen como tú." },
-  { img: "/img/2021/02/Sylvia-Pires.jpg", name: "Sylvia Pires", sub: "", text: "Carisma, búsqueda de la perfección, garra, humor, inteligencia, amor y pasión por lo que haces." },
-  { img: "/img/2021/02/Yaimelys-Sonylus.jpg", name: "Yaimelys Sonylus", sub: "", text: "Hice la 1ª formación con esta gran maestra y ya estoy haciendo la 2ª. Es, sin duda, una maestra de maestros." },
+  { img: "/img/2021/02/Jose-Luis-Chaves.jpg", name: "José Luis Chaves", sub: "de Chaves y Silvia", text: "Non importa quale stile balli… questo corso ti sarà utile di sicuro. Non è solo che già conosci il tradizionale: impari anche a respirare e a sentire la musica." },
+  { img: "/img/2021/02/Judith-Cordero-Pereiro.jpg", name: "Judith Cordero Pereiro", sub: "", text: "Felici noi di poter continuare a conoscere le radici e che tu renda tutto così facile. Ascoltarti è rimanere incantati." },
+  { img: "/img/2021/02/Gigi-Bellomo.jpg", name: "Gigi Bellomo", sub: "", text: "Grazie a questa esperienza posso dire che ci sono poche persone al mondo che amano ciò che fanno come te." },
+  { img: "/img/2021/02/Sylvia-Pires.jpg", name: "Sylvia Pires", sub: "", text: "Carisma, ricerca della perfezione, grinta, umorismo, intelligenza, amore e passione per ciò che fai." },
+  { img: "/img/2021/02/Yaimelys-Sonylus.jpg", name: "Yaimelys Sonylus", sub: "", text: "Ho fatto la 1ª formazione con questa grande maestra e sto già facendo la 2ª. È, senza dubbio, una maestra di maestri." },
 ];
 ---
 <Base
-  title="Formación · Profesora de Bachata Dominicana · La Negra"
-  description="Especializada en bachata dominicana como DJ, investigadora, conferencista y profesora. Maestra de maestros. Formación integral para profesores."
+  title="Formazione · Insegnante di Bachata Dominicana · La Negra"
+  description="Specializzata in bachata dominicana come DJ, ricercatrice, conferenziera e insegnante. Maestra di maestri. Formazione integrale per insegnanti."
   transparentHeader={true}
 >
   <PageIntro
-    kicker="Máster en Bachata Tradicional"
-    title="Conviértete en <em>profesor</em> de bachata dominicana."
+    kicker="Master in Bachata Tradizionale"
+    title="Diventa <em>insegnante</em> di bachata dominicana."
     lead={[
-      "Formación reglada con metodología propia: la titulación de referencia en bachata tradicional.",
-      "Maestra de maestros — más de dos décadas enseñando desde la raíz.",
+      "Formazione strutturata con metodologia propria: la certificazione di riferimento nella bachata tradizionale.",
+      "Maestra di maestri — oltre due decenni a insegnare partendo dalle radici.",
     ]}
-    cue="El programa"
+    cue="Il programma"
   />
 
   <section class="section">
     <div class="container prose">
-      <h2>Bachata Tradicional 1 y 2</h2>
-      <p><strong>Incluye diploma acreditativo</strong> + dossier de 50 páginas de contenido original.</p>
-      <h3>Descripción</h3>
-      <p>Clases online (10 horas) por plataforma Zoom, dossier de 50 páginas de contenido original y
-        correcciones individuales.</p>
+      <h2>Bachata Tradizionale 1 e 2</h2>
+      <p><strong>Include diploma di attestazione</strong> + dossier di 50 pagine di contenuto originale.</p>
+      <h3>Descrizione</h3>
+      <p>Lezioni online (10 ore) tramite piattaforma Zoom, dossier di 50 pagine di contenuto originale e
+        correzioni individuali.</p>
 
-      <h3>Temario</h3>
+      <h3>Programma</h3>
       <ol class="syllabus">
         {clases.map((c) => (
           <li class="syllabus__item">
@@ -60,21 +60,21 @@ const testimonios = [
         ))}
       </ol>
 
-      <h3>Horario</h3>
-      <p>5 semanas: dos horas semanales continuas. Mañanas o mediodías a escoger entre miércoles,
-        jueves o domingos (según demanda). Podrían abrirse otros horarios según demanda.</p>
+      <h3>Orario</h3>
+      <p>5 settimane: due ore settimanali continuative. Mattine o mezzogiorni a scelta tra mercoledì,
+        giovedì o domenica (secondo la richiesta). Potrebbero aprirsi altri orari in base alla richiesta.</p>
 
-      <h3>Advertencia</h3>
-      <p>Éste no es un título que te convierta en profesor (si entras en el curso es porque ya lo eres).
-        El diploma es un <strong>Certificado de Capacitación</strong> específico que se otorga por haber
-        aprobado con alto rendimiento el programa «Enseñanza de Bachata Dominicana».</p>
+      <h3>Avvertenza</h3>
+      <p>Questo non è un titolo che ti trasforma in insegnante (se entri nel corso è perché lo sei già).
+        Il diploma è un <strong>Certificato di Abilitazione</strong> specifico che viene rilasciato per aver
+        superato con alto rendimento il programma «Insegnamento della Bachata Dominicana».</p>
     </div>
   </section>
 
   <section class="section" style="background:#0f0f10;color:#fff">
     <div class="container">
-      <h2 class="text-center" style="color:#fff">Testimonios</h2>
-      <p class="text-center" style="opacity:.8">Lee lo que dicen de mí</p>
+      <h2 class="text-center" style="color:#fff">Testimonianze</h2>
+      <p class="text-center" style="opacity:.8">Leggi cosa dicono di me</p>
     </div>
     <div class="tswiper" data-tswiper>
       <div class="tswiper__track">
@@ -91,16 +91,16 @@ const testimonios = [
     </div>
   </section>
 
-  <ContactForm name="contacto-formacion" title="Más información" note="Contacta conmigo para recibir más información sobre este curso y próximas actividades." />
+  <ContactForm name="contacto-formacion-it" title="Maggiori informazioni" note="Contattami per ricevere maggiori informazioni su questo corso e sulle prossime attività." />
 </Base>
 
 <script type="application/ld+json" set:html={JSON.stringify({
   "@context": "https://schema.org",
   "@type": "Course",
-  name: "Máster en Bachata Tradicional — Enseñanza de Bachata Dominicana",
-  description: "Formación de profesorado en bachata dominicana con metodología propia, dossier de 50 páginas y diploma acreditativo. Bachata Tradicional 1 y 2, clases online por Zoom.",
+  name: "Master in Bachata Tradizionale — Insegnamento della Bachata Dominicana",
+  description: "Formazione per insegnanti di bachata dominicana con metodologia propria, dossier di 50 pagine e diploma di attestazione. Bachata Tradizionale 1 e 2, lezioni online tramite Zoom.",
   provider: { "@type": ["Organization", "DanceSchool"], name: "La Negra Salsa", sameAs: site.instagram },
-  inLanguage: "es",
+  inLanguage: "it",
   courseMode: "online",
   aggregateRating: {
     "@type": "AggregateRating",

@@ -1,19 +1,28 @@
 ---
 // Formulario de contacto vía Netlify Forms (funciona sin JS).
+import { getLocale, localize, ui } from "../i18n";
+const locale = getLocale(Astro.url);
+const f = ui[locale].form;
 const { title = "¿Tienes alguna pregunta?", name = "contacto", note } = Astro.props;
+const action = localize("/gracias/", locale);
+const privacy = localize("/privacidad/", locale);
 ---
 <section class="section" id="contacto">
   <div class="container" style="max-width:640px">
     <h2 class="text-center">{title}</h2>
     {note && <p class="text-center">{note}</p>}
-    <form name={name} method="POST" action="/gracias/" data-netlify="true" netlify-honeypot="bot-field" class="cform">
+    <form name={name} method="POST" action={action} data-netlify="true" netlify-honeypot="bot-field" class="cform">
       <input type="hidden" name="form-name" value={name} />
-      <p hidden><label>No rellenar: <input name="bot-field" /></label></p>
-      <label>Nombre<input type="text" name="nombre" required /></label>
-      <label>Email<input type="email" name="email" required /></label>
-      <label>Teléfono<input type="tel" name="telefono" /></label>
-      <label>Mensaje<textarea name="mensaje" rows="5" required></textarea></label>
-      <button class="btn btn--red btn--lg" type="submit">Enviar</button>
+      <p hidden><label>{f.noFill}: <input name="bot-field" /></label></p>
+      <label>{f.nombre}<input type="text" name="nombre" required /></label>
+      <label>{f.email}<input type="email" name="email" required /></label>
+      <label>{f.telefono}<input type="tel" name="telefono" /></label>
+      <label>{f.mensaje}<textarea name="mensaje" rows="5" required></textarea></label>
+      <label class="cform__consent">
+        <input type="checkbox" name="consentimiento" value="si" required />
+        <span>{f.consent} <a href={privacy} target="_blank" rel="noopener">{f.consentLink}</a>.</span>
+      </label>
+      <button class="btn btn--red btn--lg" type="submit">{f.enviar}</button>
     </form>
   </div>
 </section>
@@ -29,4 +38,8 @@ const { title = "¿Tienes alguna pregunta?", name = "contacto", note } = Astro.p
   .cform input::placeholder,.cform textarea::placeholder{color:var(--muted)}
   .cform input:focus,.cform textarea:focus{outline:none;border-color:var(--acc)}
   .cform button{justify-self:start;border:0}
+  .cform__consent{flex-direction:row;align-items:flex-start;gap:10px;
+    text-transform:none;letter-spacing:0;font-weight:400;font-size:.85rem;color:var(--text)}
+  .cform__consent input{width:auto;margin-top:2px;accent-color:var(--acc)}
+  .cform__consent a{color:var(--acc)}
 </style>

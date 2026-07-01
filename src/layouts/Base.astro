@@ -2,16 +2,24 @@
 import "../styles/global.css";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import WhatsAppFab from "../components/WhatsAppFab.astro";
 import { site } from "../data/site";
+import { getLocale, altUrls, ui } from "../i18n";
 
 const {
   title = site.name,
   description = site.tagline,
   transparentHeader = false,
   image = "/img/2020/11/LA-NEGRA-SALSA-BACHATA-KIZOMBA-EVELYN-VIANA-blanco.jpg",
+  preloadImage = "",
 } = Astro.props;
+const locale = getLocale(Astro.url);
+const t = ui[locale];
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const ogImage = new URL(image, Astro.site).href;
+const alts = altUrls(Astro.url);
+const hrefEs = new URL(alts.es, Astro.site).href;
+const hrefIt = new URL(alts.it, Astro.site).href;
 
 // Datos estructurados (ayudan a Google/AI a entender y citar la marca)
 const schema = {
@@ -52,7 +60,7 @@ const schema = {
 };
 ---
 <!doctype html>
-<html lang="es">
+<html lang={t.htmlLang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -60,15 +68,33 @@ const schema = {
     <meta name="description" content={description} />
     <meta name="robots" content="index, follow, max-image-preview:large" />
     <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="es" href={hrefEs} />
+    <link rel="alternate" hreflang="it" href={hrefIt} />
+    <link rel="alternate" hreflang="x-default" href={hrefEs} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={site.name} />
-    <meta property="og:locale" content="es_ES" />
+    <meta property="og:locale" content={t.ogLocale} />
     <meta property="og:url" content={canonical} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImage} />
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="icon" href="/img/2019/09/logo-lanegra.png" />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- Favicon / PWA -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/img/2019/09/logo-lanegra.png" sizes="any" />
+    <link rel="apple-touch-icon" href="/img/2019/09/logo-lanegra.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#0a0a0a" />
+
+    <!-- Rendimiento: precarga de fuentes críticas y del hero (mejora LCP) -->
+    <link rel="preload" href="/fonts/mona-sans.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/great-vibes.woff2" as="font" type="font/woff2" crossorigin />
+    {preloadImage && (
+      <link rel="preload" as="image" href={preloadImage} fetchpriority="high" />
+    )}
+
     <script type="application/ld+json" set:html={JSON.stringify(schema)} />
   </head>
   <body>
@@ -77,5 +103,6 @@ const schema = {
       <slot />
     </main>
     <Footer />
+    <WhatsAppFab />
   </body>
 </html>

@@ -1,85 +1,85 @@
 ---
-import Base from "../layouts/Base.astro";
-import Faq from "../components/Faq.astro";
-import { site } from "../data/site";
+import Base from "../../layouts/Base.astro";
+import Faq from "../../components/Faq.astro";
+import { site } from "../../data/site";
 
 const faqs = [
-  { q: "¿Necesito venir con pareja?", a: "No. En las clases se va rotando, así que puedes apuntarte sola o solo sin problema." },
-  { q: "¿Se puede empezar sin nivel previo?", a: "Sí. Hay grupos y contenidos pensados para empezar desde cero; te acompaño desde la pisada y el conteo básico." },
-  { q: "¿Dónde son las clases presenciales?", a: `En Barcelona (BS Dance Center) e Ibiza (Davinia Van Praag Dance Academy). Puedes ver horarios en <a href="/clases-presenciales/">clases presenciales</a>.` },
-  { q: "¿Las clases online se quedan grabadas?", a: "Sí. Las sesiones en directo por Zoom se graban para que las repases a tu ritmo cuando quieras." },
-  { q: "¿El máster sirve para dar clases de bachata tradicional?", a: `Es una formación de profesorado con metodología propia y diploma acreditativo. Tienes el temario en la <a href="/profesora-bachata-dominicana/">página del máster</a>.` },
+  { q: "Devo venire in coppia?", a: "No. Durante le lezioni si ruota, quindi puoi iscriverti da solo o da sola senza problemi." },
+  { q: "Si può iniziare da zero?", a: "Sì. Ci sono gruppi e contenuti pensati per iniziare da zero; ti accompagno dal passo e dal conteggio di base." },
+  { q: "Dove si tengono le lezioni in presenza?", a: `A Barcellona (BS Dance Center) e Ibiza (Davinia Van Praag Dance Academy). Puoi vedere gli orari in <a href="/it/clases-presenciales/">lezioni in presenza</a>.` },
+  { q: "Le lezioni online restano registrate?", a: "Sì. Le sessioni in diretta su Zoom vengono registrate così puoi rivederle al tuo ritmo quando vuoi." },
+  { q: "Il master abilita a insegnare bachata tradizionale?", a: `È una formazione per insegnanti con metodologia propria e diploma accreditato. Trovi il programma nella <a href="/it/profesora-bachata-dominicana/">pagina del master</a>.` },
 ];
 
 const eventos = [
-  { img: "/img/campeonato.webp", chip: "Calpe · Alicante · 21–25 oct", t: "El campeonato mundial",
-    d: "El Mundial de Pasos Libres de Salsa: la competición pionera en el mundo, creada por La Negra. Bailarines de todo el planeta en una sola pista.",
-    href: site.festival, external: true, cta: "Reserva tu plaza" },
-  { img: "/img/crucero.jpg", chip: "España · Italia · Francia · 1–8 nov", t: "Crucero del baile",
-    d: "Más que un viaje — días de salsa, bachata y buena compañía a bordo. Clases, sesiones y mar abierto.",
-    href: site.whatsapp, external: true, cta: "Reserva tu plaza" },
+  { img: "/img/campeonato.webp", chip: "Calpe · Alicante · 21–25 ott", t: "Il campionato mondiale",
+    d: "Il Mundial de Pasos Libres di Salsa: la competizione pioniera al mondo, creata da La Negra. Ballerini da tutto il pianeta su un'unica pista.",
+    href: site.festival, external: true, cta: "Prenota il tuo posto" },
+  { img: "/img/crucero.jpg", chip: "Spagna · Italia · Francia · 1–8 nov", t: "Crociera del ballo",
+    d: "Più di un viaggio — giorni di salsa, bachata e buona compagnia a bordo. Lezioni, sessioni e mare aperto.",
+    href: site.whatsapp, external: true, cta: "Prenota il tuo posto" },
 ];
 
 const presenciales = [
-  { img: "/img/2024/12/clases-bcn-korke-y-judith-576x1024.jpeg", chip: "Clases regulares · jueves", t: "Barcelona",
-    d: "Bachata tradicional en BS Dance Center. Clases regulares en directo todos los jueves.",
-    href: "/clases-presenciales/#barcelona", cta: "Ver clases" },
-  { img: "/img/2025/11/IBIZA-clases-nov-dic25-con-horarios-819x1024.png", chip: "Clases regulares · todo el año", t: "Ibiza",
-    d: "Salsa y bachata en Davinia Van Praag Dance Academy. Cursos regulares por trimestre.",
-    href: "/clases-presenciales/#ibiza", cta: "Ver clases" },
+  { img: "/img/2024/12/clases-bcn-korke-y-judith-576x1024.jpeg", chip: "Lezioni regolari · giovedì", t: "Barcellona",
+    d: "Bachata tradizionale al BS Dance Center. Lezioni regolari in diretta tutti i giovedì.",
+    href: "/it/clases-presenciales/#barcelona", cta: "Vedi le lezioni" },
+  { img: "/img/2025/11/IBIZA-clases-nov-dic25-con-horarios-819x1024.png", chip: "Lezioni regolari · tutto l'anno", t: "Ibiza",
+    d: "Salsa e bachata alla Davinia Van Praag Dance Academy. Corsi regolari per trimestre.",
+    href: "/it/clases-presenciales/#ibiza", cta: "Vedi le lezioni" },
 ];
 
 const online = [
-  { img: "/img/2021/10/web-ensenanza-de-la-bachata-libro-1024x1024.jpg", chip: "Programa de profesorado", t: "Máster en Bachata Tradicional",
-    d: "Formación reglada para profesores: módulos I, II y III, metodología propia y la titulación de referencia en bachata dominicana.",
-    href: "/profesora-bachata-dominicana/", cta: "Ver programa" },
-  { img: "/img/2024/12/los-jueves-zoom-1080X1080-1024x1024.png", chip: "En directo · Zoom", t: "Clases online",
-    d: "Bachata y salsa en directo por Zoom. Las clases se quedan grabadas para ti.",
-    href: "/bachata-salsa-online-offline/", cta: "Empezar" },
+  { img: "/img/2021/10/web-ensenanza-de-la-bachata-libro-1024x1024.jpg", chip: "Programma per insegnanti", t: "Master in Bachata Tradizionale",
+    d: "Formazione strutturata per insegnanti: moduli I, II e III, metodologia propria e il titolo di riferimento nella bachata dominicana.",
+    href: "/it/profesora-bachata-dominicana/", cta: "Vedi il programma" },
+  { img: "/img/2024/12/los-jueves-zoom-1080X1080-1024x1024.png", chip: "In diretta · Zoom", t: "Lezioni online",
+    d: "Bachata e salsa in diretta su Zoom. Le lezioni restano registrate per te.",
+    href: "/it/bachata-salsa-online-offline/", cta: "Inizia" },
 ];
 
 const worldtour = [
-  { mes: "Julio", items: [
-    { place: "Japón · Tokio", date: "2 al 5", event: "Bachata Media Japón Festival" },
-    { place: "Korea · Jeju Island", date: "10 al 12", event: "K-Sensual 10th Anniversary" },
-    { place: "Gran Canaria", date: "17 al 19", event: "Teacher Training e Intensivo Bachata Tradicional I" },
-    { place: "Valencia", date: "26 al 27", event: "Teacher Training Bachata Tradicional (I, II y III)" },
-    { place: "Italia · Roma", date: "31 al 2", event: "Meeteach Bachata Weekend" },
+  { mes: "Luglio", items: [
+    { place: "Giappone · Tokyo", date: "2-5", event: "Bachata Media Japón Festival" },
+    { place: "Corea · Jeju Island", date: "10-12", event: "K-Sensual 10th Anniversary" },
+    { place: "Gran Canaria", date: "17-19", event: "Teacher Training e Intensivo Bachata Tradizionale I" },
+    { place: "Valencia", date: "26-27", event: "Teacher Training Bachata Tradizionale (I, II e III)" },
+    { place: "Italia · Roma", date: "31-2", event: "Meeteach Bachata Weekend" },
   ]},
   { mes: "Agosto", items: [
-    { place: "Italia · Roma", date: "1 y 2", event: "Meeteach Bachata Weekend" },
-    { place: "Rumanía · Bucarest", date: "7 al 9", event: "Formación e Intensivo Bachata Tradicional" },
-    { place: "México Tour", date: "19 al 30", event: "Varias ciudades" },
+    { place: "Italia · Roma", date: "1 e 2", event: "Meeteach Bachata Weekend" },
+    { place: "Romania · Bucarest", date: "7-9", event: "Formazione e Intensivo Bachata Tradizionale" },
+    { place: "Messico Tour", date: "19-30", event: "Varie città" },
   ]},
-  { mes: "Septiembre", items: [
-    { place: "Taiwán · Taipei", date: "5 y 6", event: "Freedom Bachata Weekender" },
-    { place: "Sevilla", date: "10 al 13", event: "DyD Be Unlike" },
-    { place: "Madrid", date: "17 al 20", event: "Vacílalo Madrid Congress" },
-    { place: "Quito · Ecuador", date: "24 al 28", event: "República Bachata" },
+  { mes: "Settembre", items: [
+    { place: "Taiwan · Taipei", date: "5 e 6", event: "Freedom Bachata Weekender" },
+    { place: "Siviglia", date: "10-13", event: "DyD Be Unlike" },
+    { place: "Madrid", date: "17-20", event: "Vacílalo Madrid Congress" },
+    { place: "Quito · Ecuador", date: "24-28", event: "República Bachata" },
   ]},
-  { mes: "Octubre", items: [
-    { place: "Noruega · Oslo", date: "2 al 4", event: "Intensivo Bachata Tradicional" },
-    { place: "Ibiza", date: "4 al 9", event: "Dance4two Dance Holiday" },
-    { place: "Barcelona", date: "9 al 11", event: "Teacher Training Course by Korke y Judith" },
-    { place: "Calpe · Alicante", date: "21 al 25", event: "XV Mundial de Pasos Libres" },
-    { place: "Santa Susana", date: "30 al 31", event: "El Bloque Bachatero" },
+  { mes: "Ottobre", items: [
+    { place: "Norvegia · Oslo", date: "2-4", event: "Intensivo Bachata Tradizionale" },
+    { place: "Ibiza", date: "4-9", event: "Dance4two Dance Holiday" },
+    { place: "Barcellona", date: "9-11", event: "Teacher Training Course by Korke y Judith" },
+    { place: "Calpe · Alicante", date: "21-25", event: "XV Mundial de Pasos Libres" },
+    { place: "Santa Susana", date: "30-31", event: "El Bloque Bachatero" },
   ]},
-  { mes: "Noviembre", items: [
-    { place: "España · Italia · Francia", date: "1 al 8", event: "Crucero del Baile · Edición Delux Otoño" },
-    { place: "Italia", date: "14 y 15", event: "Formación e intensivos" },
-    { place: "Polonia", date: "19 al 22", event: "Bachateando Afrolatin Dance Festival" },
-    { place: "Malasia · Kuala Lumpur", date: "27 al 29", event: "World Bachata Festival Kuala Lumpur" },
+  { mes: "Novembre", items: [
+    { place: "Spagna · Italia · Francia", date: "1-8", event: "Crucero del Baile · Edición Delux Otoño" },
+    { place: "Italia", date: "14 e 15", event: "Formazione e intensivi" },
+    { place: "Polonia", date: "19-22", event: "Bachateando Afrolatin Dance Festival" },
+    { place: "Malaysia · Kuala Lumpur", date: "27-29", event: "World Bachata Festival Kuala Lumpur" },
   ]},
-  { mes: "Diciembre", items: [
-    { place: "China", date: "4 al 6", event: "Bachata Congress" },
-    { place: "Italia · Treviso", date: "11 al 13", event: "Intensivo Bachata Tradicional #Sinbarrio" },
-    { place: "Holanda", date: "18 al 20", event: "Biezenmortel Christmas Edition" },
+  { mes: "Dicembre", items: [
+    { place: "Cina", date: "4-6", event: "Bachata Congress" },
+    { place: "Italia · Treviso", date: "11-13", event: "Intensivo Bachata Tradizionale #Sinbarrio" },
+    { place: "Olanda", date: "18-20", event: "Biezenmortel Christmas Edition" },
   ]},
 ];
 ---
 <Base
-  title="Évelyn «La Negra» — Profesora & DJ de salsa y bachata dominicana"
-  description="Évelyn «La Negra»: profesora y DJ de ritmos latinos desde 1997. Salsa y bachata dominicana en Barcelona, Ibiza y online."
+  title="Évelyn «La Negra» — Insegnante & DJ di salsa e bachata dominicana"
+  description="Évelyn «La Negra»: insegnante e DJ di ritmi latini dal 1997. Salsa e bachata dominicana a Barcellona, Ibiza e online."
   transparentHeader={true}
   preloadImage="/img/evelynbn.png"
 >
@@ -87,36 +87,36 @@ const worldtour = [
 
     <!-- HERO -->
     <header class="ln-hero">
-      <img class="ln-hero__img" src="/img/evelynbn.png" alt="Évelyn «La Negra» bailando bachata dominicana"
+      <img class="ln-hero__img" src="/img/evelynbn.png" alt="Évelyn «La Negra» che balla bachata dominicana"
         width="1830" height="1025" fetchpriority="high" decoding="async" />
       <h1 class="ln-hero__name">
         <span class="he-name">Évelyn</span>
         <strong class="he-laneg">La Negra</strong>
-        <span class="he-disc">Bachata Tradicional</span>
+        <span class="he-disc">Bachata Tradizionale</span>
       </h1>
       <div class="ln-hero__bottom container">
-        <p class="ln-hero__role">Profesora &amp; DJ · Salsa · Bachata Dominicana</p>
+        <p class="ln-hero__role">Insegnante &amp; DJ · Salsa · Bachata Dominicana</p>
         <div class="ln-hero__cta">
-          <a class="btn btn--red btn--lg" href={site.whatsapp} target="_blank" rel="noopener">Ven a bailar</a>
-          <a class="btn btn--ghost btn--lg" href="/curriculum/">Conócela</a>
+          <a class="btn btn--red btn--lg" href={site.whatsapp} target="_blank" rel="noopener">Vieni a ballare</a>
+          <a class="btn btn--ghost btn--lg" href="/it/curriculum/">Scopri chi è</a>
         </div>
       </div>
     </header>
 
     <!-- FRANJA DE CREDIBILIDAD -->
-    <section class="stats" aria-label="La Negra en cifras">
+    <section class="stats" aria-label="La Negra in cifre">
       <div class="container stats__grid">
-        <div class="stat"><span class="stat__n">+25</span><span class="stat__l">años en la pista</span></div>
-        <div class="stat"><span class="stat__n">40+</span><span class="stat__l">países en gira</span></div>
-        <div class="stat"><span class="stat__n">2010</span><span class="stat__l">creó el Mundial de Pasos Libres</span></div>
-        <div class="stat"><span class="stat__n">∞</span><span class="stat__l">maestra de maestros</span></div>
+        <div class="stat"><span class="stat__n">+25</span><span class="stat__l">anni in pista</span></div>
+        <div class="stat"><span class="stat__n">40+</span><span class="stat__l">paesi in tour</span></div>
+        <div class="stat"><span class="stat__n">2010</span><span class="stat__l">ha creato il Mundial de Pasos Libres</span></div>
+        <div class="stat"><span class="stat__n">∞</span><span class="stat__l">maestra di maestri</span></div>
       </div>
     </section>
 
     <!-- 1 · EVENTOS -->
     <section class="ev" id="eventos">
       <div class="container">
-        <h2 class="ev__title">Próximos eventos</h2>
+        <h2 class="ev__title">Prossimi eventi</h2>
         <div class="ev__grid">
           {eventos.map((c) => (
             <a class="evcard" href={c.href} {...(c.external ? { target: "_blank", rel: "noopener" } : {})}>
@@ -136,7 +136,7 @@ const worldtour = [
     <!-- 2 · FORMACIÓN PRESENCIAL -->
     <section class="ev" id="formacion-presencial">
       <div class="container">
-        <h2 class="ev__title">Formación presencial</h2>
+        <h2 class="ev__title">Formazione in presenza</h2>
         <div class="ev__grid">
           {presenciales.map((c) => (
             <a class="evcard" href={c.href}>
@@ -156,7 +156,7 @@ const worldtour = [
     <!-- 3 · FORMACIÓN ONLINE & MÁSTER -->
     <section class="ev" id="formacion-online">
       <div class="container">
-        <h2 class="ev__title">Formación online &amp; Máster</h2>
+        <h2 class="ev__title">Formazione online &amp; Master</h2>
         <div class="ev__grid">
           {online.map((c) => (
             <a class="evcard" href={c.href}>
@@ -177,7 +177,7 @@ const worldtour = [
     <section class="tour" id="world-tour">
       <div class="container">
         <h2 class="ev__title">World Tour 2026</h2>
-        <p class="tour__sub">Ruta La Negra · jul – dic 2026. Encuéntrame por todo el mundo.</p>
+        <p class="tour__sub">Rotta La Negra · lug – dic 2026. Trovami in tutto il mondo.</p>
       </div>
       <div class="tour__cols">
         {worldtour.map((m) => (
@@ -193,8 +193,8 @@ const worldtour = [
         ))}
       </div>
       <div class="container">
-        <p class="tour__note">Domingos · DJ residente KEEPER Ibiza &nbsp;·&nbsp; Clases regulares: Ibiza (lun–mié) · Barcelona BS Dance Center (jueves)</p>
-        <p class="tour__cta"><a class="btn btn--red btn--lg" href={site.whatsapp} target="_blank" rel="noopener">Próximas fechas</a></p>
+        <p class="tour__note">Domeniche · DJ residente KEEPER Ibiza &nbsp;·&nbsp; Lezioni regolari: Ibiza (lun–mer) · Barcellona BS Dance Center (giovedì)</p>
+        <p class="tour__cta"><a class="btn btn--red btn--lg" href={site.whatsapp} target="_blank" rel="noopener">Prossime date</a></p>
       </div>
     </section>
 
@@ -202,31 +202,31 @@ const worldtour = [
     <section class="ln-merch" id="tienda">
       <div class="container ln-merch__inner">
         <div>
-          <p class="kick">Tienda</p>
-          <h2 class="ln-h2">Camisetas oficiales</h2>
-          <p class="ln-merch__lead">Lleva el Método Bachata Tradicional contigo. Usa el código
-            <strong>EVELYN</strong> y consigue un 10% de descuento.</p>
-          <a class="btn btn--red btn--lg" href={site.shop} target="_blank" rel="noopener">Ir a la tienda</a>
+          <p class="kick">Shop</p>
+          <h2 class="ln-h2">Magliette ufficiali</h2>
+          <p class="ln-merch__lead">Porta con te il Metodo Bachata Tradizionale. Usa il codice
+            <strong>EVELYN</strong> e ottieni il 10% di sconto.</p>
+          <a class="btn btn--red btn--lg" href={site.shop} target="_blank" rel="noopener">Vai allo shop</a>
         </div>
         <div class="ln-merch__imgs">
-          <img src="/img/2021/02/CAMISETA-BACHATA-TRADICIONAL-CHICAS.jpg" alt="Camiseta chicas" loading="lazy" />
-          <img src="/img/2021/02/CAMISETA-BACHATA-TRADICIONAL-CHICOS.jpg" alt="Camiseta chicos" loading="lazy" />
+          <img src="/img/2021/02/CAMISETA-BACHATA-TRADICIONAL-CHICAS.jpg" alt="Maglietta donna" loading="lazy" />
+          <img src="/img/2021/02/CAMISETA-BACHATA-TRADICIONAL-CHICOS.jpg" alt="Maglietta uomo" loading="lazy" />
         </div>
       </div>
     </section>
 
     <!-- 5b · FAQ -->
-    <Faq kicker="Dudas frecuentes" title="Preguntas frecuentes" items={faqs} />
+    <Faq kicker="Dubbi frequenti" title="Domande frequenti" items={faqs} />
 
     <!-- 6 · CONTACTA -->
     <section class="ln-social" id="contacta">
       <div class="container ln-social__inner">
         <div>
-          <p class="kick">Contacta</p>
-          <h2 class="ln-h2">¿Hablamos?</h2>
+          <p class="kick">Contatti</p>
+          <h2 class="ln-h2">Parliamone?</h2>
           <div class="ln-social__links">
             <a href={site.whatsapp} target="_blank" rel="noopener">WhatsApp</a>
-            <a href={`tel:${site.phone.replace(/\s/g, "")}`}>Teléfono</a>
+            <a href={`tel:${site.phone.replace(/\s/g, "")}`}>Telefono</a>
             <a href={`mailto:${site.email}`}>Email</a>
           </div>
           <div class="ln-social__links ln-social__links--alt">
@@ -235,17 +235,17 @@ const worldtour = [
             <a href={site.festival} target="_blank" rel="noopener">LaNegra World Championship</a>
           </div>
         </div>
-        <form class="ln-news" name="newsletter" method="POST" action="/gracias/" data-netlify="true" netlify-honeypot="bot-field">
-          <input type="hidden" name="form-name" value="newsletter" />
+        <form class="ln-news" name="newsletter-it" method="POST" action="/it/gracias/" data-netlify="true" netlify-honeypot="bot-field">
+          <input type="hidden" name="form-name" value="newsletter-it" />
           <p hidden><label>No rellenar: <input name="bot-field" /></label></p>
-          <label class="ln-news__label" for="nl-email">Recibe fechas y novedades</label>
+          <label class="ln-news__label" for="nl-email">Ricevi date e novità</label>
           <div class="ln-news__row">
-            <input id="nl-email" type="email" name="email" placeholder="tu@email.com" required />
-            <button class="btn btn--red" type="submit">Apúntame</button>
+            <input id="nl-email" type="email" name="email" placeholder="tua@email.com" required />
+            <button class="btn btn--red" type="submit">Iscrivimi</button>
           </div>
           <label class="ln-news__consent">
             <input type="checkbox" name="consentimiento" value="si" required />
-            <span>Acepto la <a href="/privacidad/" target="_blank" rel="noopener">política de privacidad</a>.</span>
+            <span>Accetto l'<a href="/it/privacidad/" target="_blank" rel="noopener">informativa sulla privacy</a>.</span>
           </label>
         </form>
       </div>
@@ -260,22 +260,22 @@ const worldtour = [
     {
       "@type": "Event",
       name: "Mundial de Pasos Libres de Salsa",
-      description: "La competición pionera de salsa en el mundo, creada por La Negra.",
+      description: "La competizione pioniera di salsa al mondo, creata da La Negra.",
       startDate: "2026-10-21",
       endDate: "2026-10-25",
       eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
-      location: { "@type": "Place", name: "Calpe", address: "Calpe, Alicante, España" },
+      location: { "@type": "Place", name: "Calpe", address: "Calpe, Alicante, Spagna" },
       organizer: { "@type": "Person", name: "Évelyn «La Negra»" },
       url: site.festival,
     },
     {
       "@type": "Event",
       name: "Crucero del Baile · Edición Delux Otoño",
-      description: "Días de salsa, bachata y buena compañía a bordo: clases, sesiones y mar abierto.",
+      description: "Giorni di salsa, bachata e buona compagnia a bordo: lezioni, sessioni e mare aperto.",
       startDate: "2026-11-01",
       endDate: "2026-11-08",
       eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
-      location: { "@type": "Place", name: "Mediterráneo", address: "España · Italia · Francia" },
+      location: { "@type": "Place", name: "Mediterraneo", address: "Spagna · Italia · Francia" },
       organizer: { "@type": "Person", name: "Évelyn «La Negra»" },
     },
   ],

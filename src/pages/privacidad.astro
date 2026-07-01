@@ -1,0 +1,54 @@
+---
+import Base from "../layouts/Base.astro";
+import { site } from "../data/site";
+---
+<Base title="Política de privacidad · La Negra Salsa" description="Cómo tratamos tus datos personales en la web de Évelyn «La Negra».">
+  <section class="section">
+    <div class="container prose legal">
+      <p class="eyebrow">Protección de datos</p>
+      <h1>Política de privacidad</h1>
+
+      <p>De acuerdo con el Reglamento (UE) 2016/679 (RGPD) y la Ley Orgánica 3/2018 (LOPDGDD), te
+        informamos sobre el tratamiento de tus datos personales.</p>
+
+      <h2>1. Responsable del tratamiento</h2>
+      <ul>
+        <li><strong>Responsable:</strong> Évelyn Viana Lovera («La Negra»)</li>
+        <li><strong>NIF/NIE:</strong> [COMPLETAR]</li>
+        <li><strong>Email:</strong> <a href={`mailto:${site.email}`}>{site.email}</a></li>
+      </ul>
+
+      <h2>2. Finalidad</h2>
+      <p>Los datos que nos facilitas a través de los formularios (nombre, email, teléfono y mensaje) se
+        tratan para <strong>atender tu solicitud de información</strong> sobre clases y actividades y, si
+        lo autorizas, para <strong>enviarte novedades y fechas</strong> (newsletter).</p>
+
+      <h2>3. Legitimación</h2>
+      <p>La base legal es tu <strong>consentimiento</strong>, que otorgas al marcar la casilla del
+        formulario y enviarlo. Puedes retirarlo en cualquier momento.</p>
+
+      <h2>4. Conservación</h2>
+      <p>Conservaremos tus datos mientras exista interés mutuo o hasta que solicites su supresión, y
+        durante los plazos legalmente exigibles.</p>
+
+      <h2>5. Destinatarios</h2>
+      <p>Los datos se gestionan a través de <strong>Netlify</strong> (alojamiento y gestión de
+        formularios), proveedor que actúa como encargado del tratamiento. No se ceden datos a terceros
+        salvo obligación legal.</p>
+
+      <h2>6. Tus derechos</h2>
+      <p>Puedes ejercer los derechos de acceso, rectificación, supresión, oposición, limitación y
+        portabilidad escribiendo a <a href={`mailto:${site.email}`}>{site.email}</a>. También puedes
+        reclamar ante la <strong>Agencia Española de Protección de Datos</strong> (aepd.es).</p>
+
+      <p class="legal__note">Última actualización: julio de 2026.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .legal h2{margin-top:1.6em}
+  .legal ul{padding-left:1.2em}
+  .legal li{margin-bottom:.4em}
+  .legal__note{margin-top:2em;color:var(--muted);font-size:.9rem}
+</style>

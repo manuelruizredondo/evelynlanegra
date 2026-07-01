@@ -1,10 +1,12 @@
 ---
 // Página de navegación de galerías Keeper: cabecera + rejilla de botones.
+import { getLocale } from "../i18n";
+const eyebrow = getLocale(Astro.url) === "it" ? "Galleria Keeper" : "Galería Keeper";
 const { heading, intro, buttons = [], back } = Astro.props;
 ---
 <section class="gallery-hero">
   <div class="container text-center">
-    <p class="eyebrow" style="color:var(--red-bright)">Galería Keeper</p>
+    <p class="eyebrow" style="color:var(--red-bright)">{eyebrow}</p>
     <h1>{heading}</h1>
     {intro && <p class="gallery-hero__intro">{intro}</p>}
   </div>

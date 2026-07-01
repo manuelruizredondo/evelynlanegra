@@ -1,9 +1,16 @@
 ---
-import { nav, site } from "../data/site";
+import { site } from "../data/site";
+import { getLocale, localize, altUrls, ui, langNames } from "../i18n";
+
+const locale = getLocale(Astro.url);
+const t = ui[locale];
+const nav = t.nav.map((n) => ({ label: n.label, href: localize(n.href, locale) }));
+const alts = altUrls(Astro.url);
+const home = localize("/", locale);
 ---
 <header class="site-header" data-header>
   <div class="site-header__inner">
-    <a class="site-header__logo" href="/" aria-label={site.name}>
+    <a class="site-header__logo" href={home} aria-label={site.name}>
       <img src="/img/2019/09/logo-lanegra.png" width="160" height="73" alt={site.name} />
     </a>
 
@@ -11,14 +18,15 @@ import { nav, site } from "../data/site";
       <!-- Selector de idioma -->
       <div class="lang" data-lang>
         <button class="lang__btn" data-lang-toggle aria-haspopup="true" aria-expanded="false">
-          <span>ES</span>
+          <span>{locale.toUpperCase()}</span>
           <svg class="lang__arrow" viewBox="0 0 12 8" width="11" height="7" aria-hidden="true">
             <path d="M1 1.5 6 6l5-4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
           </svg>
         </button>
         <ul class="lang__menu">
-          <li><a href="/" aria-current="true">Español</a></li>
-          <li><a href="https://www.lanegrasalsa.com/en/la-negra-salsa">English</a></li>
+          <li><a href={alts.es} {...(locale === "es" ? { "aria-current": "true" } : {})}>{langNames.es}</a></li>
+          <li><a href={alts.it} {...(locale === "it" ? { "aria-current": "true" } : {})}>{langNames.it}</a></li>
+          <li><a href={alts.en} target="_blank" rel="noopener">{langNames.en}</a></li>
         </ul>
       </div>
 
@@ -39,12 +47,12 @@ import { nav, site } from "../data/site";
     ))}
   </nav>
   <div class="mobile-menu__social">
-    <span class="mobile-menu__social-label">Sígueme</span>
+    <span class="mobile-menu__social-label">{t.footer.followMe}</span>
     <div class="mobile-menu__social-links">
       <a href={site.instagram} target="_blank" rel="noopener">Instagram</a>
       <a href={site.spotify} target="_blank" rel="noopener">Spotify</a>
       <a href={site.whatsapp} target="_blank" rel="noopener">WhatsApp</a>
-      <a href={site.festival} target="_blank" rel="noopener">Dance Festival</a>
+      <a href={site.festival} target="_blank" rel="noopener">LaNegra World Championship</a>
     </div>
   </div>
 </aside>

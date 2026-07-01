@@ -1,0 +1,49 @@
+---
+// FAQ con acordeón nativo (<details>) + datos estructurados FAQPage.
+// Doble beneficio: resuelve dudas y puede salir como "preguntas frecuentes" en Google/IA.
+interface FaqItem { q: string; a: string }
+interface Props { title?: string; kicker?: string; items: FaqItem[] }
+const { title = "Preguntas frecuentes", kicker = "Dudas", items } = Astro.props;
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: items.map((it) => ({
+    "@type": "Question",
+    name: it.q,
+    acceptedAnswer: { "@type": "Answer", text: it.a },
+  })),
+};
+---
+<section class="faq section" id="faq">
+  <div class="container">
+    <p class="eyebrow text-center">{kicker}</p>
+    <h2 class="text-center">{title}</h2>
+    <div class="faq__list">
+      {items.map((it) => (
+        <details class="faq__item">
+          <summary>
+            <span>{it.q}</span>
+            <span class="faq__icon" aria-hidden="true">+</span>
+          </summary>
+          <div class="faq__answer"><p set:html={it.a}></p></div>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />
+
+<style>
+  .faq__list{max-width:820px;margin:28px auto 0;border-top:1px solid var(--line)}
+  .faq__item{border-bottom:1px solid var(--line)}
+  .faq__item summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;
+    gap:20px;padding:22px 4px;font-size:1.08rem;font-weight:600;color:#fff}
+  .faq__item summary::-webkit-details-marker{display:none}
+  .faq__icon{flex:0 0 auto;width:28px;height:28px;display:grid;place-items:center;border-radius:50%;
+    border:1px solid var(--line);color:var(--acc);font-size:1.2rem;line-height:1;transition:transform .25s ease}
+  .faq__item[open] .faq__icon{transform:rotate(45deg)}
+  .faq__answer{padding:0 4px 24px;color:var(--text);max-width:70ch}
+  .faq__answer p{margin:0;line-height:1.65}
+  .faq__answer a{color:var(--acc)}
+</style>
