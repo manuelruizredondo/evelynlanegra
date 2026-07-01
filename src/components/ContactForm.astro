@@ -20,10 +20,13 @@ const { title = "¿Tienes alguna pregunta?", name = "contacto", note } = Astro.p
 
 <style>
   .cform{display:grid;gap:16px;margin-top:22px}
-  .cform label{display:flex;flex-direction:column;gap:6px;font-weight:700;color:var(--ink);font-size:.85rem}
+  .cform label{display:flex;flex-direction:column;gap:6px;font-weight:700;color:#fff;font-size:.78rem;
+    text-transform:uppercase;letter-spacing:.05em}
   .cform input,.cform textarea{
-    font:inherit;font-weight:400;padding:12px 14px;border:1px solid #ddd;border-radius:8px;width:100%;color:var(--ink);
+    font:inherit;font-weight:400;padding:13px 16px;border:1px solid var(--line);border-radius:10px;width:100%;
+    background:var(--bg2);color:#fff;
   }
-  .cform input:focus,.cform textarea:focus{outline:2px solid var(--red);border-color:var(--red)}
+  .cform input::placeholder,.cform textarea::placeholder{color:var(--muted)}
+  .cform input:focus,.cform textarea:focus{outline:none;border-color:var(--acc)}
   .cform button{justify-self:start;border:0}
 </style>

@@ -11,6 +11,45 @@ const {
   image = "/img/2020/11/LA-NEGRA-SALSA-BACHATA-KIZOMBA-EVELYN-VIANA-blanco.jpg",
 } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL(image, Astro.site).href;
+
+// Datos estructurados (ayudan a Google/AI a entender y citar la marca)
+const schema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": new URL("#evelyn", Astro.site).href,
+      name: "Évelyn Viana Lovera",
+      alternateName: "La Negra",
+      jobTitle: "Profesora y DJ de bachata dominicana y salsa",
+      description:
+        "Periodista, productora, DJ y profesora de bachata dominicana y salsa, radicada en Barcelona desde 1997. Referencia en la formación de bachata tradicional.",
+      url: new URL("/curriculum/", Astro.site).href,
+      image: ogImage,
+      knowsAbout: [
+        "Bachata dominicana",
+        "Bachata tradicional",
+        "Salsa cubana",
+        "DJ de ritmos latinos",
+        "Formación de profesores de baile",
+      ],
+      sameAs: [site.instagram, site.spotify, site.festival],
+    },
+    {
+      "@type": ["LocalBusiness", "DanceSchool"],
+      "@id": new URL("#lanegrasalsa", Astro.site).href,
+      name: "La Negra Salsa",
+      description:
+        "Escuela de salsa y bachata dominicana de Évelyn «La Negra»: clases presenciales en Barcelona e Ibiza, formación online y máster de bachata tradicional.",
+      url: Astro.site?.href,
+      telephone: site.phone,
+      founder: { "@id": new URL("#evelyn", Astro.site).href },
+      areaServed: ["Barcelona", "Ibiza", "Online"],
+      sameAs: [site.instagram, site.spotify],
+    },
+  ],
+};
 ---
 <!doctype html>
 <html lang="es">
@@ -19,13 +58,18 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
     <link rel="canonical" href={canonical} />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:url" content={canonical} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={image} />
+    <meta property="og:image" content={ogImage} />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" href="/img/2019/09/logo-lanegra.png" />
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
   </head>
   <body>
     <Header transparent={transparentHeader} />

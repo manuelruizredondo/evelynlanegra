@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import PageIntro from "../components/PageIntro.astro";
 const logos = [
   { src: "/img/2021/02/metodo-la-negra-bachata-tradicional-blanco-1024x1024.jpg", label: "Método La Negra · Bachata Tradicional" },
   { src: "/img/2021/02/la-negra-logo-fondos-claros.jpg", label: "La Negra · logo (fondos claros)" },
@@ -9,13 +10,15 @@ const logos = [
 ];
 ---
 <Base title="Logotipos · La Negra" description="Descarga los logotipos oficiales del Método La Negra, Mundial de Pasos Libres y Mundial de Bachata Tradicional.">
-  <section class="gallery-hero">
-    <div class="container text-center">
-      <p class="eyebrow" style="color:var(--red-bright)">Descargas</p>
-      <h1>Logotipos</h1>
-      <p style="opacity:.85;max-width:600px;margin:10px auto 0">Logotipo del Método La Negra · Bachata Tradicional y otros elementos gráficos descargables.</p>
-    </div>
-  </section>
+  <PageIntro
+    kicker="Marca · Descargas"
+    title="Los <em>logotipos</em> de La Negra."
+    lead={[
+      "Descarga el logo del Método La Negra · Bachata Tradicional y el resto de elementos gráficos.",
+      "Disponibles en EPS, JPG, PDF y PNG.",
+    ]}
+    cue="Descargas"
+  />
 
   <section class="section">
     <div class="container">
@@ -47,7 +50,7 @@ const logos = [
 </Base>
 
 <style>
-  .gallery-hero{background:#111;color:#fff;padding:90px 0 50px}
+  .gallery-hero{background:#0f0f10;color:#fff;padding:90px 0 50px}
   .gallery-hero h1{color:#fff;font-size:2.6rem}
   .cform{display:grid;gap:16px;max-width:520px;margin:22px auto 0}
   .cform label{display:flex;flex-direction:column;gap:6px;font-weight:700;color:var(--ink);font-size:.85rem}

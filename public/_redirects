@@ -14,3 +14,11 @@
 # Resto de páginas no migradas -> sitio original en vivo
 /es/*   https://www.lanegrasalsa.com/es/:splat   301
 /en/*   https://www.lanegrasalsa.com/en/:splat   301
+
+/propuesta-ln/    /            301
+/propuesta-sobre/ /curriculum/ 301
+/propuesta/ / 301
+
+# Fusión Barcelona+Ibiza -> Clases presenciales
+/clases-de-baile-en-barcelona/  /clases-presenciales/#barcelona  301
+/clases-de-baile-en-ibiza/      /clases-presenciales/#ibiza      301

@@ -1,0 +1,34 @@
+---
+// Presentación editorial al inicio de las páginas interiores.
+// title admite HTML con <em> para la palabra acento (en rojo).
+const { kicker, title, lead = [], cue = "Más abajo" } = Astro.props;
+---
+<section class="pintro">
+  <div class="container">
+    {kicker && <p class="pintro__kicker">{kicker}</p>}
+    <h1 class="pintro__title" set:html={title} />
+    <div class="pintro__lead">
+      {lead.map((l) => <p set:html={l} />)}
+    </div>
+    <p class="pintro__cue">{cue}<span class="pintro__arrow">↓</span></p>
+  </div>
+</section>
+
+<style>
+  .pintro{min-height:74vh;display:flex;align-items:center;
+    padding:calc(var(--header-h) + 48px) 0 56px;border-bottom:1px solid var(--line)}
+  .pintro__kicker{font-size:2rem;font-weight:700;letter-spacing:0;text-transform:uppercase;
+    color:var(--acc);margin:0 0 0}
+  .pintro__title{font-family:var(--serif);font-style:italic;font-weight:500;color:#fff;
+    font-size:clamp(2.1rem,5.6vw,4.4rem);line-height:1.1;max-width:20ch;margin:0 0 26px;letter-spacing:.004em}
+  .pintro__title em{font-style:italic;color:var(--acc)}
+  .pintro__lead p{color:var(--text);font-size:clamp(1.05rem,1.7vw,1.3rem);line-height:1.5;
+    max-width:52ch;margin:0 0 6px}
+  .pintro__lead a{color:#fff;border-bottom:2px solid var(--acc);padding-bottom:1px}
+  .pintro__lead a:hover{color:var(--acc);text-decoration:none}
+  .pintro__cue{margin-top:46px;font-size:.72rem;font-weight:700;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:12px}
+  .pintro__arrow{display:inline-block;animation:pintro-bob 1.8s ease-in-out infinite}
+  @keyframes pintro-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+  @media (max-width:600px){.pintro{min-height:64vh}}
+</style>

@@ -1,6 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
-import Banner from "../components/Banner.astro";
+import PageIntro from "../components/PageIntro.astro";
 import ContactForm from "../components/ContactForm.astro";
 import { site } from "../data/site";
 const wa = "https://api.whatsapp.com/send?phone=34659090696&text=Hola%20Evelyn,%20quiero%20info%20de%20las%20clases%20online";
@@ -10,14 +10,14 @@ const wa = "https://api.whatsapp.com/send?phone=34659090696&text=Hola%20Evelyn,%
   description="Évelyn La Negra, especializada en bachata dominicana. Clases online en directo por Zoom que se quedan grabadas, y clases particulares."
   transparentHeader={true}
 >
-  <Banner
-    image="/img/2024/12/los-jueves-zoom-1080X1080-1024x1024.png"
-    eyebrow="Escuela Online"
-    title="Bachata y Salsa Online"
-    subtitle="Clases en directo por Zoom"
-    cta={{ label: "Escríbeme por WhatsApp", href: wa, external: true }}
-    overlay={0.5}
-    tall={true}
+  <PageIntro
+    kicker="Escuela Online"
+    title="Baila conmigo <em>desde donde estés</em>."
+    lead={[
+      "Bachata y salsa en directo por Zoom — y las clases se quedan grabadas para ti.",
+      "Especializada en bachata dominicana, también doy clases particulares.",
+    ]}
+    cue="Cómo funciona"
   />
 
   <section class="section text-center">
@@ -51,7 +51,7 @@ const wa = "https://api.whatsapp.com/send?phone=34659090696&text=Hola%20Evelyn,%
 
 <style>
   .courses{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:24px}
-  .course{background:#fff;border:1px solid #eee;border-radius:12px;padding:26px;box-shadow:0 6px 22px rgba(0,0,0,.06)}
-  .course h3{color:var(--ink);font-weight:700}
+  .course{background:#0f0f10;border:1px solid var(--line);border-radius:12px;padding:26px}
+  .course h3{color:#fff;font-weight:700}
   @media (max-width:600px){.courses{grid-template-columns:1fr}}
 </style>

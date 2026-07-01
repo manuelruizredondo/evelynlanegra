@@ -1,57 +1,101 @@
 ---
 import { nav, site } from "../data/site";
-const { transparent = true } = Astro.props;
 ---
-<header class:list={["site-header", { "is-transparent": transparent }]}>
-  <div class="site-header__inner container">
+<header class="site-header" data-header>
+  <div class="site-header__inner">
     <a class="site-header__logo" href="/" aria-label={site.name}>
       <img src="/img/2019/09/logo-lanegra.png" width="160" height="73" alt={site.name} />
     </a>
 
-    <nav class="site-nav" aria-label="Principal">
-      {nav.slice(0, 7).map((i) => (
-        <a href={i.href} {...(i.external ? { target: "_blank", rel: "noopener" } : {})}>{i.label}</a>
-      ))}
-    </nav>
+    <div class="site-header__actions">
+      <!-- Selector de idioma -->
+      <div class="lang" data-lang>
+        <button class="lang__btn" data-lang-toggle aria-haspopup="true" aria-expanded="false">
+          <span>ES</span>
+          <svg class="lang__arrow" viewBox="0 0 12 8" width="11" height="7" aria-hidden="true">
+            <path d="M1 1.5 6 6l5-4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </button>
+        <ul class="lang__menu">
+          <li><a href="/" aria-current="true">Español</a></li>
+          <li><a href="https://www.lanegrasalsa.com/en/la-negra-salsa">English</a></li>
+        </ul>
+      </div>
 
-    <button class="nav-toggle" data-open-menu aria-label="Abrir menú" aria-controls="mobile-menu" aria-expanded="false">
-      <span></span><span></span><span></span>
-    </button>
+      <!-- Hamburguesa -->
+      <button class="nav-toggle" data-open-menu aria-label="Abrir menú" aria-controls="mobile-menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
   </div>
-
-  <!-- Off-canvas: clase en <body> + transform -->
-  <aside id="mobile-menu" class="mobile-menu" aria-label="Menú">
-    <button class="mobile-menu__close" data-close-menu aria-label="Cerrar menú">&times;</button>
-    <nav>
-      {nav.map((i) => (
-        <a href={i.href} {...(i.external ? { target: "_blank", rel: "noopener" } : {})}>{i.label}</a>
-      ))}
-    </nav>
-  </aside>
-  <button class="menu-overlay" data-close-menu aria-hidden="true" tabindex="-1"></button>
 </header>
 
-<style>
-  .site-header{position:sticky;top:0;z-index:1000;background:#000}
-  .site-header.is-transparent{position:absolute;left:0;right:0;background:transparent}
-  .site-header__inner{display:flex;align-items:center;justify-content:space-between;gap:18px;height:var(--header-h)}
-  .site-header__logo img{height:46px;width:auto}
-  .site-nav{display:flex;gap:18px;flex-wrap:wrap;justify-content:flex-end}
-  .site-nav a{color:#fff;font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;opacity:.92}
-  .site-nav a:hover{opacity:1;text-decoration:none;color:#fff}
+<!-- Off-canvas: fuera del <header> para que backdrop-filter (scroll) no atrape los fixed -->
+<aside id="mobile-menu" class="mobile-menu" aria-label="Menú">
+  <button class="mobile-menu__close" data-close-menu aria-label="Cerrar menú">&times;</button>
+  <nav class="mobile-menu__nav">
+    {nav.map((i) => (
+      <a href={i.href} {...(i.external ? { target: "_blank", rel: "noopener" } : {})}>{i.label}</a>
+    ))}
+  </nav>
+  <div class="mobile-menu__social">
+    <span class="mobile-menu__social-label">Sígueme</span>
+    <div class="mobile-menu__social-links">
+      <a href={site.instagram} target="_blank" rel="noopener">Instagram</a>
+      <a href={site.spotify} target="_blank" rel="noopener">Spotify</a>
+      <a href={site.whatsapp} target="_blank" rel="noopener">WhatsApp</a>
+      <a href={site.festival} target="_blank" rel="noopener">Dance Festival</a>
+    </div>
+  </div>
+</aside>
+<button class="menu-overlay" data-close-menu aria-hidden="true" tabindex="-1"></button>
 
-  .nav-toggle{display:none;flex-direction:column;gap:5px;background:none;border:0;cursor:pointer;padding:8px}
-  .nav-toggle span{width:26px;height:3px;background:#fff;border-radius:2px}
+<style>
+  .site-header{position:fixed;top:0;left:0;right:0;z-index:1000;background:transparent;
+    transition:background .3s ease,backdrop-filter .3s ease,border-color .3s ease;border-bottom:1px solid transparent}
+  .site-header.is-scrolled{background:rgba(10,10,10,.65);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+    border-bottom-color:var(--line)}
+  .site-header__inner{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:14px 40px}
+  .site-header__logo img{height:86px;width:auto;transition:transform .2s ease}
+  .site-header__logo:hover img{transform:scale(1.04)}
+
+  .site-header__actions{display:flex;align-items:center;gap:22px;align-self:center}
+
+  /* Selector de idioma */
+  .lang{position:relative}
+  .lang__btn{display:inline-flex;align-items:center;gap:8px;background:none;border:0;cursor:pointer;
+    color:#fff;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:6px 2px}
+  .lang__arrow{transition:transform .2s ease}
+  .lang.is-open .lang__arrow{transform:rotate(180deg)}
+  .lang__menu{position:absolute;top:calc(100% + 8px);right:0;min-width:130px;list-style:none;margin:0;padding:6px;
+    background:#0f0f10;border:1px solid var(--line);border-radius:10px;box-shadow:0 14px 34px rgba(0,0,0,.5);
+    opacity:0;visibility:hidden;transform:translateY(-6px);transition:opacity .2s,transform .2s,visibility .2s}
+  .lang.is-open .lang__menu{opacity:1;visibility:visible;transform:translateY(0)}
+  .lang__menu a{display:block;padding:9px 12px;border-radius:7px;color:#c9c9cc;font-size:.85rem;font-weight:600}
+  .lang__menu a:hover{background:rgba(255,255,255,.06);color:#fff;text-decoration:none}
+  .lang__menu a[aria-current]{color:var(--acc)}
+
+  /* Hamburguesa (líneas de 1px) */
+  .nav-toggle{display:flex;flex-direction:column;gap:7px;background:none;border:0;cursor:pointer;padding:6px 2px}
+  .nav-toggle span{width:32px;height:1px;background:#fff;transition:background .2s}
+  .nav-toggle:hover span{background:var(--acc)}
 
   /* Off-canvas */
-  .mobile-menu{position:fixed;top:0;right:0;bottom:0;width:300px;max-width:86vw;height:100%;
-    background:#111;color:#fff;z-index:1002;padding:64px 24px 30px;overflow-y:auto;
+  .mobile-menu{position:fixed;top:0;right:0;bottom:0;width:340px;max-width:88vw;height:100%;
+    background:#0f0f10;color:#fff;z-index:1002;padding:72px 30px 34px;overflow-y:auto;
+    display:flex;flex-direction:column;
     transform:translateX(100%);transition:transform .3s ease;box-shadow:-8px 0 30px rgba(0,0,0,.4)}
-  .mobile-menu nav{display:flex;flex-direction:column}
-  .mobile-menu nav a{color:#fff;padding:12px 2px;border-bottom:1px solid rgba(255,255,255,.12);
-    font-size:.86rem;font-weight:700;text-transform:uppercase;letter-spacing:.02em}
-  .mobile-menu nav a:hover{color:var(--red-bright);text-decoration:none}
-  .mobile-menu__close{position:absolute;top:14px;right:18px;background:none;border:0;color:#fff;font-size:34px;line-height:1;cursor:pointer}
+  .mobile-menu__nav{display:flex;flex-direction:column;gap:2px}
+  .mobile-menu__nav a{color:#fff;padding:9px 0;font-size:1.15rem;font-weight:600;letter-spacing:0}
+  .mobile-menu__nav a:hover{color:var(--acc);text-decoration:none}
+  .mobile-menu__close{position:absolute;top:16px;right:20px;background:none;border:0;color:#fff;font-size:34px;line-height:1;cursor:pointer}
+
+  .mobile-menu__social{margin-top:auto;padding-top:30px}
+  .mobile-menu__social-label{display:block;font-size:.7rem;font-weight:700;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+  .mobile-menu__social-links{display:flex;flex-wrap:wrap;gap:10px 18px}
+  .mobile-menu__social-links a{color:#c9c9cc;font-size:.92rem;font-weight:600}
+  .mobile-menu__social-links a:hover{color:var(--acc);text-decoration:none}
   .menu-overlay{position:fixed;inset:0;z-index:1001;background:rgba(0,0,0,.55);border:0;
     opacity:0;visibility:hidden;transition:opacity .3s ease;cursor:pointer}
 
@@ -59,9 +103,9 @@ const { transparent = true } = Astro.props;
   :global(body.nav-open) .menu-overlay{opacity:1;visibility:visible}
   :global(body.nav-open){overflow:hidden}
 
-  @media (max-width:1024px){
-    .site-nav{display:none}
-    .nav-toggle{display:flex}
+  @media (max-width:600px){
+    .site-header__inner{padding:12px 20px}
+    .site-header__logo img{height:64px}
   }
 </style>
 
@@ -72,5 +116,24 @@ const { transparent = true } = Astro.props;
   document.querySelectorAll("[data-open-menu]").forEach((b) => b.addEventListener("click", open));
   document.querySelectorAll("[data-close-menu]").forEach((b) => b.addEventListener("click", close));
   document.querySelectorAll("#mobile-menu a").forEach((a) => a.addEventListener("click", close));
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") { close(); langClose(); } });
+
+  // Header sticky: fondo al hacer scroll
+  const header = document.querySelector("[data-header]");
+  const onScroll = () => header && header.classList.toggle("is-scrolled", window.scrollY > 24);
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  // Selector de idioma
+  const lang = document.querySelector("[data-lang]");
+  const langBtn = lang && lang.querySelector("[data-lang-toggle]");
+  const langClose = () => { if (lang) { lang.classList.remove("is-open"); langBtn.setAttribute("aria-expanded", "false"); } };
+  if (langBtn) {
+    langBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = lang.classList.toggle("is-open");
+      langBtn.setAttribute("aria-expanded", String(isOpen));
+    });
+    document.addEventListener("click", (e) => { if (!lang.contains(e.target)) langClose(); });
+  }
 </script>

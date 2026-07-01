@@ -13,14 +13,10 @@ export const site = {
 
 // Menú principal — fiel al original
 export const nav = [
-  { label: "Home", href: "/" },
   { label: "Sobre Évelyn", href: "/curriculum/" },
-  { label: "Escuela en Barcelona", href: "/clases-de-baile-en-barcelona/" },
-  { label: "Escuela en Ibiza", href: "/clases-de-baile-en-ibiza/" },
-  { label: "Clases Online", href: "/bachata-salsa-online-offline/" },
-  { label: "Formación Bachata Dominicana", href: "/profesora-bachata-dominicana/" },
+  { label: "Clases presenciales", href: "/clases-presenciales/" },
+  { label: "Clases online", href: "/bachata-salsa-online-offline/" },
+  { label: "Máster bachata tradicional", href: "/profesora-bachata-dominicana/" },
   { label: "Logotipos", href: "/logotipos/" },
-  { label: "Blog", href: "/blog/" },
-  { label: "KEEPER eventos 2025", href: "/keeper-galeria-eventos-2025/" },
-  { label: "KEEPER eventos 2026", href: "/keeper-galeria-eventos-2026/" },
+  { label: "Spotify", href: "/spotify/" },
 ];

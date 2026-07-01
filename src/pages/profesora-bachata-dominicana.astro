@@ -1,16 +1,16 @@
 ---
 import Base from "../layouts/Base.astro";
-import Banner from "../components/Banner.astro";
+import PageIntro from "../components/PageIntro.astro";
 import ContactForm from "../components/ContactForm.astro";
 import { site } from "../data/site";
 const wa = "https://api.whatsapp.com/send?phone=34659090696&text=Hola%20Evelyn,%20quiero%20info%20de%20la%20formacion%20de%20Bachata%20Tradicional";
 
 const clases = [
-  { t: "Clase I · Historia (2h, teórica)", d: "Acepciones del vocablo bachata, los precursores y ritmos que la originaron, origen y evolución de la bachata." },
-  { t: "Clase II · Musicalidad (2h, teórica)", d: "Lenguaje musical básico (pulso, ritmo, compás, tempo), la importancia de los patrones rítmicos e instrumentos." },
-  { t: "Clase III · Desmontando el básico (2h, práctica)", d: "Diferencias entre la bachata auténtica, la moderna y la sensual. Elementos para conseguir un estilo: pisada y conteo." },
-  { t: "Clase IV · Combinaciones y variaciones (2h, práctica)", d: "Sistema lineal, cuadrado y diagonal. Pasos básicos y su musicalidad. El patín como recurso." },
-  { t: "Clase V · Baile en pareja (2h+1, teórico-práctica)", d: "La importancia de los brazos y la conducción. La «dominicana» de competición y en el social." },
+  { n: "01", title: "Historia", meta: "2h · Teórica", d: "Acepciones del vocablo bachata, los precursores y ritmos que la originaron, origen y evolución de la bachata." },
+  { n: "02", title: "Musicalidad", meta: "2h · Teórica", d: "Lenguaje musical básico (pulso, ritmo, compás, tempo), la importancia de los patrones rítmicos e instrumentos." },
+  { n: "03", title: "Desmontando el básico", meta: "2h · Práctica", d: "Diferencias entre la bachata auténtica, la moderna y la sensual. Elementos para conseguir un estilo: pisada y conteo." },
+  { n: "04", title: "Combinaciones y variaciones", meta: "2h · Práctica", d: "Sistema lineal, cuadrado y diagonal. Pasos básicos y su musicalidad. El patín como recurso." },
+  { n: "05", title: "Baile en pareja", meta: "2h+1 · Teórico-práctica", d: "La importancia de los brazos y la conducción. La «dominicana» de competición y en el social." },
 ];
 
 const testimonios = [
@@ -26,14 +26,14 @@ const testimonios = [
   description="Especializada en bachata dominicana como DJ, investigadora, conferencista y profesora. Maestra de maestros. Formación integral para profesores."
   transparentHeader={true}
 >
-  <Banner
-    image="/img/2022/12/ENSENANZA-DE-LA-BACHATA-TRADICIONAL.jpeg"
-    eyebrow="Formación"
-    title="ENSEÑANZA DE LA<br>BACHATA TRADICIONAL"
-    subtitle="Formación integral para profesores"
-    cta={{ label: "+ Info por WhatsApp", href: wa, external: true }}
-    overlay={0.5}
-    tall={true}
+  <PageIntro
+    kicker="Máster en Bachata Tradicional"
+    title="Conviértete en <em>profesor</em> de bachata dominicana."
+    lead={[
+      "Formación reglada con metodología propia: la titulación de referencia en bachata tradicional.",
+      "Maestra de maestros — más de dos décadas enseñando desde la raíz.",
+    ]}
+    cue="El programa"
   />
 
   <section class="section">
@@ -44,12 +44,21 @@ const testimonios = [
       <p>Clases online (10 horas) por plataforma Zoom, dossier de 50 páginas de contenido original y
         correcciones individuales.</p>
 
-      <h3>Contenido</h3>
-      <div class="clases">
+      <h3>Temario</h3>
+      <ol class="syllabus">
         {clases.map((c) => (
-          <div class="clase"><h4>{c.t}</h4><p>{c.d}</p></div>
+          <li class="syllabus__item">
+            <span class="syllabus__num">{c.n}</span>
+            <div class="syllabus__body">
+              <div class="syllabus__head">
+                <h4>{c.title}</h4>
+                <span class="syllabus__meta">{c.meta}</span>
+              </div>
+              <p>{c.d}</p>
+            </div>
+          </li>
         ))}
-      </div>
+      </ol>
 
       <h3>Horario</h3>
       <p>5 semanas: dos horas semanales continuas. Mañanas o mediodías a escoger entre miércoles,
@@ -62,7 +71,7 @@ const testimonios = [
     </div>
   </section>
 
-  <section class="section" style="background:#111;color:#fff">
+  <section class="section" style="background:#0f0f10;color:#fff">
     <div class="container">
       <h2 class="text-center" style="color:#fff">Testimonios</h2>
       <p class="text-center" style="opacity:.8">Lee lo que dicen de mí</p>
@@ -82,14 +91,25 @@ const testimonios = [
 </Base>
 
 <style>
-  .clases{display:grid;gap:14px;margin:14px 0 0}
-  .clase{background:#f7f7f7;border-left:4px solid var(--red);border-radius:8px;padding:16px 18px}
-  .clase h4{margin:0 0 4px;color:var(--ink)}
-  .clase p{margin:0}
+  .syllabus{list-style:none;margin:18px 0 0;padding:0;border-top:1px solid var(--line)}
+  .syllabus__item{display:grid;grid-template-columns:auto 1fr;gap:30px;padding:26px 4px;
+    border-bottom:1px solid var(--line);align-items:start;transition:background .2s}
+  .syllabus__item:hover{background:rgba(255,255,255,.02)}
+  .syllabus__num{font-family:var(--serif);font-style:italic;font-weight:500;font-size:2.6rem;
+    line-height:.9;color:var(--acc);min-width:1.4em}
+  .syllabus__head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:7px}
+  .syllabus__head h4{margin:0;font-size:1.3rem;color:#fff;font-weight:700}
+  .syllabus__meta{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+    color:var(--muted);border:1px solid var(--line);padding:4px 11px;border-radius:999px;white-space:nowrap}
+  .syllabus__body p{margin:0;color:var(--text);max-width:62ch;line-height:1.55}
+  @media (max-width:600px){
+    .syllabus__item{grid-template-columns:1fr;gap:6px;padding:22px 4px}
+    .syllabus__num{font-size:1.9rem}
+  }
   .tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:22px;margin-top:24px}
   .tcard{margin:0;background:#1b1b1b;border-radius:12px;padding:22px;text-align:center}
   .tcard img{width:84px;height:84px;border-radius:50%;object-fit:cover;margin:0 auto 12px}
-  .tcard blockquote{margin:0 0 12px;font-style:italic;color:#eee;font-size:.92rem}
+  .tcard blockquote{margin:0 0 12px;font-style:italic;color:#c9c9cc;font-size:.92rem}
   .tcard figcaption{color:var(--red-bright);font-size:.85rem}
-  .tcard figcaption span{color:#aaa}
+  .tcard figcaption span{color:#c9c9cc}
 </style>
