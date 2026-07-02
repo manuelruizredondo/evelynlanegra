@@ -24,3 +24,6 @@
 # Fusión Barcelona+Ibiza -> Clases presenciales
 /clases-de-baile-en-barcelona/  /clases-presenciales/#barcelona  301
 /clases-de-baile-en-ibiza/      /clases-presenciales/#ibiza      301
+
+# 404 en italiano para rutas /it/ inexistentes
+/it/*   /it/404/index.html   404

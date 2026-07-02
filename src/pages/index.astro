@@ -76,6 +76,13 @@ const worldtour = [
     { place: "Holanda", date: "18 al 20", event: "Biezenmortel Christmas Edition" },
   ]},
 ];
+
+// Atenúa (en build) los meses del tour ya pasados. Gira de 2026.
+const MES_NUM = { Enero:0, Febrero:1, Marzo:2, Abril:3, Mayo:4, Junio:5, Julio:6, Agosto:7, Septiembre:8, Octubre:9, Noviembre:10, Diciembre:11 };
+const TOUR_YEAR = 2026;
+const _now = new Date();
+const _curYM = _now.getFullYear() * 12 + _now.getMonth();
+const isPastMonth = (mes) => TOUR_YEAR * 12 + (MES_NUM[mes] ?? 0) < _curYM;
 ---
 <Base
   title="Évelyn «La Negra» — Profesora & DJ de salsa y bachata dominicana"
@@ -106,7 +113,7 @@ const worldtour = [
     <!-- FRANJA DE CREDIBILIDAD -->
     <section class="stats" aria-label="La Negra en cifras">
       <div class="container stats__grid">
-        <div class="stat"><span class="stat__n">+25</span><span class="stat__l">años en la pista</span></div>
+        <div class="stat"><span class="stat__n">30</span><span class="stat__l">años en la pista</span></div>
         <div class="stat"><span class="stat__n">40+</span><span class="stat__l">países en gira</span></div>
         <div class="stat"><span class="stat__n">2010</span><span class="stat__l">creó el Mundial de Pasos Libres</span></div>
         <div class="stat"><span class="stat__n">∞</span><span class="stat__l">maestra de maestros</span></div>
@@ -181,7 +188,7 @@ const worldtour = [
       </div>
       <div class="tour__cols">
         {worldtour.map((m) => (
-          <div class="tour__month">
+          <div class:list={["tour__month", { "tour__month--past": isPastMonth(m.mes) }]}>
             <h3 class="tour__mes">{m.mes}</h3>
             {m.items.map((it) => (
               <div class="tour__item">
@@ -417,7 +424,9 @@ const worldtour = [
   .tour__sub{color:var(--muted);max-width:52ch;margin:0 auto 42px;font-size:1.05rem}
   .tour__cols{display:grid;grid-template-columns:repeat(3,1fr);gap:40px 48px;text-align:left;
     max-width:1200px;margin:0 auto;padding-inline:24px;align-items:start}
-  .tour__month{width:100%;margin:0}
+  .tour__month{width:100%;margin:0;transition:opacity .3s}
+  .tour__month--past{opacity:.38}
+  .tour__month--past .tour__date{color:var(--muted)}
   .tour__mes{font-family:"PP Pangaia",Georgia,serif!important;font-style:italic;font-weight:500;
     font-size:1.5rem;color:#fff;margin:0 0 14px;padding-bottom:8px;border-bottom:1px solid var(--line)}
   .tour__item{break-inside:avoid;margin-bottom:15px}

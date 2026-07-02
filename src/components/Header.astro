@@ -40,7 +40,7 @@ const home = localize("/", locale);
 
 <!-- Off-canvas: fuera del <header> para que backdrop-filter (scroll) no atrape los fixed -->
 <aside id="mobile-menu" class="mobile-menu" aria-label="Menú">
-  <button class="mobile-menu__close" data-close-menu aria-label="Cerrar menú">&times;</button>
+  <button class="mobile-menu__close" data-close-menu aria-label="Cerrar menú"><span></span><span></span></button>
   <nav class="mobile-menu__nav">
     {nav.map((i) => (
       <a href={i.href} {...(i.external ? { target: "_blank", rel: "noopener" } : {})}>{i.label}</a>
@@ -96,7 +96,11 @@ const home = localize("/", locale);
   .mobile-menu__nav{display:flex;flex-direction:column;gap:2px}
   .mobile-menu__nav a{color:#fff;padding:9px 0;font-size:1.15rem;font-weight:600;letter-spacing:0}
   .mobile-menu__nav a:hover{color:var(--acc);text-decoration:none}
-  .mobile-menu__close{position:absolute;top:16px;right:20px;background:none;border:0;color:#fff;font-size:34px;line-height:1;cursor:pointer}
+  .mobile-menu__close{position:absolute;top:20px;right:22px;width:30px;height:30px;background:none;border:0;cursor:pointer;padding:0}
+  .mobile-menu__close span{position:absolute;top:50%;left:50%;width:26px;height:1px;background:#fff;transition:background .2s}
+  .mobile-menu__close span:first-child{transform:translate(-50%,-50%) rotate(45deg)}
+  .mobile-menu__close span:last-child{transform:translate(-50%,-50%) rotate(-45deg)}
+  .mobile-menu__close:hover span{background:var(--acc)}
 
   .mobile-menu__social{margin-top:auto;padding-top:30px}
   .mobile-menu__social-label{display:block;font-size:.7rem;font-weight:700;letter-spacing:.18em;
