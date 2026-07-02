@@ -4,7 +4,7 @@ export const site = {
   phone: "+34 659 090 696",
   phoneShort: "659 09 06 96",
   whatsapp: "https://wa.me/34659090696",
-  email: "info@lanegrasalsa.com",
+  email: "info@evelynlanegra.com",
   instagram: "https://www.instagram.com/evelynlanegrasalsa/",
   spotify: "https://open.spotify.com/user/1165580333",
   festival: "https://www.campeonatopasoslibres.com/",
