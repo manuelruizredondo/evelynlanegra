@@ -1,6 +1,6 @@
 # URLs antiguas de WordPress -> nuevas rutas limpias
 /es/evelyn-viana-lovera            /                                   301
-/es/curriculum                     /curriculum/                        301
+/es/curriculum                     /evelyn-la-negra/                   301
 /es/bachata-salsa-online-offline   /bachata-salsa-online-offline/      301
 /es/profesora-bachata-dominicana   /profesora-bachata-dominicana/      301
 /es/logotipos                      /logotipos/                         301
@@ -17,9 +17,13 @@
 /es/*   https://www.lanegrasalsa.com/es/:splat   301
 /en/*   https://www.lanegrasalsa.com/en/:splat   301
 
-/propuesta-ln/    /            301
-/propuesta-sobre/ /curriculum/ 301
+/propuesta-ln/    /                  301
+/propuesta-sobre/ /evelyn-la-negra/  301
 /propuesta/ / 301
+
+# Renombrado de /curriculum/ -> /evelyn-la-negra/ (marca personal)
+/curriculum/      /evelyn-la-negra/      301
+/it/curriculum/   /it/evelyn-la-negra/   301
 
 # Fusión Barcelona+Ibiza -> Clases presenciales
 /clases-de-baile-en-barcelona/  /clases-presenciales/#barcelona  301

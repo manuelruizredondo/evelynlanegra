@@ -11,7 +11,7 @@ export function getLocale(url: URL): Locale {
   return url.pathname === "/it" || url.pathname.startsWith("/it/") ? "it" : "es";
 }
 
-/** Convierte una ruta canónica (en ES, p.ej. "/curriculum/") a su versión localizada. */
+/** Convierte una ruta canónica (en ES, p.ej. "/evelyn-la-negra/") a su versión localizada. */
 export function localize(path: string, locale: Locale): string {
   if (locale === "es") return path;
   if (path === "/") return "/it/";
@@ -48,7 +48,7 @@ export const ui = {
     tagline: "La MEJOR profesora y DJ de RITMOS LATINOS",
     credit: "Diseño y desarrollo a partir del sitio original",
     nav: [
-      { href: "/curriculum/", label: "Sobre Évelyn" },
+      { href: "/evelyn-la-negra/", label: "Sobre Évelyn" },
       { href: "/clases-presenciales/", label: "Clases presenciales" },
       { href: "/bachata-salsa-online-offline/", label: "Clases online" },
       { href: "/profesora-bachata-dominicana/", label: "Máster bachata tradicional" },
@@ -62,7 +62,7 @@ export const ui = {
           title: "",
           links: [
             { label: "Home", href: "/" },
-            { label: "Sobre Évelyn", href: "/curriculum/" },
+            { label: "Sobre Évelyn", href: "/evelyn-la-negra/" },
             { label: "FOTOS Keeper", href: "/keeper-galeria/" },
             { label: "Spotify", href: "/spotify/" },
             { label: "Logotipos", href: "/logotipos/" },
@@ -111,7 +111,7 @@ export const ui = {
     tagline: "La MIGLIORE insegnante e DJ di RITMI LATINI",
     credit: "Design e sviluppo a partire dal sito originale",
     nav: [
-      { href: "/curriculum/", label: "Chi è Évelyn" },
+      { href: "/evelyn-la-negra/", label: "Chi è Évelyn" },
       { href: "/clases-presenciales/", label: "Lezioni in presenza" },
       { href: "/bachata-salsa-online-offline/", label: "Lezioni online" },
       { href: "/profesora-bachata-dominicana/", label: "Master bachata tradizionale" },
@@ -125,7 +125,7 @@ export const ui = {
           title: "",
           links: [
             { label: "Home", href: "/" },
-            { label: "Chi è Évelyn", href: "/curriculum/" },
+            { label: "Chi è Évelyn", href: "/evelyn-la-negra/" },
             { label: "Foto Keeper", href: "/keeper-galeria/" },
             { label: "Spotify", href: "/spotify/" },
             { label: "Loghi", href: "/logotipos/" },

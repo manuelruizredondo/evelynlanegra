@@ -13,7 +13,7 @@ export const site = {
 
 // Menú principal — fiel al original
 export const nav = [
-  { label: "Sobre Évelyn", href: "/curriculum/" },
+  { label: "Sobre Évelyn", href: "/evelyn-la-negra/" },
   { label: "Clases presenciales", href: "/clases-presenciales/" },
   { label: "Clases online", href: "/bachata-salsa-online-offline/" },
   { label: "Máster bachata tradicional", href: "/profesora-bachata-dominicana/" },
