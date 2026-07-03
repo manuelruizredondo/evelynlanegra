@@ -1,0 +1,87 @@
+---
+import Base from "../../layouts/Base.astro";
+import { getCollection } from "astro:content";
+import { site } from "../../data/site";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog", ({ data }) => !data.draft);
+  return posts.map((post) => ({ params: { slug: post.slug }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+const { title, description, date, cover } = post.data;
+const fmt = (d) => d.toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" });
+const url = new URL(`/blog/${post.slug}/`, Astro.site).href;
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: title,
+  description,
+  datePublished: date.toISOString(),
+  image: cover ? new URL(cover, Astro.site).href : undefined,
+  author: { "@type": "Person", name: "Évelyn Viana Lovera", alternateName: "La Negra" },
+  publisher: { "@type": "Organization", name: "La Negra Salsa" },
+  mainEntityOfPage: url,
+  inLanguage: "es",
+};
+---
+<Base title={`${title} · Blog · La Negra`} description={description} image={cover ?? undefined}>
+  <article class="post">
+    <header class="post__head">
+      <div class="container">
+        <p class="post__back"><a href="/blog/">← Blog</a></p>
+        <p class="post__date">{fmt(date)}</p>
+        <h1 class="post__title">{title}</h1>
+      </div>
+    </header>
+
+    {cover && (
+      <div class="post__cover container">
+        <img src={cover} alt={title} width="1200" height="675" />
+      </div>
+    )}
+
+    <div class="container">
+      <div class="prose post__body">
+        <Content />
+      </div>
+
+      <aside class="post__cta">
+        <h2>¿Bailamos?</h2>
+        <p>Ven a una clase en Barcelona o Ibiza, o baila conmigo online desde donde estés.</p>
+        <div class="post__cta-btns">
+          <a class="btn btn--red btn--lg" href={site.whatsapp} target="_blank" rel="noopener">Escríbeme por WhatsApp</a>
+          <a class="btn btn--ghost btn--lg" href="/clases-presenciales/">Ver clases</a>
+        </div>
+      </aside>
+    </div>
+  </article>
+
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+</Base>
+
+<style>
+  .post__head{padding:calc(var(--header-h) + 40px) 0 24px}
+  .post__back a{color:var(--muted);font-size:.85rem;font-weight:600}
+  .post__back a:hover{color:var(--acc);text-decoration:none}
+  .post__date{color:var(--acc);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin:18px 0 8px}
+  .post__title{font-family:var(--serif);font-style:italic;font-weight:500;color:#fff;
+    font-size:clamp(2rem,5vw,3.4rem);line-height:1.12;max-width:20ch;margin:0}
+  .post__cover{margin:12px auto 40px}
+  .post__cover img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:16px;border:1px solid var(--line)}
+  .post__body{margin:0 auto}
+  .post__body :global(h2){font-family:var(--serif);font-style:italic;color:#fff;font-size:1.6rem;margin:1.8em 0 .5em}
+  .post__body :global(blockquote){border-left:3px solid var(--acc);margin:1.4em 0;padding:.2em 0 .2em 20px;
+    color:#fff;font-style:italic}
+  .post__body :global(ol),.post__body :global(ul){padding-left:1.3em;line-height:1.7}
+  .post__body :global(li){margin-bottom:.4em}
+  .post__body :global(hr){border:0;border-top:1px solid var(--line);margin:2.4em 0}
+  .post__body :global(a){color:var(--acc)}
+  .post__cta{max-width:760px;margin:44px auto 0;padding:34px;border:1px solid var(--line);
+    border-radius:18px;background:var(--bg2);text-align:center}
+  .post__cta h2{color:#fff;margin:0 0 .3em}
+  .post__cta p{color:var(--text);margin:0 0 22px}
+  .post__cta-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+</style>

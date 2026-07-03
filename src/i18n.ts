@@ -52,6 +52,7 @@ export const ui = {
       { href: "/clases-presenciales/", label: "Clases presenciales" },
       { href: "/bachata-salsa-online-offline/", label: "Clases online" },
       { href: "/profesora-bachata-dominicana/", label: "Máster bachata tradicional" },
+      { href: "/blog/", label: "Blog" },
       { href: "/logotipos/", label: "Logotipos" },
       { href: "/spotify/", label: "Spotify" },
     ],
@@ -63,6 +64,7 @@ export const ui = {
           links: [
             { label: "Home", href: "/" },
             { label: "Sobre Évelyn", href: "/evelyn-la-negra/" },
+            { label: "Blog", href: "/blog/" },
             { label: "FOTOS Keeper", href: "/keeper-galeria/" },
             { label: "Spotify", href: "/spotify/" },
             { label: "Logotipos", href: "/logotipos/" },

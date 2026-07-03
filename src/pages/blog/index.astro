@@ -1,0 +1,59 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageIntro from "../../components/PageIntro.astro";
+import { getCollection } from "astro:content";
+
+const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime()
+);
+const fmt = (d) => d.toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" });
+---
+<Base
+  title="Blog de bachata y salsa · Évelyn «La Negra»"
+  description="Artículos sobre bachata tradicional dominicana y salsa: estilos, técnica, musicalidad y consejos para bailar desde la raíz, por Évelyn «La Negra»."
+>
+  <PageIntro
+    kicker="Blog"
+    title="Bachata y salsa, <em>desde la raíz</em>."
+    lead={[
+      "Estilos, técnica y musicalidad explicados sin rodeos.",
+      "Todo lo que me habría gustado que me contaran cuando empecé a bailar.",
+    ]}
+    cue="Últimos artículos"
+  />
+
+  <section class="section">
+    <div class="container">
+      <div class="posts">
+        {posts.map((p) => (
+          <a class="postcard" href={`/blog/${p.slug}/`}>
+            {p.data.cover && <img class="postcard__img" src={p.data.cover} alt="" loading="lazy" />}
+            <div class="postcard__body">
+              <span class="postcard__date">{fmt(p.data.date)}</span>
+              <h2 class="postcard__title">{p.data.title}</h2>
+              <p class="postcard__desc">{p.data.description}</p>
+              <span class="postcard__link">Leer <span class="arrow">→</span></span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .posts{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:28px}
+  .postcard{display:flex;flex-direction:column;background:var(--bg2);border:1px solid var(--line);
+    border-radius:16px;overflow:hidden;text-decoration:none;transition:transform .25s,border-color .25s}
+  .postcard:hover{transform:translateY(-4px);border-color:var(--acc);text-decoration:none}
+  .postcard__img{width:100%;aspect-ratio:16/10;object-fit:cover}
+  .postcard__body{padding:22px 24px 26px;display:flex;flex-direction:column;flex:1}
+  .postcard__date{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--acc)}
+  .postcard__title{font-family:var(--serif);font-style:italic;font-weight:500;color:#fff;
+    font-size:1.4rem;line-height:1.2;margin:10px 0 12px}
+  .postcard__desc{color:var(--text);font-size:.95rem;line-height:1.55;margin:0 0 18px;flex:1}
+  .postcard__link{color:#fff;font-weight:700;font-size:.8rem;text-transform:uppercase;letter-spacing:.05em}
+  .postcard:hover .postcard__link{color:var(--acc)}
+  .postcard__link .arrow{transition:transform .2s}
+  .postcard:hover .arrow{transform:translateX(4px);display:inline-block}
+</style>
