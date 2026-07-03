@@ -1,10 +1,12 @@
 ---
-title: "La pisada: la base de la bachata que no se puede perder"
-description: "Por qué la pisada es el corazón de la bachata dominicana y cómo el abuso del adorno (ondas, figuras, cuello) mata la base. Reflexión de Évelyn «La Negra»."
+title: "La pisada en la bachata dominicana: qué es y por qué es la base"
+description: "Qué es la pisada en la bachata dominicana, por qué es la base de todo el baile y cómo el abuso del adorno (ondas, figuras) la arruina. Por Évelyn «La Negra»."
 date: 2026-06-26
-tags: ["bachata tradicional", "bachata dominicana", "técnica"]
+tags: ["bachata dominicana", "bachata tradicional", "pisada", "técnica de baile"]
 cover: "/img/2024/12/clases-bcn-korke-y-judith-576x1024.jpeg"
 ---
+
+**La pisada es la forma en que apoyas y transfieres el peso en cada tiempo de la bachata dominicana, y es la base sobre la que se sostiene todo el baile.** No es plana ni mecánica: tiene acento e intención. Cuando la pisada está bien, las caderas y el cuerpo se mueven solos; cuando falta, ninguna figura logra que «se sienta» bachata.
 
 En mi campeonato, el [Mundial de Pasos Libres](/), hemos llegado a tener 800 inscritos para 400 plazas. Y una de las cosas que más miro para decidir quién entra es sencilla de decir y difícil de fingir: **la pisada.**
 

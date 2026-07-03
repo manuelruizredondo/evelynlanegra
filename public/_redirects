@@ -23,6 +23,11 @@
 /curriculum/      /evelyn-la-negra/      301
 /it/curriculum/   /it/evelyn-la-negra/   301
 
+# Blog: slugs optimizados para keywords
+/blog/la-bachata-es-una-sola/                    /blog/bachata-tradicional-moderna-sensual/  301
+/blog/la-pisada-base-de-la-bachata/              /blog/pisada-bachata-dominicana/            301
+/blog/salsa-escenario-social-mundial-pasos-libres/  /blog/salsa-bachata-escenario-social/    301
+
 # Fusión Barcelona+Ibiza -> Clases presenciales
 /clases-de-baile-en-barcelona/  /clases-presenciales/#barcelona  301
 /clases-de-baile-en-ibiza/      /clases-presenciales/#ibiza      301

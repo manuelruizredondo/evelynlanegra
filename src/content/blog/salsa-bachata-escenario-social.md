@@ -1,12 +1,14 @@
 ---
-title: "Escenario o social: la lección de la salsa (y el Mundial de Pasos Libres)"
-description: "Qué puede aprender la bachata de la salsa, por qué no es lo mismo bailar en el escenario que en la pista, y cómo nació el Mundial de Pasos Libres. Por Évelyn «La Negra»."
+title: "Salsa y bachata: bailar en el escenario no es bailar en el social"
+description: "La diferencia entre bailar salsa y bachata en el escenario y en el social, qué puede aprender la bachata de la salsa y cómo nació el Mundial de Pasos Libres. Por Évelyn «La Negra»."
 date: 2026-07-02
-tags: ["salsa", "bachata tradicional", "competición"]
+tags: ["salsa", "bachata", "competición de baile", "mundial de pasos libres"]
 cover: "/img/campeonato.webp"
 ---
 
-Antes de la bachata, yo venía de la **salsa**. Trabajé en discotecas latinas donde sonaba de todo —salsa, cumbia, merengue, bachata— y ahí me hice DJ y bailadora. Por eso, cuando hablo de bachata, no puedo evitar mirar de reojo a la salsa: nos lleva años de ventaja y nos ha dado muchísimas lecciones.
+**Bailar en el escenario y bailar en el social son dos cosas distintas.** En el escenario se busca el *show*: figuras, acrobacias y recursos que en la pista social no tienen sentido. En el social se baila conectado con la pareja y con la música. Confundir ambos —llevar lo del escenario a la pista— es uno de los errores más comunes en la salsa y la bachata.
+
+Lo veo claro porque, antes de la bachata, yo venía de la **salsa**. Trabajé en discotecas latinas donde sonaba de todo —salsa, cumbia, merengue, bachata— y ahí me hice DJ y bailadora. Por eso, cuando hablo de bachata, no puedo evitar mirar de reojo a la salsa: nos lleva años de ventaja y nos ha dado muchísimas lecciones.
 
 ## La cenicienta y la niña bonita
 

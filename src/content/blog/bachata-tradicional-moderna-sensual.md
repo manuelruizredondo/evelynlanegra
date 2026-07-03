@@ -1,12 +1,14 @@
 ---
-title: "La bachata es una sola: tradicional, moderna y sensual"
-description: "Tradicional, sensual, moderna… Évelyn «La Negra» explica por qué la bachata es una sola música dominicana y las etiquetas solo son formas de interpretarla."
+title: "Bachata tradicional, moderna y sensual: diferencias y cuál aprender"
+description: "Diferencias entre la bachata tradicional (dominicana), la moderna y la sensual, y por qué en el fondo es una sola música. Guía de Évelyn «La Negra»."
 date: 2026-06-12
-tags: ["bachata tradicional", "bachata dominicana", "opinión"]
+tags: ["bachata tradicional", "bachata sensual", "bachata moderna", "bachata dominicana"]
 cover: "/img/evelyn.png"
 ---
 
-Cada semana alguien me pregunta lo mismo: *«¿tú enseñas bachata tradicional, sensual o moderna?»*. Y mi respuesta siempre descoloca un poco: **la bachata es una sola, y es dominicana.** Lo que cambia no es la bachata; cambia la forma en que cada persona la interpreta.
+**La bachata tradicional, la moderna y la sensual no son tres músicas distintas: son tres formas de interpretar una sola bachata, que es dominicana.** La tradicional se baila desde el suelo, con la pisada como protagonista; la moderna añade giros y figuras de pareja; y la sensual prioriza las ondas y el trabajo de cuerpo. Cambia el estilo, no la raíz.
+
+Te lo cuento como me lo preguntan cada semana en clase: *«¿tú enseñas bachata tradicional, sensual o moderna?»*. Mi respuesta siempre descoloca un poco, porque lo que cambia no es la bachata; cambia la forma en que cada persona la interpreta.
 
 ## Una madre, muchas hijas
 
