@@ -94,7 +94,7 @@ const {
     padding:4px clamp(20px,calc((100vw - var(--maxw)) / 2 + 20px),400px);
     scroll-padding-inline:clamp(20px,calc((100vw - var(--maxw)) / 2 + 20px),400px);
     scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;
-    cursor:grab}
+    cursor:grab;overscroll-behavior-x:contain;will-change:scroll-position}
   .mslider__track::-webkit-scrollbar{display:none}
   .mslider__track.is-dragging{cursor:grabbing;scroll-snap-type:none;user-select:none}
   .mslider__track.is-dragging .mslide__media{pointer-events:none}
@@ -158,7 +158,7 @@ const {
       const idx = Math.max(0, Math.min(slides.length - 1, i));
       const from = track.scrollLeft;
       const to = t[idx];
-      if (Math.abs(to - from) < 1) return;
+      if (Math.abs(to - from) < 1) { track.style.scrollSnapType = ""; return; }
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       track.style.scrollSnapType = "none";
       const finish = () => { track.style.scrollSnapType = ""; };
@@ -185,27 +185,51 @@ const {
     document.querySelector("[data-ms-prev]")?.addEventListener("click", () => goTo(currentIndex() - 1));
     document.querySelector("[data-ms-next]")?.addEventListener("click", () => goTo(currentIndex() + 1));
 
+    // Índice del snap más cercano a una posición dada
+    const nearestTo = (x: number) => {
+      const t = targets();
+      let best = 0, d = Infinity;
+      t.forEach((p, i) => { const dd = Math.abs(p - x); if (dd < d) { d = dd; best = i; } });
+      return best;
+    };
+
     // Drag & slide con ratón (en táctil ya funciona el scroll nativo)
     let dragging = false, startX = 0, startScroll = 0, moved = false;
+    let lastX = 0, lastT = 0, velocity = 0; // px/ms, para la inercia al soltar
+
     track.addEventListener("pointerdown", (e) => {
       if (e.pointerType !== "mouse" || e.button !== 0) return;
       dragging = true; moved = false;
-      startX = e.clientX; startScroll = track.scrollLeft;
+      startX = lastX = e.clientX;
+      startScroll = track.scrollLeft;
+      lastT = performance.now(); velocity = 0;
       cancelAnimationFrame(raf);
       window.clearTimeout(safety);
+      track.style.scrollSnapType = "none"; // el snap se reactiva al aterrizar
       track.classList.add("is-dragging");
     });
+
     window.addEventListener("pointermove", (e) => {
       if (!dragging) return;
-      const dx = e.clientX - startX;
-      if (Math.abs(dx) > 3) moved = true;
-      track.scrollLeft = startScroll - dx;
+      track.scrollLeft = startScroll - (e.clientX - startX);
+      if (Math.abs(e.clientX - startX) > 3) moved = true;
+      const now = performance.now(), dt = now - lastT;
+      if (dt > 0) {
+        // media ponderada: suaviza los saltos de un frame suelto
+        velocity = velocity * 0.7 + ((e.clientX - lastX) / dt) * 0.3;
+        lastX = e.clientX; lastT = now;
+      }
       e.preventDefault();
     }, { passive: false });
+
     const endDrag = () => {
       if (!dragging) return;
       dragging = false;
-      track.classList.remove("is-dragging"); // al soltar, el snap recoloca al slide más cercano
+      track.classList.remove("is-dragging");
+      // Proyecta la inercia y aterriza suave en el slide más cercano
+      const idle = performance.now() - lastT > 120; // soltó parado -> sin inercia
+      const projected = track.scrollLeft - (idle ? 0 : velocity * 320);
+      goTo(nearestTo(projected));
     };
     window.addEventListener("pointerup", endDrag);
     window.addEventListener("pointercancel", endDrag);
