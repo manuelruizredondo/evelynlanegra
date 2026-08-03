@@ -62,8 +62,10 @@ img{max-width:100%;height:auto;display:block}
 a{color:var(--link);text-decoration:none}
 a:hover{text-decoration:underline}
 h1,h2,h3,h4{font-family:var(--font);color:#fff;line-height:1.2;margin:0 0 .4em}
-h1{font-size:2.4rem;font-weight:700}
-h2{font-size:1.9rem;font-weight:700}
+h1{font-size:2.4rem;font-weight:800;text-transform:uppercase;letter-spacing:-.015em;line-height:1}
+/* Titular de sección: Mona Sans, negrita, mayúsculas y alineado a la izquierda (toda la web) */
+h2{font-size:clamp(1.7rem,3.6vw,2.5rem);font-weight:800;text-transform:uppercase;
+  letter-spacing:-.01em;line-height:1;margin:0 0 .6em}
 h3{font-size:1.35rem;font-weight:400}
 h4{font-size:1.05rem;font-weight:700}
 p{margin:0 0 1rem}

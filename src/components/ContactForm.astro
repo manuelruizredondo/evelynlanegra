@@ -9,8 +9,8 @@ const privacy = localize("/privacidad/", locale);
 ---
 <section class="section" id="contacto">
   <div class="container" style="max-width:640px">
-    <h2 class="text-center">{title}</h2>
-    {note && <p class="text-center">{note}</p>}
+    <h2>{title}</h2>
+    {note && <p class="cform__note">{note}</p>}
     <form name={name} method="POST" action={action} data-netlify="true" netlify-honeypot="bot-field" class="cform">
       <input type="hidden" name="form-name" value={name} />
       <p hidden><label>{f.noFill}: <input name="bot-field" /></label></p>

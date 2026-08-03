@@ -7,12 +7,17 @@
 export type Slide = {
   type: "video" | "image";
   src: string;
-  poster?: string; // solo vídeos: imagen de portada antes de reproducirse
-  alt?: string;    // descripción accesible / SEO
+  poster?: string;   // solo vídeos: imagen de portada antes de reproducirse
+  alt?: string;      // descripción accesible / SEO
+  title?: string;    // texto sobre el degradado inferior
+  subtitle?: string; // segunda línea (p. ej. el año)
+  sound?: boolean;   // solo vídeos: muestra el botón para activar el audio
 };
 
 export const slides: Slide[] = [
-  { type: "video", src: "/media/evelyn-bailando.mp4", poster: "/media/evelyn-bailando.jpg", alt: "Évelyn «La Negra» bailando bachata dominicana" },
+  { type: "video", src: "/media/evelyn-bailando.mp4", poster: "/media/evelyn-bailando.jpg",
+    alt: "Teacher Training 2026 con Évelyn «La Negra»",
+    title: "Teacher Training", subtitle: "2026", sound: true },
   { type: "image", src: "/media/evelyn-social.jpg", alt: "Évelyn «La Negra» en la pista" },
   { type: "image", src: "/media/clases-barcelona.jpg", alt: "Clases de bachata tradicional en Barcelona · BS Dance Center" },
   { type: "image", src: "/media/clases-ibiza.jpg", alt: "Clases de salsa y bachata en Ibiza" },

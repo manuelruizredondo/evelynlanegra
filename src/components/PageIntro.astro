@@ -19,9 +19,10 @@ const { kicker, title, lead = [], cue = "Más abajo" } = Astro.props;
     padding:calc(var(--header-h) + 48px) 0 56px;border-bottom:1px solid var(--line)}
   .pintro__kicker{font-size:2rem;font-weight:700;letter-spacing:0;text-transform:uppercase;
     color:var(--acc);margin:0 0 0}
-  .pintro__title{font-family:var(--serif);font-style:italic;font-weight:500;color:#fff;
-    font-size:clamp(2.1rem,5.6vw,4.4rem);line-height:1.1;max-width:20ch;margin:0 0 26px;letter-spacing:.004em}
-  .pintro__title em{font-style:italic;color:var(--acc)}
+  .pintro__title{font-family:var(--font);font-style:normal;font-weight:800;color:#fff;
+    font-size:clamp(2.1rem,5.6vw,4.2rem);line-height:1;max-width:16ch;margin:0 0 26px;
+    text-transform:uppercase;letter-spacing:-.015em}
+  .pintro__title em{font-style:normal;color:var(--acc)}
   .pintro__lead p{color:var(--text);font-size:clamp(1.05rem,1.7vw,1.3rem);line-height:1.5;
     max-width:52ch;margin:0 0 6px}
   .pintro__lead a{color:#fff;border-bottom:2px solid var(--acc);padding-bottom:1px}

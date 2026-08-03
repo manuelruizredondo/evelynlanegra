@@ -1,6 +1,6 @@
 export const site = {
   name: "La Negra Salsa",
-  tagline: "La MEJOR profesora y Dj de RITMOS LATINOS",
+  tagline: "Salsa y bachata dominicana, desde la raíz",
   phone: "+34 659 090 696",
   phoneShort: "659 09 06 96",
   whatsapp: "https://wa.me/34659090696",

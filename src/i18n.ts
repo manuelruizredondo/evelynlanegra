@@ -45,7 +45,7 @@ export const ui = {
   es: {
     htmlLang: "es",
     ogLocale: "es_ES",
-    tagline: "La MEJOR profesora y DJ de RITMOS LATINOS",
+    tagline: "Salsa y bachata dominicana, desde la raíz",
     credit: "Diseño y desarrollo a partir del sitio original",
     nav: [
       { href: "/evelyn-la-negra/", label: "Sobre Évelyn" },
@@ -110,7 +110,7 @@ export const ui = {
   it: {
     htmlLang: "it",
     ogLocale: "it_IT",
-    tagline: "La MIGLIORE insegnante e DJ di RITMI LATINI",
+    tagline: "Salsa e bachata dominicana, dalla radice",
     credit: "Design e sviluppo a partire dal sito originale",
     nav: [
       { href: "/evelyn-la-negra/", label: "Chi è Évelyn" },
