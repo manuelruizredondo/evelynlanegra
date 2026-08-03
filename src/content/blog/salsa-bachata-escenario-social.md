@@ -40,4 +40,4 @@ Sea salsa o bachata, cubana o en línea, tradicional o fusión, lo que separa a 
 
 ---
 
-¿Te lanzas? Tienes salsa y bachata en las [clases presenciales](/clases-presenciales/) y en las [clases online](/bachata-salsa-online-offline/). Y si quieres competir o venir a ver el espectáculo, no te pierdas el [LaNegra World Championship](/).
+¿Te lanzas? Tienes salsa y bachata en las [clases presenciales](/clases-presenciales/) y en las [clases online](/curso-online-bachata-dominicana/). Y si quieres competir o venir a ver el espectáculo, no te pierdas el [LaNegra World Championship](/).

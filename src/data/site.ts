@@ -15,7 +15,7 @@ export const site = {
 export const nav = [
   { label: "Sobre Évelyn", href: "/evelyn-la-negra/" },
   { label: "Clases presenciales", href: "/clases-presenciales/" },
-  { label: "Clases online", href: "/bachata-salsa-online-offline/" },
+  { label: "Curso online", href: "/curso-online-bachata-dominicana/" },
   { label: "Máster bachata tradicional", href: "/profesora-bachata-dominicana/" },
   { label: "Logotipos", href: "/logotipos/" },
   { label: "Spotify", href: "/spotify/" },

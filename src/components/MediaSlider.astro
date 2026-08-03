@@ -1,0 +1,143 @@
+---
+// Slider horizontal de vídeos y fotos (scroll-snap + flechas).
+// Los vídeos se reproducen solos, en bucle y sin sonido cuando entran en pantalla.
+import { slides } from "../data/slider";
+
+interface Props { kicker?: string; title?: string }
+const { kicker = "En la pista", title = "La Negra en acción" } = Astro.props;
+---
+{slides.length > 0 && (
+  <section class="mslider" aria-label={title}>
+    <div class="container mslider__head">
+      <div>
+        <p class="kick">{kicker}</p>
+        <h2 class="mslider__title">{title}</h2>
+      </div>
+      <div class="mslider__nav">
+        <button class="mslider__btn" data-ms-prev aria-label="Anterior">←</button>
+        <button class="mslider__btn" data-ms-next aria-label="Siguiente">→</button>
+      </div>
+    </div>
+
+    <div class="mslider__track" data-ms-track>
+      {slides.map((s) => (
+        <figure class="mslide">
+          {s.type === "video" ? (
+            <video
+              class="mslide__media"
+              src={s.src}
+              poster={s.poster}
+              muted
+              loop
+              playsinline
+              preload="metadata"
+              aria-label={s.alt}
+              data-ms-video
+            ></video>
+          ) : (
+            <img class="mslide__media" src={s.src} alt={s.alt ?? ""} loading="lazy" decoding="async" />
+          )}
+        </figure>
+      ))}
+    </div>
+  </section>
+)}
+
+<style>
+  .mslider{padding:96px 0;border-top:1px solid var(--line)}
+  .mslider__head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:30px}
+  .kick{font-size:.72rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--acc);margin:0 0 14px}
+  .mslider__title{font-family:var(--serif);font-style:italic;font-weight:500;color:#fff;
+    font-size:clamp(1.8rem,4vw,2.8rem);margin:0;line-height:1.1}
+  .mslider__nav{display:flex;gap:10px}
+  .mslider__btn{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:transparent;
+    color:#fff;font-size:1.1rem;cursor:pointer;transition:background .2s,border-color .2s}
+  .mslider__btn:hover{background:var(--acc);border-color:var(--acc)}
+
+  .mslider__track{display:flex;gap:22px;overflow-x:auto;scroll-snap-type:x mandatory;
+    padding:4px clamp(20px,calc((100vw - var(--maxw)) / 2 + 20px),400px);
+    scroll-padding-inline:clamp(20px,calc((100vw - var(--maxw)) / 2 + 20px),400px);
+    scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch}
+  .mslider__track::-webkit-scrollbar{display:none}
+
+  .mslide{margin:0;flex:0 0 auto;width:min(78vw,560px);scroll-snap-align:start}
+  .mslide__media{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:16px;
+    border:1px solid var(--line);box-shadow:0 16px 40px rgba(0,0,0,.35);display:block;background:var(--bg2)}
+
+  @media (max-width:600px){
+    .mslider{padding:64px 0}
+    .mslide{width:84vw}
+  }
+</style>
+
+<script>
+  const track = document.querySelector<HTMLElement>("[data-ms-track]");
+  if (track) {
+    const slides = Array.from(track.querySelectorAll<HTMLElement>(".mslide"));
+    // Posición de scroll exacta de cada slide (coincide con los snap points)
+    const padLeft = () => parseFloat(getComputedStyle(track).paddingLeft) || 0;
+    const targets = () => slides.map((s) => s.offsetLeft - padLeft());
+    const currentIndex = () => {
+      const x = track.scrollLeft;
+      const t = targets();
+      let best = 0, d = Infinity;
+      t.forEach((p, i) => { const dd = Math.abs(p - x); if (dd < d) { d = dd; best = i; } });
+      return best;
+    };
+    // Animación propia: `behavior:"smooth"` es cancelado por scroll-snap mandatory en varios navegadores.
+    let raf = 0;
+    let safety: number | undefined;
+    const goTo = (i: number) => {
+      const t = targets();
+      const idx = Math.max(0, Math.min(slides.length - 1, i));
+      const from = track.scrollLeft;
+      const to = t[idx];
+      if (Math.abs(to - from) < 1) return;
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      track.style.scrollSnapType = "none";
+      const finish = () => { track.style.scrollSnapType = ""; };
+      if (reduce) { track.scrollLeft = to; finish(); return; }
+      const start = performance.now();
+      const dur = 450;
+      cancelAnimationFrame(raf);
+      window.clearTimeout(safety);
+      const tick = (now: number) => {
+        const p = Math.min(1, (now - start) / dur);
+        const e = 1 - Math.pow(1 - p, 3); // easeOutCubic
+        track.scrollLeft = from + (to - from) * e;
+        if (p < 1) raf = requestAnimationFrame(tick);
+        else { window.clearTimeout(safety); finish(); }
+      };
+      raf = requestAnimationFrame(tick);
+      // Si rAF no corre (pestaña en segundo plano), asegura el destino igualmente
+      safety = window.setTimeout(() => {
+        cancelAnimationFrame(raf);
+        track.scrollLeft = to;
+        finish();
+      }, dur + 120);
+    };
+    document.querySelector("[data-ms-prev]")?.addEventListener("click", () => goTo(currentIndex() - 1));
+    document.querySelector("[data-ms-next]")?.addEventListener("click", () => goTo(currentIndex() + 1));
+
+    // Vídeos: play/pausa según visibilidad (silenciados, en bucle)
+    const videos = Array.from(track.querySelectorAll<HTMLVideoElement>("[data-ms-video]"));
+    if (videos.length) {
+      const tryPlay = () => {
+        const vw = window.innerWidth || document.documentElement.clientWidth;
+        videos.forEach((v) => {
+          const r = v.getBoundingClientRect();
+          const visible = r.width > 0 && r.right > 0 && r.left < vw &&
+            r.bottom > 0 && r.top < (window.innerHeight || document.documentElement.clientHeight);
+          if (visible) v.play().catch(() => {});
+          else v.pause();
+        });
+      };
+      const io = new IntersectionObserver(tryPlay, { threshold: 0.35 });
+      videos.forEach((v) => io.observe(v));
+      window.addEventListener("scroll", tryPlay, { passive: true });
+      track.addEventListener("scroll", tryPlay, { passive: true });
+      window.addEventListener("resize", tryPlay, { passive: true });
+      setTimeout(tryPlay, 600);
+    }
+  }
+</script>

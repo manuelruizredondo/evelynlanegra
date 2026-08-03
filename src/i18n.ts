@@ -50,7 +50,7 @@ export const ui = {
     nav: [
       { href: "/evelyn-la-negra/", label: "Sobre Évelyn" },
       { href: "/clases-presenciales/", label: "Clases presenciales" },
-      { href: "/bachata-salsa-online-offline/", label: "Clases online" },
+      { href: "/curso-online-bachata-dominicana/", label: "Curso online" },
       { href: "/profesora-bachata-dominicana/", label: "Máster bachata tradicional" },
       { href: "/blog/", label: "Blog" },
       { href: "/logotipos/", label: "Logotipos" },
@@ -74,7 +74,7 @@ export const ui = {
           title: "Clases",
           links: [
             { label: "Clases presenciales", href: "/clases-presenciales/" },
-            { label: "Clases online", href: "/bachata-salsa-online-offline/" },
+            { label: "Curso online", href: "/curso-online-bachata-dominicana/" },
             { label: "Máster bachata tradicional", href: "/profesora-bachata-dominicana/" },
           ],
         },
@@ -115,7 +115,7 @@ export const ui = {
     nav: [
       { href: "/evelyn-la-negra/", label: "Chi è Évelyn" },
       { href: "/clases-presenciales/", label: "Lezioni in presenza" },
-      { href: "/bachata-salsa-online-offline/", label: "Lezioni online" },
+      { href: "/curso-online-bachata-dominicana/", label: "Corso online" },
       { href: "/profesora-bachata-dominicana/", label: "Master bachata tradizionale" },
       { href: "/logotipos/", label: "Loghi" },
       { href: "/spotify/", label: "Spotify" },
@@ -137,7 +137,7 @@ export const ui = {
           title: "Lezioni",
           links: [
             { label: "Lezioni in presenza", href: "/clases-presenciales/" },
-            { label: "Lezioni online", href: "/bachata-salsa-online-offline/" },
+            { label: "Corso online", href: "/curso-online-bachata-dominicana/" },
             { label: "Master bachata tradizionale", href: "/profesora-bachata-dominicana/" },
           ],
         },

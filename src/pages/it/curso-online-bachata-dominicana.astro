@@ -1,0 +1,85 @@
+---
+import Base from "../../layouts/Base.astro";
+import PageIntro from "../../components/PageIntro.astro";
+import ContactForm from "../../components/ContactForm.astro";
+import Faq from "../../components/Faq.astro";
+import { site } from "../../data/site";
+const wa = "https://api.whatsapp.com/send?phone=34659090696&text=Ciao%20Evelyn,%20vorrei%20info%20sul%20corso%20online%20di%20bachata%20dominicana";
+
+const faqs = [
+  { q: "Come funziona il corso online di bachata dominicana?", a: "Le lezioni sono in diretta su Zoom e restano registrate: se non puoi partecipare, le guardi quando vuoi e le ripassi al tuo ritmo." },
+  { q: "Serve un partner per il corso online?", a: "No. Il corso lavora sulla base individuale della bachata dominicana: passo, conteggio, musicalità e movimento del corpo. Puoi seguirlo da solo o da sola da casa." },
+  { q: "Che livello serve per iniziare?", a: "Ci sono contenuti dal livello medio, e se parti da zero ti oriento nella prima lezione così segui il corso senza perderti." },
+  { q: "Quanto costa il corso online di bachata?", a: "Dipende dalla modalità: lezioni di gruppo o private. Scrivimi su WhatsApp e ti mando prezzi, orari e opzioni senza impegno." },
+  { q: "Qual è la differenza tra bachata dominicana e sensual?", a: "La dominicana (tradizionale) si balla dal suolo, con il passo e la musicalità come base; la sensual privilegia onde e lavoro del corpo." },
+];
+
+const courseSchema = {
+  "@context": "https://schema.org",
+  "@type": "Course",
+  name: "Corso online di bachata dominicana",
+  description: "Corso online di bachata dominicana (tradizionale) in diretta su Zoom con Évelyn «La Negra»: passo, musicalità e sapore dalla radice. Le lezioni restano registrate.",
+  provider: { "@type": "Organization", name: "La Negra Salsa", url: new URL("/", Astro.site).href },
+  inLanguage: "it",
+  hasCourseInstance: {
+    "@type": "CourseInstance",
+    courseMode: "Online",
+    courseWorkload: "PT1H",
+    instructor: { "@type": "Person", name: "Évelyn Viana Lovera", alternateName: "La Negra", url: new URL("/it/evelyn-la-negra/", Astro.site).href },
+  },
+};
+---
+<Base
+  title="Corso online di bachata dominicana · Lezioni su Zoom con La Negra"
+  description="Corso online di bachata dominicana in diretta su Zoom con Évelyn «La Negra». Le lezioni restano registrate. Passo, musicalità e sapore dalla radice."
+  transparentHeader={true}
+>
+  <PageIntro
+    kicker="Corso online"
+    title="Corso online di <em>bachata dominicana</em>."
+    lead={[
+      "Bachata dominicana in diretta su Zoom, da dove vuoi — e le lezioni restano registrate per te.",
+      "Impara il passo, la musicalità e il sapore della radice con una maestra di maestri.",
+    ]}
+    cue="Come funziona"
+  />
+
+  <section class="section text-center">
+    <div class="container" style="max-width:760px">
+      <p class="eyebrow">Ti offro due corsi</p>
+      <div class="courses">
+        <div class="course"><h3>Bachata Tradizionale</h3><p>Livello medio</p></div>
+        <div class="course"><h3>Salsa · Movimento del corpo</h3><p>Livello medio</p></div>
+      </div>
+      <h2 style="margin-top:40px">Le lezioni restano registrate</h2>
+      <p>Sai qual è il segreto di questo corso online di bachata? Che puoi rivedere ogni lezione quando
+        vuoi: ogni sessione in diretta resta registrata così la ripassi al tuo ritmo.</p>
+    </div>
+  </section>
+
+  <section class="section" style="background:#f7f7f7">
+    <div class="container text-center" style="max-width:680px">
+      <p class="eyebrow">Lezioni private</p>
+      <h2>Prezzi e orari</h2>
+      <p style="font-size:1.1rem">Scrivimi e ti mando prezzi, orari e opzioni senza impegno.</p>
+      <p>
+        <a class="btn btn--red btn--lg" href={`tel:${site.phone.replace(/\s/g, "")}`}>{site.phone}</a>
+        &nbsp;
+        <a class="btn btn--lg" href={wa} target="_blank" rel="noopener">WhatsApp</a>
+      </p>
+    </div>
+  </section>
+
+  <Faq items={faqs} title="Domande sul corso online" kicker="Dubbi" />
+
+  <ContactForm name="contacto-online-it" title="Maggiori informazioni" note="Contattami per ricevere maggiori informazioni sul corso online di bachata dominicana e le prossime attività." />
+
+  <script type="application/ld+json" set:html={JSON.stringify(courseSchema)} />
+</Base>
+
+<style>
+  .courses{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:24px}
+  .course{background:#0f0f10;border:1px solid var(--line);border-radius:12px;padding:26px}
+  .course h3{color:#fff;font-weight:700}
+  @media (max-width:600px){.courses{grid-template-columns:1fr}}
+</style>

@@ -42,4 +42,4 @@ Porque cuando un alumno por fin «pilla» la pisada, se le ilumina la cara. Deja
 
 ---
 
-¿Quieres trabajar la pisada desde cero? Te acompaño en las [clases presenciales](/clases-presenciales/) de Barcelona e Ibiza, en las [clases online](/bachata-salsa-online-offline/) y, si ya enseñas, en el [Máster en Bachata Tradicional](/profesora-bachata-dominicana/).
+¿Quieres trabajar la pisada desde cero? Te acompaño en las [clases presenciales](/clases-presenciales/) de Barcelona e Ibiza, en las [clases online](/curso-online-bachata-dominicana/) y, si ya enseñas, en el [Máster en Bachata Tradicional](/profesora-bachata-dominicana/).

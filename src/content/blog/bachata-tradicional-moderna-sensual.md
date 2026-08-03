@@ -39,4 +39,4 @@ Las etiquetas sirven para vender clases en un congreso, no para dividir a la gen
 
 ---
 
-¿Quieres bailar la bachata desde la raíz? Te espero en las [clases presenciales](/clases-presenciales/) de Barcelona e Ibiza, en las [clases online](/bachata-salsa-online-offline/) o, si ya enseñas, en el [Máster en Bachata Tradicional](/profesora-bachata-dominicana/).
+¿Quieres bailar la bachata desde la raíz? Te espero en las [clases presenciales](/clases-presenciales/) de Barcelona e Ibiza, en las [clases online](/curso-online-bachata-dominicana/) o, si ya enseñas, en el [Máster en Bachata Tradicional](/profesora-bachata-dominicana/).

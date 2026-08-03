@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import Faq from "../components/Faq.astro";
+import MediaSlider from "../components/MediaSlider.astro";
 import { site } from "../data/site";
 
 const faqs = [
@@ -35,7 +36,7 @@ const online = [
     href: "/profesora-bachata-dominicana/", cta: "Ver programa" },
   { img: "/img/2024/12/los-jueves-zoom-1080X1080-1024x1024.png", chip: "En directo · Zoom", t: "Clases online",
     d: "Bachata y salsa en directo por Zoom. Las clases se quedan grabadas para ti.",
-    href: "/bachata-salsa-online-offline/", cta: "Empezar" },
+    href: "/curso-online-bachata-dominicana/", cta: "Empezar" },
 ];
 
 const worldtour = [
@@ -120,6 +121,9 @@ const isPastMonth = (mes) => TOUR_YEAR * 12 + (MES_NUM[mes] ?? 0) < _curYM;
       </div>
     </section>
 
+    <!-- SLIDER DE VÍDEOS Y FOTOS -->
+    <MediaSlider kicker="En la pista" title="La Negra en acción" />
+
     <!-- 1 · EVENTOS -->
     <section class="ev" id="eventos">
       <div class="container">
@@ -200,7 +204,7 @@ const isPastMonth = (mes) => TOUR_YEAR * 12 + (MES_NUM[mes] ?? 0) < _curYM;
         ))}
       </div>
       <div class="container">
-        <p class="tour__note">Domingos · DJ residente KEEPER Ibiza &nbsp;·&nbsp; Clases regulares: Ibiza (lun–mié) · Barcelona BS Dance Center (jueves)</p>
+        <p class="tour__note">Domingos · DJ residente KEEPER Ibiza<br>Clases regulares · Ibiza (lun–mié)<br>Barcelona · BS Dance Center (jueves)</p>
         <p class="tour__cta"><a class="btn btn--red btn--lg" href={site.whatsapp} target="_blank" rel="noopener">Próximas fechas</a></p>
       </div>
     </section>
@@ -270,9 +274,13 @@ const isPastMonth = (mes) => TOUR_YEAR * 12 + (MES_NUM[mes] ?? 0) < _curYM;
       description: "La competición pionera de salsa en el mundo, creada por La Negra.",
       startDate: "2026-10-21",
       endDate: "2026-10-25",
+      eventStatus: "https://schema.org/EventScheduled",
       eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
       location: { "@type": "Place", name: "Calpe", address: "Calpe, Alicante, España" },
-      organizer: { "@type": "Person", name: "Évelyn «La Negra»" },
+      image: [new URL("/img/campeonato.webp", Astro.site).href],
+      performer: { "@type": "Person", name: "Évelyn «La Negra»", url: new URL("/evelyn-la-negra/", Astro.site).href },
+      organizer: { "@type": "Person", name: "Évelyn «La Negra»", url: new URL("/evelyn-la-negra/", Astro.site).href },
+      offers: { "@type": "Offer", url: site.festival, availability: "https://schema.org/InStock", priceCurrency: "EUR", validFrom: "2026-01-01" },
       url: site.festival,
     },
     {
@@ -281,9 +289,14 @@ const isPastMonth = (mes) => TOUR_YEAR * 12 + (MES_NUM[mes] ?? 0) < _curYM;
       description: "Días de salsa, bachata y buena compañía a bordo: clases, sesiones y mar abierto.",
       startDate: "2026-11-01",
       endDate: "2026-11-08",
+      eventStatus: "https://schema.org/EventScheduled",
       eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
       location: { "@type": "Place", name: "Mediterráneo", address: "España · Italia · Francia" },
-      organizer: { "@type": "Person", name: "Évelyn «La Negra»" },
+      image: [new URL("/img/crucero.jpg", Astro.site).href],
+      performer: { "@type": "Person", name: "Évelyn «La Negra»", url: new URL("/evelyn-la-negra/", Astro.site).href },
+      organizer: { "@type": "Person", name: "Évelyn «La Negra»", url: new URL("/evelyn-la-negra/", Astro.site).href },
+      offers: { "@type": "Offer", url: site.whatsapp, availability: "https://schema.org/InStock", priceCurrency: "EUR", validFrom: "2026-01-01" },
+      url: site.whatsapp,
     },
   ],
 })} />

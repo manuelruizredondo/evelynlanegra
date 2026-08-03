@@ -1,7 +1,7 @@
 # URLs antiguas de WordPress -> nuevas rutas limpias
 /es/evelyn-viana-lovera            /                                   301
 /es/curriculum                     /evelyn-la-negra/                   301
-/es/bachata-salsa-online-offline   /bachata-salsa-online-offline/      301
+/es/bachata-salsa-online-offline   /curso-online-bachata-dominicana/   301
 /es/profesora-bachata-dominicana   /profesora-bachata-dominicana/      301
 /es/logotipos                      /logotipos/                         301
 /es/blog                           /blog/                              301
@@ -22,6 +22,10 @@
 # Renombrado de /curriculum/ -> /evelyn-la-negra/ (marca personal)
 /curriculum/      /evelyn-la-negra/      301
 /it/curriculum/   /it/evelyn-la-negra/   301
+
+# Renombrado clases online -> curso online (keyword)
+/bachata-salsa-online-offline/      /curso-online-bachata-dominicana/      301
+/it/bachata-salsa-online-offline/   /it/curso-online-bachata-dominicana/   301
 
 # Blog: slugs optimizados para keywords
 /blog/la-bachata-es-una-sola/                    /blog/bachata-tradicional-moderna-sensual/  301
