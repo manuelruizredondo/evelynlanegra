@@ -6,12 +6,14 @@ import { site } from "../data/site";
   title="Sobre Évelyn «La Negra» — periodista, DJ y profesora de bachata dominicana"
   description="La historia de Évelyn «La Negra»: periodista venezolana, productora, DJ y referencia en la formación de bachata tradicional, radicada en Barcelona desde 1997."
   transparentHeader={true}
+  preloadImage="/img/evelynbn.png"
 >
   <div class="ln">
 
     <!-- HERO (igual que la home) -->
     <header class="ln-hero">
-      <img class="ln-hero__img" src="/img/evelynbn.png" alt="Évelyn La Negra" />
+      <img class="ln-hero__img" src="/img/evelynbn.png" alt="Évelyn «La Negra», profesora y DJ de bachata dominicana"
+        width="1830" height="1025" fetchpriority="high" decoding="async" />
       <h1 class="ln-hero__name">
         <span class="he-name">Évelyn</span>
         <strong class="he-laneg">La Negra</strong>
@@ -83,19 +85,22 @@ import { site } from "../data/site";
 
   /* HERO (idéntico a la home) */
   .ln-hero{position:relative;min-height:100vh;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;background:#0a0a0a}
-  .ln-hero__img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 28%;opacity:.95}
+  .ln-hero__img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 28%;
+    opacity:.95;animation:heroReveal 1.8s ease both}
+  @keyframes heroReveal{from{opacity:0;transform:scale(0.92)}to{opacity:.95;transform:scale(1)}}
+  @media (prefers-reduced-motion:reduce){.ln-hero__img{animation:none;opacity:.95}}
   .ln-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.6),rgba(0,0,0,.15) 30%,rgba(0,0,0,.35) 70%,#0a0a0a 100%)}
   .chip{display:inline-flex;align-items:center;gap:9px;background:rgba(0,0,0,.5);border:1px solid var(--line);
     padding:8px 16px;border-radius:999px;font-size:.74rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#fff}
   .chip .dot{width:8px;height:8px;border-radius:50%;background:var(--acc2)}
   .ln-hero__name{position:relative;z-index:2;text-align:center;margin:auto 0;line-height:1;padding-inline:18px;transform:translateY(12vh)}
-  .ln-hero__name .he-name{display:block;font-family:var(--script);font-weight:400;
-    font-size:clamp(2.2rem,6vw,4.2rem);color:#fff;line-height:1}
+  .ln-hero__name .he-name{display:block;font-family:var(--script);text-transform:none;font-weight:400;
+    font-size:clamp(2.2rem,6vw,4.2rem);color:#fff;opacity:1;letter-spacing:0;line-height:1}
   .ln-hero__name .he-laneg{display:block;font-family:"Mona Sans","Lato",sans-serif;
     font-size:clamp(3.5rem,16vw,11rem);font-weight:900;letter-spacing:-.02em;text-transform:uppercase;
-    color:#fff;line-height:.86;font-variation-settings:"wght" 900,"wdth" 122;margin:-.03em 0}
-  .ln-hero__name .he-disc{display:block;font-family:var(--script);font-weight:400;
-    font-size:clamp(1.4rem,6.5vw,4.8rem);color:var(--acc);line-height:1;max-width:100%}
+    color:#fff;line-height:.86;font-stretch:122%;font-variation-settings:"wght" 900,"wdth" 122;margin:-.03em 0}
+  .ln-hero__name .he-disc{display:block;font-family:var(--script);text-transform:none;font-weight:400;
+    font-size:clamp(1.4rem,6.5vw,4.8rem);color:var(--acc);opacity:1;letter-spacing:0;line-height:1;max-width:100%}
   .ln-hero__bottom{position:relative;z-index:2;padding-bottom:40px;text-align:center}
   .ln-hero__role{font-size:1rem;letter-spacing:.16em;text-transform:uppercase;color:#fff;margin:0 0 20px}
   .ln-hero__cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:22px}

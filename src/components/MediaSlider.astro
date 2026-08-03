@@ -3,12 +3,13 @@
 // Los vídeos se reproducen solos, en bucle y sin sonido cuando entran en pantalla.
 import { slides } from "../data/slider";
 
-interface Props { title?: string; prevLabel?: string; nextLabel?: string; soundLabel?: string }
+interface Props { title?: string; prevLabel?: string; nextLabel?: string; soundLabel?: string; playLabel?: string }
 const {
   title = "La Negra en acción",
   prevLabel = "Anterior",
   nextLabel = "Siguiente",
   soundLabel = "Activar o silenciar el sonido",
+  playLabel = "Reproducir o pausar el vídeo",
 } = Astro.props;
 ---
 {slides.length > 0 && (
@@ -18,7 +19,7 @@ const {
     </div>
 
     <div class="mslider__track" data-ms-track>
-      {slides.map((s) => (
+      {slides.map((s, i) => (
         <figure class="mslide">
           {s.type === "video" ? (
             <video
@@ -28,7 +29,8 @@ const {
               muted
               loop
               playsinline
-              preload="metadata"
+              autoplay={i === 0 ? true : undefined}
+              preload={i === 0 ? "auto" : "metadata"}
               aria-label={s.alt}
               draggable="false"
               data-ms-video
@@ -37,22 +39,36 @@ const {
             <img class="mslide__media" src={s.src} alt={s.alt ?? ""} loading="lazy" decoding="async" draggable="false" />
           )}
 
-          {(s.title || s.subtitle || (s.type === "video" && s.sound)) && (
+          {(s.title || s.subtitle || s.type === "video") && (
             <figcaption class="mslide__cap">
               <div class="mslide__txt">
                 {s.title && <span class="mslide__t">{s.title}</span>}
                 {s.subtitle && <span class="mslide__s">{s.subtitle}</span>}
               </div>
-              {s.type === "video" && s.sound && (
-                <button class="mslide__sound" type="button" data-ms-sound aria-pressed="false" aria-label={soundLabel}>
-                  <svg class="ico-off" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-                    <path fill="currentColor" d="M4 9v6h4l5 5V4L8 9H4zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z" opacity=".55"/>
-                    <path stroke="currentColor" stroke-width="2" d="M18 6 L6 18"/>
-                  </svg>
-                  <svg class="ico-on" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-                    <path fill="currentColor" d="M4 9v6h4l5 5V4L8 9H4zm11.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zm-2.5-7.4v2.06A6.5 6.5 0 0 1 17.5 12a6.5 6.5 0 0 1-4.5 6.17v2.06A8.5 8.5 0 0 0 19.5 12 8.5 8.5 0 0 0 13 4.6z"/>
-                  </svg>
-                </button>
+
+              {s.type === "video" && (
+                <div class="mslide__ctrls">
+                  <button class="mslide__btn" type="button" data-ms-play aria-pressed="true" aria-label={playLabel}>
+                    <svg class="ico-play" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                      <path fill="currentColor" d="M8 5v14l11-7z"/>
+                    </svg>
+                    <svg class="ico-pause" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                      <path fill="currentColor" d="M6 5h4v14H6zm8 0h4v14h-4z"/>
+                    </svg>
+                  </button>
+
+                  {s.sound && (
+                    <button class="mslide__btn" type="button" data-ms-sound aria-pressed="false" aria-label={soundLabel}>
+                      <svg class="ico-off" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                        <path fill="currentColor" d="M4 9v6h4l5 5V4L8 9H4z"/>
+                        <path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M16 9.5 L21 14.5 M21 9.5 L16 14.5"/>
+                      </svg>
+                      <svg class="ico-on" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                        <path fill="currentColor" d="M4 9v6h4l5 5V4L8 9H4zm11.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zm-2.5-7.4v2.06A6.5 6.5 0 0 1 17.5 12a6.5 6.5 0 0 1-4.5 6.17v2.06A8.5 8.5 0 0 0 19.5 12 8.5 8.5 0 0 0 13 4.6z"/>
+                      </svg>
+                    </button>
+                  )}
+                </div>
               )}
             </figcaption>
           )}
@@ -97,14 +113,17 @@ const {
   .mslide__t{color:#fff;font-weight:800;text-transform:uppercase;letter-spacing:-.01em;
     font-size:clamp(1.15rem,2.4vw,1.6rem);line-height:1}
   .mslide__s{color:var(--acc);font-weight:800;font-size:clamp(1.15rem,2.4vw,1.6rem);line-height:1}
-  .mslide__sound{pointer-events:auto;flex:0 0 auto;width:42px;height:42px;border-radius:50%;
+  .mslide__ctrls{pointer-events:auto;display:flex;gap:10px;flex:0 0 auto}
+  .mslide__btn{width:42px;height:42px;border-radius:50%;
     border:1px solid rgba(255,255,255,.35);background:rgba(0,0,0,.45);color:#fff;cursor:pointer;
     display:grid;place-items:center;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-    transition:background .2s,border-color .2s}
-  .mslide__sound:hover{background:var(--acc);border-color:var(--acc)}
-  .mslide__sound .ico-on{display:none}
-  .mslide__sound[aria-pressed="true"] .ico-on{display:block}
-  .mslide__sound[aria-pressed="true"] .ico-off{display:none}
+    transition:background .2s,border-color .2s;padding:0}
+  .mslide__btn:hover{background:var(--acc);border-color:var(--acc)}
+  .mslide__btn svg{grid-area:1/1}
+  /* aria-pressed=true significa "reproduciendo" -> se muestra el icono de pausa */
+  .mslide__btn .ico-pause,.mslide__btn .ico-on{display:none}
+  .mslide__btn[aria-pressed="true"] .ico-pause,.mslide__btn[aria-pressed="true"] .ico-on{display:block}
+  .mslide__btn[aria-pressed="true"] .ico-play,.mslide__btn[aria-pressed="true"] .ico-off{display:none}
 
   .mslider__nav{display:flex;gap:12px;justify-content:center;margin-top:34px}
   .mslider__btn{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:transparent;
@@ -194,6 +213,22 @@ const {
     track.addEventListener("click", (e) => { if (moved) { e.preventDefault(); e.stopPropagation(); } }, true);
     track.addEventListener("dragstart", (e) => e.preventDefault());
 
+    // Botón play/pausa. `paused` marca los vídeos que el usuario ha pausado a mano
+    const userPaused = new WeakSet<HTMLVideoElement>();
+    track.querySelectorAll<HTMLButtonElement>("[data-ms-play]").forEach((btn) => {
+      const v = btn.closest(".mslide")?.querySelector<HTMLVideoElement>("video");
+      if (!v) return;
+      const sync = () => btn.setAttribute("aria-pressed", String(!v.paused));
+      v.addEventListener("play", sync);
+      v.addEventListener("pause", sync);
+      sync();
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (v.paused) { userPaused.delete(v); v.play().catch(() => {}); }
+        else { userPaused.add(v); v.pause(); }
+      });
+    });
+
     // Botón de sonido: activa el audio de su vídeo y silencia el resto
     track.querySelectorAll<HTMLButtonElement>("[data-ms-sound]").forEach((btn) => {
       btn.addEventListener("click", (e) => {
@@ -218,7 +253,7 @@ const {
           const r = v.getBoundingClientRect();
           const visible = r.width > 0 && r.right > 0 && r.left < vw &&
             r.bottom > 0 && r.top < (window.innerHeight || document.documentElement.clientHeight);
-          if (visible) v.play().catch(() => {});
+          if (visible) { if (!userPaused.has(v)) v.play().catch(() => {}); }
           else {
             v.pause();
             // Al salir de pantalla, corta el audio y resetea el botón
