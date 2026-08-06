@@ -1,13 +1,19 @@
 export const site = {
   name: "La Negra Salsa",
   tagline: "Salsa y bachata dominicana, desde la raíz",
-  phone: "+34 659 090 696",
-  phoneShort: "659 09 06 96",
-  whatsapp: "https://wa.me/34659090696",
+  phone: "+34 621 07 40 54",
+  phoneShort: "621 07 40 54",
+  whatsapp: "https://wa.me/34621074054",
   email: "info@evelynlanegra.com",
   instagram: "https://www.instagram.com/evelynlanegrasalsa/",
   spotify: "https://open.spotify.com/user/1165580333",
   festival: "https://www.campeonatopasoslibres.com/",
+  // Webs del proyecto (franja del pie)
+  sites: [
+    { label: "lanegrasalsa.com", href: "https://lanegrasalsa.com/" },
+    { label: "evelynlanegra.com", href: "https://evelynlanegra.com/" },
+    { label: "campeonatopasoslibres.com", href: "https://campeonatopasoslibres.com/" },
+  ],
   shop: "https://camisetasbailongas.com/?s=la+negra&post_type=product",
 };
 

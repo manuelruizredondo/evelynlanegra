@@ -88,6 +88,7 @@ export const ui = {
         },
       ],
       contactTitle: "Contacto",
+      sitesTitle: "Nuestras webs",
       legal: [
         { label: "Aviso legal", href: "/aviso-legal/" },
         { label: "Privacidad", href: "/privacidad/" },
@@ -151,6 +152,7 @@ export const ui = {
         },
       ],
       contactTitle: "Contatti",
+      sitesTitle: "I nostri siti",
       legal: [
         { label: "Note legali", href: "/aviso-legal/" },
         { label: "Privacy", href: "/privacidad/" },

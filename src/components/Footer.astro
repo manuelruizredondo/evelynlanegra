@@ -55,6 +55,16 @@ const home = localize("/", locale);
     </div>
   </div>
 
+  <!-- Webs del proyecto -->
+  <div class="container site-footer__sites">
+    <span class="site-footer__sites-label">{t.footer.sitesTitle}</span>
+    <nav class="site-footer__sites-links" aria-label={t.footer.sitesTitle}>
+      {site.sites.map((s) => (
+        <a href={s.href} target="_blank" rel="noopener">{s.label}</a>
+      ))}
+    </nav>
+  </div>
+
   <div class="container site-footer__bar">
     <p>© {new Date().getFullYear()} {site.name}</p>
     <nav class="site-footer__legal" aria-label="Legal">
@@ -82,9 +92,20 @@ const home = localize("/", locale);
   .site-footer__col a{color:#fff;font-size:.88rem}
   .site-footer__col a:hover{color:var(--acc);text-decoration:none}
 
+  /* Franja de webs del proyecto */
+  .site-footer__sites{
+    display:flex;align-items:center;flex-wrap:wrap;gap:12px 26px;
+    margin-top:46px;padding-top:26px;border-top:1px solid rgba(255,255,255,.08);
+  }
+  .site-footer__sites-label{font-size:.7rem;font-weight:700;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--acc)}
+  .site-footer__sites-links{display:flex;flex-wrap:wrap;gap:10px 26px}
+  .site-footer__sites-links a{color:#fff;font-size:.9rem;font-weight:600}
+  .site-footer__sites-links a:hover{color:var(--acc);text-decoration:none}
+
   .site-footer__bar{
     display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
-    margin-top:46px;padding-top:22px;border-top:1px solid rgba(255,255,255,.08);
+    margin-top:26px;padding-top:22px;border-top:1px solid rgba(255,255,255,.08);
     font-size:.78rem;color:#76767a;
   }
   .site-footer__bar p{margin:0}
