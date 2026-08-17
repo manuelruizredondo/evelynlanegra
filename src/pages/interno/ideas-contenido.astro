@@ -23,7 +23,7 @@ const cats: Cat[] = [
     ],
   },
   {
-    id: "conexion", name: "Conexión", color: "#e0457b",
+    id: "conexion", name: "Conexión", color: "#d4570a",
     desc: "Construir confianza: que te conozcan y te crean.",
     ideas: [
       "Micro-clase en stories (un detalle de la pisada)",
@@ -39,7 +39,7 @@ const cats: Cat[] = [
     ],
   },
   {
-    id: "captacion", name: "Captación", color: "#a03cc9",
+    id: "captacion", name: "Captación", color: "#a67c00",
     desc: "Convertir seguidores en contactos: DM, email, WhatsApp.",
     ideas: [
       "«Escríbeme BACHATA por DM y te paso info»",
@@ -55,7 +55,7 @@ const cats: Cat[] = [
     ],
   },
   {
-    id: "venta", name: "Venta", color: "#7b3fd4",
+    id: "venta", name: "Venta", color: "#17805a",
     desc: "Presentar y vender clases, máster, eventos y crucero.",
     ideas: [
       "Presenta o lanza una formación",
@@ -71,7 +71,7 @@ const cats: Cat[] = [
     ],
   },
   {
-    id: "personal", name: "Personal", color: "#e0457b",
+    id: "personal", name: "Personal", color: "#2b6fd6",
     desc: "Tu día a día: lo que te hace cercana y única.",
     ideas: [
       "Un día en la vida en gira",
@@ -87,7 +87,7 @@ const cats: Cat[] = [
     ],
   },
   {
-    id: "autoridad", name: "Autoridad", color: "#ce0306",
+    id: "autoridad", name: "Autoridad", color: "#8b3fd4",
     desc: "Lo que te hace referente: raíz, criterio y cultura.",
     ideas: [
       "Detrás de cámaras de una formación",
@@ -135,20 +135,28 @@ const sectors = cats.map((c, i) => {
       <div class="wheel-layout">
         <div class="wheel-box">
           <svg viewBox="0 0 400 400" class="wheel" role="img" aria-label="Rueda de categorías de contenido">
-            {sectors.map((s) => (
-              <g class="sector" data-cat={s.id} tabindex="0" role="button" aria-label={s.name}>
-                <path d={s.d} fill={s.color} />
-                <text x={s.lx} y={s.ly} transform={`rotate(${s.rot} ${s.lx} ${s.ly})`}>{s.name}</text>
-              </g>
-            ))}
-            <circle cx={CX} cy={CY} r={r - 4} fill="#0a0a0a" stroke="rgba(255,255,255,.15)" />
-            <text class="wheel-hub" x={CX} y={CY - 6}>LA NEGRA</text>
-            <text class="wheel-hub wheel-hub--sm" x={CX} y={CY + 14}>ideas</text>
+            <!-- Grupo que gira como una ruleta -->
+            <g class="wheel-spin" data-spin>
+              {sectors.map((s) => (
+                <g class="sector" data-cat={s.id} tabindex="0" role="button" aria-label={s.name}>
+                  <path d={s.d} fill={s.color} />
+                  <text x={s.lx} y={s.ly} transform={`rotate(${s.rot} ${s.lx} ${s.ly})`}>{s.name}</text>
+                </g>
+              ))}
+            </g>
+
+            <!-- Centro fijo: pulsar para girar -->
+            <g class="hub" data-spin-btn tabindex="0" role="button" aria-label="Girar la ruleta">
+              <circle cx={CX} cy={CY} r={r - 4} fill="#0a0a0a" stroke="rgba(255,255,255,.2)" />
+              <text class="wheel-hub" x={CX} y={CY - 8}>LA NEGRA</text>
+              <text class="wheel-hub wheel-hub--sm" x={CX} y={CY + 14}>girar</text>
+            </g>
+
+            <!-- Puntero -->
+            <polygon class="wheel-pin" points="200,14 190,-6 210,-6" />
           </svg>
 
-          <button class="btn btn--red btn--lg wheel-random" type="button" data-random>
-            Dame una idea al azar
-          </button>
+          <p class="wheel-hint">Pulsa el centro para girar · o elige una porción</p>
         </div>
 
         <div class="wheel-panel">
@@ -158,7 +166,7 @@ const sectors = cats.map((c, i) => {
           </div>
 
           {cats.map((c, i) => (
-            <article class="cat" data-panel={c.id} hidden={i !== 0}>
+            <article class="cat" data-panel={c.id} data-color={c.color} hidden={i !== 0}>
               <span class="cat__dot" style={`background:${c.color}`}></span>
               <h2 class="cat__name">{c.name}</h2>
               <p class="cat__desc">{c.desc}</p>
@@ -183,15 +191,28 @@ const sectors = cats.map((c, i) => {
   .wheel-layout{display:grid;grid-template-columns:minmax(300px,440px) 1fr;gap:52px;align-items:start}
   .wheel-box{position:sticky;top:120px;text-align:center}
   .wheel{width:100%;height:auto;display:block}
-  .sector{cursor:pointer}
+  /* Sin recuadro de foco del navegador: el aviso visual va en la propia porción */
+  .sector{cursor:pointer;outline:none}
   .sector path{transition:opacity .2s,transform .2s;transform-origin:200px 200px}
   .sector:hover path,.sector:focus-visible path{opacity:.85;transform:scale(1.03)}
+  .sector:focus-visible path{stroke:#fff;stroke-width:3}
   .sector.is-active path{stroke:#fff;stroke-width:2}
   .sector text{fill:#fff;font-size:15px;font-weight:800;text-anchor:middle;dominant-baseline:middle;
     text-transform:uppercase;letter-spacing:.04em;pointer-events:none}
   .wheel-hub{fill:#fff;font-size:15px;font-weight:800;text-anchor:middle;letter-spacing:.06em}
-  .wheel-hub--sm{fill:var(--muted);font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase}
-  .wheel-random{margin-top:26px}
+  .wheel-hub--sm{fill:var(--acc);font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase}
+
+  /* Ruleta */
+  .wheel{overflow:visible}
+  .wheel-spin{transform-origin:200px 200px}
+  .wheel-spin.is-spinning{transition:transform 4.6s cubic-bezier(.12,.75,.16,1)}
+  .wheel-spin.is-spinning .sector{pointer-events:none}
+  .hub{cursor:pointer;outline:none;transition:transform .18s ease;transform-origin:200px 200px}
+  .hub:hover,.hub:focus-visible{transform:scale(1.06)}
+  .hub:focus-visible circle{stroke:#fff;stroke-width:2}
+  .hub circle{transition:stroke .2s}
+  .wheel-pin{fill:#fff;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
+  .wheel-hint{margin-top:22px;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 
   .wheel-panel{min-width:0}
   .cat__dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-bottom:14px}
@@ -202,10 +223,13 @@ const sectors = cats.map((c, i) => {
     padding:14px 18px;color:#fff;font-size:.98rem;line-height:1.45}
   .cat__ideas li::before{content:"›";color:var(--acc);font-weight:800;margin-right:10px}
 
-  .wheel-random-out{border:1px solid var(--acc);border-radius:16px;padding:22px 24px;margin-bottom:30px;
-    background:rgba(206,3,6,.08)}
-  .wheel-random-cat{font-size:.7rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--acc)}
+  /* El resultado toma el color de la categoría que ha salido */
+  .wheel-random-out{border:2px solid var(--out,var(--acc));border-radius:16px;padding:22px 24px;margin-bottom:30px;
+    background:color-mix(in srgb,var(--out,var(--acc)) 14%,transparent);transition:border-color .3s,background .3s}
+  .wheel-random-cat{font-size:.7rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--out,var(--acc))}
   .wheel-random-idea{color:#fff;font-size:1.25rem;margin:8px 0 0;line-height:1.35}
+  .wheel-random-out.is-rolling .wheel-random-idea{opacity:.45}
 
   @media (max-width:900px){
     .wheel-layout{grid-template-columns:1fr;gap:36px}
@@ -228,23 +252,56 @@ const sectors = cats.map((c, i) => {
     });
   });
 
-  // Idea al azar de cualquier categoría
+  // ===== Ruleta: pulsar el centro gira y, al parar, da una idea de la categoría =====
   const out = document.querySelector<HTMLElement>("[data-random-out]");
   const outCat = document.querySelector<HTMLElement>("[data-random-cat]");
   const outIdea = document.querySelector<HTMLElement>("[data-random-idea]");
-  document.querySelector("[data-random]")?.addEventListener("click", () => {
-    const all: { cat: string; idea: string; id: string }[] = [];
-    panels.forEach((p) => {
-      const name = p.querySelector(".cat__name")?.textContent ?? "";
-      p.querySelectorAll("li").forEach((li) =>
-        all.push({ cat: name, idea: li.textContent ?? "", id: p.dataset.panel! })
-      );
-    });
-    if (!all.length || !out || !outCat || !outIdea) return;
-    const pick = all[Math.floor(Math.random() * all.length)];
-    outCat.textContent = pick.cat;
-    outIdea.textContent = pick.idea;
+  const spinG = document.querySelector<SVGGElement>("[data-spin]");
+  const hub = document.querySelector<SVGGElement>("[data-spin-btn]");
+  const N = panels.length;          // 6 sectores
+  const SEG = 360 / N;              // 60°
+  let rotation = 0;                 // acumulada, siempre hacia adelante
+  let spinning = false;
+
+  // Muestra el resultado con el color de su categoría
+  const reveal = (idx: number) => {
+    const panel = panels[idx];
+    if (!panel || !out || !outCat || !outIdea) return;
+    const ideas = Array.from(panel.querySelectorAll("li"));
+    const idea = ideas[Math.floor(Math.random() * ideas.length)]?.textContent ?? "";
+    out.style.setProperty("--out", panel.dataset.color || "");
+    outCat.textContent = panel.querySelector(".cat__name")?.textContent ?? "";
+    outIdea.textContent = idea;
     out.hidden = false;
-    show(pick.id);
+    out.classList.remove("is-rolling");
+    show(panel.dataset.panel!);
+  };
+
+  const spin = () => {
+    if (spinning || !spinG) return;
+    const idx = Math.floor(Math.random() * N);
+    // El sector idx está centrado en idx*SEG + SEG/2; llevarlo bajo el puntero (arriba)
+    const targetMod = (360 - (idx * SEG + SEG / 2)) % 360;
+    const currentMod = ((rotation % 360) + 360) % 360;
+    let delta = targetMod - currentMod;
+    if (delta <= 0) delta += 360;
+
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) { rotation += delta; spinG.style.transform = `rotate(${rotation}deg)`; reveal(idx); return; }
+
+    spinning = true;
+    out?.classList.add("is-rolling");
+    rotation += 360 * (4 + Math.floor(Math.random() * 3)) + delta; // 4-6 vueltas
+    spinG.classList.add("is-spinning");
+    spinG.style.transform = `rotate(${rotation}deg)`;
+
+    const done = () => { spinning = false; reveal(idx); };
+    spinG.addEventListener("transitionend", done, { once: true });
+    window.setTimeout(() => { if (spinning) done(); }, 5200); // por si no llega el evento
+  };
+
+  hub?.addEventListener("click", spin);
+  hub?.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); spin(); }
   });
 </script>
