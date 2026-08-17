@@ -1,16 +1,22 @@
 User-agent: *
 Allow: /
+Disallow: /interno/
 
 # Bots de IA permitidos (para que puedan citar el contenido)
 User-agent: GPTBot
 Allow: /
+Disallow: /interno/
 User-agent: ChatGPT-User
 Allow: /
+Disallow: /interno/
 User-agent: PerplexityBot
 Allow: /
+Disallow: /interno/
 User-agent: ClaudeBot
 Allow: /
+Disallow: /interno/
 User-agent: Google-Extended
 Allow: /
+Disallow: /interno/
 
 Sitemap: https://evelynlanegra.com/sitemap.xml

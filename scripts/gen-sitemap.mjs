@@ -14,7 +14,10 @@ function routes(dir, base = "") {
   return out;
 }
 
-const all = routes(DIST).filter((r) => !r.includes("/404")).sort();
+// Fuera del sitemap: 404 y las páginas internas (/interno/*)
+const all = routes(DIST)
+  .filter((r) => !r.includes("/404") && !r.startsWith("/interno/"))
+  .sort();
 const set = new Set(all);
 const canonical = (r) => (r === "/it/" ? "/" : r.replace(/^\/it\//, "/"));
 

@@ -1,0 +1,250 @@
+---
+// Página INTERNA (noindex, fuera del sitemap y bloqueada en robots.txt).
+// Rueda de ideas de contenido para stories/redes, adaptada a la marca de Évelyn.
+import Base from "../../layouts/Base.astro";
+
+type Cat = { id: string; name: string; color: string; desc: string; ideas: string[] };
+
+const cats: Cat[] = [
+  {
+    id: "visibilidad", name: "Visibilidad", color: "#ce0306",
+    desc: "Que te vean cada día. Rutina y presencia constante.",
+    ideas: [
+      "Rutina fija de stories (misma hora cada día)",
+      "Aparece en stories todos los días, aunque sea 10 s",
+      "Responde a quien te ve las stories",
+      "Encuesta: «¿tradicional o sensual?»",
+      "Caja de preguntas sobre bachata",
+      "Responde a stories de otros bailarines",
+      "Repite lo que funcionó el mes pasado",
+      "Trends de audio latino con tu toque",
+      "Clip corto bailando sin más contexto",
+      "Etiqueta a la escuela o al congreso donde estás",
+    ],
+  },
+  {
+    id: "conexion", name: "Conexión", color: "#e0457b",
+    desc: "Construir confianza: que te conozcan y te crean.",
+    ideas: [
+      "Micro-clase en stories (un detalle de la pisada)",
+      "Directo y luego súbelo a stories",
+      "Habla directo a tu alumno ideal",
+      "Corrige un error típico en 15 segundos",
+      "Recordatorio de la clase de esta semana",
+      "Pregunta abierta: «¿qué te cuesta más al bailar?»",
+      "Resuelve una duda concreta que te llegó por DM",
+      "Cuenta la historia de una canción de bachata",
+      "Presenta a un músico dominicano que admires",
+      "Un consejo que darías a quien empieza",
+    ],
+  },
+  {
+    id: "captacion", name: "Captación", color: "#a03cc9",
+    desc: "Convertir seguidores en contactos: DM, email, WhatsApp.",
+    ideas: [
+      "«Escríbeme BACHATA por DM y te paso info»",
+      "Comparte un recurso gratis (guía de la pisada)",
+      "Invitación a una clase de prueba",
+      "Enlace directo a WhatsApp",
+      "Enlace al curso online",
+      "Pide el email a cambio de algo de valor",
+      "Habla con quien ya te ve las stories",
+      "Masterclass gratuita para captar interesados",
+      "Playlist gratis a cambio de seguir",
+      "Lista de espera para la próxima formación",
+    ],
+  },
+  {
+    id: "venta", name: "Venta", color: "#7b3fd4",
+    desc: "Presentar y vender clases, máster, eventos y crucero.",
+    ideas: [
+      "Presenta o lanza una formación",
+      "Recupera un directo que sí vendió",
+      "Antes / después de un alumno",
+      "Detalles del máster: temario y diploma",
+      "Testimonios de alumnos",
+      "Capturas de mensajes de agradecimiento",
+      "Plazas que quedan para el próximo intensivo",
+      "Por qué tu formación es distinta",
+      "Cuenta atrás para el cierre de inscripciones",
+      "Promo del crucero o del campeonato",
+    ],
+  },
+  {
+    id: "personal", name: "Personal", color: "#e0457b",
+    desc: "Tu día a día: lo que te hace cercana y única.",
+    ideas: [
+      "Un día en la vida en gira",
+      "Rutina de mañana antes de un congreso",
+      "Prepararme para una sesión de DJ",
+      "Equilibrio entre viajar y enseñar",
+      "Lo que nunca falta en mi maleta",
+      "Mis innegociables",
+      "Story time: una anécdota de la pista",
+      "Tu agenda de la semana",
+      "Metas y sueños para este año",
+      "Descansos entre clases",
+    ],
+  },
+  {
+    id: "autoridad", name: "Autoridad", color: "#ce0306",
+    desc: "Lo que te hace referente: raíz, criterio y cultura.",
+    ideas: [
+      "Detrás de cámaras de una formación",
+      "Historia y origen de la bachata",
+      "«Pregúntame lo que quieras» sobre bachata dominicana",
+      "Un reto que superaste como maestra",
+      "Tu opinión sobre un debate del sector",
+      "Frases o citas que te definen",
+      "Lo que aprendiste en República Dominicana",
+      "Diferencias entre estilos, explicadas",
+      "Recursos y libros que recomiendas",
+      "Investigación: de dónde sale un paso",
+    ],
+  },
+];
+
+// Geometría de la rueda (donut de 6 sectores)
+const CX = 200, CY = 200, R = 190, r = 74;
+const pol = (cx: number, cy: number, rad: number, deg: number) => {
+  const a = ((deg - 90) * Math.PI) / 180;
+  return [cx + rad * Math.cos(a), cy + rad * Math.sin(a)];
+};
+const sectors = cats.map((c, i) => {
+  const a0 = i * 60, a1 = (i + 1) * 60, mid = a0 + 30;
+  const [x0, y0] = pol(CX, CY, R, a0), [x1, y1] = pol(CX, CY, R, a1);
+  const [xi1, yi1] = pol(CX, CY, r, a1), [xi0, yi0] = pol(CX, CY, r, a0);
+  const d = `M ${x0} ${y0} A ${R} ${R} 0 0 1 ${x1} ${y1} L ${xi1} ${yi1} A ${r} ${r} 0 0 0 ${xi0} ${yi0} Z`;
+  const [lx, ly] = pol(CX, CY, (R + r) / 2, mid);
+  return { ...c, d, lx, ly, rot: mid > 180 ? mid + 90 : mid - 90 };
+});
+---
+<Base
+  title="Rueda de ideas de contenido · Uso interno"
+  description="Herramienta interna para planificar contenido en redes."
+  noindex={true}
+>
+  <section class="wheel-page">
+    <div class="container">
+      <p class="wheel-kicker">Uso interno · No indexable</p>
+      <h1 class="wheel-title">Rueda de ideas de contenido</h1>
+      <p class="wheel-lead">
+        Pulsa una porción para ver ideas de esa categoría, o deja que la rueda elija por ti.
+      </p>
+
+      <div class="wheel-layout">
+        <div class="wheel-box">
+          <svg viewBox="0 0 400 400" class="wheel" role="img" aria-label="Rueda de categorías de contenido">
+            {sectors.map((s) => (
+              <g class="sector" data-cat={s.id} tabindex="0" role="button" aria-label={s.name}>
+                <path d={s.d} fill={s.color} />
+                <text x={s.lx} y={s.ly} transform={`rotate(${s.rot} ${s.lx} ${s.ly})`}>{s.name}</text>
+              </g>
+            ))}
+            <circle cx={CX} cy={CY} r={r - 4} fill="#0a0a0a" stroke="rgba(255,255,255,.15)" />
+            <text class="wheel-hub" x={CX} y={CY - 6}>LA NEGRA</text>
+            <text class="wheel-hub wheel-hub--sm" x={CX} y={CY + 14}>ideas</text>
+          </svg>
+
+          <button class="btn btn--red btn--lg wheel-random" type="button" data-random>
+            Dame una idea al azar
+          </button>
+        </div>
+
+        <div class="wheel-panel">
+          <div class="wheel-random-out" data-random-out hidden>
+            <span class="wheel-random-cat" data-random-cat></span>
+            <p class="wheel-random-idea" data-random-idea></p>
+          </div>
+
+          {cats.map((c, i) => (
+            <article class="cat" data-panel={c.id} hidden={i !== 0}>
+              <span class="cat__dot" style={`background:${c.color}`}></span>
+              <h2 class="cat__name">{c.name}</h2>
+              <p class="cat__desc">{c.desc}</p>
+              <ul class="cat__ideas">
+                {c.ideas.map((idea) => <li>{idea}</li>)}
+              </ul>
+            </article>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .wheel-page{padding:calc(var(--header-h) + 40px) 0 90px}
+  .wheel-kicker{font-size:.7rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--acc);margin:0 0 12px}
+  .wheel-title{font-size:clamp(2rem,5vw,3.2rem);margin:0 0 10px}
+  .wheel-lead{color:var(--text);max-width:60ch;margin:0 0 40px}
+
+  .wheel-layout{display:grid;grid-template-columns:minmax(300px,440px) 1fr;gap:52px;align-items:start}
+  .wheel-box{position:sticky;top:120px;text-align:center}
+  .wheel{width:100%;height:auto;display:block}
+  .sector{cursor:pointer}
+  .sector path{transition:opacity .2s,transform .2s;transform-origin:200px 200px}
+  .sector:hover path,.sector:focus-visible path{opacity:.85;transform:scale(1.03)}
+  .sector.is-active path{stroke:#fff;stroke-width:2}
+  .sector text{fill:#fff;font-size:15px;font-weight:800;text-anchor:middle;dominant-baseline:middle;
+    text-transform:uppercase;letter-spacing:.04em;pointer-events:none}
+  .wheel-hub{fill:#fff;font-size:15px;font-weight:800;text-anchor:middle;letter-spacing:.06em}
+  .wheel-hub--sm{fill:var(--muted);font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase}
+  .wheel-random{margin-top:26px}
+
+  .wheel-panel{min-width:0}
+  .cat__dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-bottom:14px}
+  .cat__name{font-size:1.9rem;margin:0 0 6px}
+  .cat__desc{color:var(--muted);margin:0 0 22px}
+  .cat__ideas{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+  .cat__ideas li{background:var(--bg2);border:1px solid var(--line);border-radius:12px;
+    padding:14px 18px;color:#fff;font-size:.98rem;line-height:1.45}
+  .cat__ideas li::before{content:"›";color:var(--acc);font-weight:800;margin-right:10px}
+
+  .wheel-random-out{border:1px solid var(--acc);border-radius:16px;padding:22px 24px;margin-bottom:30px;
+    background:rgba(206,3,6,.08)}
+  .wheel-random-cat{font-size:.7rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--acc)}
+  .wheel-random-idea{color:#fff;font-size:1.25rem;margin:8px 0 0;line-height:1.35}
+
+  @media (max-width:900px){
+    .wheel-layout{grid-template-columns:1fr;gap:36px}
+    .wheel-box{position:static;max-width:440px;margin:0 auto}
+  }
+</style>
+
+<script>
+  const sectors = document.querySelectorAll<SVGGElement>(".sector");
+  const panels = document.querySelectorAll<HTMLElement>("[data-panel]");
+  const show = (id: string) => {
+    panels.forEach((p) => { p.hidden = p.dataset.panel !== id; });
+    sectors.forEach((s) => s.classList.toggle("is-active", s.dataset.cat === id));
+  };
+  sectors.forEach((s) => {
+    const open = () => show(s.dataset.cat!);
+    s.addEventListener("click", open);
+    s.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); }
+    });
+  });
+
+  // Idea al azar de cualquier categoría
+  const out = document.querySelector<HTMLElement>("[data-random-out]");
+  const outCat = document.querySelector<HTMLElement>("[data-random-cat]");
+  const outIdea = document.querySelector<HTMLElement>("[data-random-idea]");
+  document.querySelector("[data-random]")?.addEventListener("click", () => {
+    const all: { cat: string; idea: string; id: string }[] = [];
+    panels.forEach((p) => {
+      const name = p.querySelector(".cat__name")?.textContent ?? "";
+      p.querySelectorAll("li").forEach((li) =>
+        all.push({ cat: name, idea: li.textContent ?? "", id: p.dataset.panel! })
+      );
+    });
+    if (!all.length || !out || !outCat || !outIdea) return;
+    const pick = all[Math.floor(Math.random() * all.length)];
+    outCat.textContent = pick.cat;
+    outIdea.textContent = pick.idea;
+    out.hidden = false;
+    show(pick.id);
+  });
+</script>

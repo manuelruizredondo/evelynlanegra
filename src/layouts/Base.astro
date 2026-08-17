@@ -12,6 +12,7 @@ const {
   transparentHeader = false,
   image = "/img/evelynbn.png",
   preloadImage = "",
+  noindex = false,
 } = Astro.props;
 const locale = getLocale(Astro.url);
 const t = ui[locale];
@@ -67,11 +68,17 @@ const schema = {
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="google-site-verification" content="C4RYPuw6-hFnYjl2GeU1iNOccF0BlPWG22nQUV9AvdE" />
-    <meta name="robots" content="index, follow, max-image-preview:large" />
-    <link rel="canonical" href={canonical} />
-    <link rel="alternate" hreflang="es" href={hrefEs} />
-    <link rel="alternate" hreflang="it" href={hrefIt} />
-    <link rel="alternate" hreflang="x-default" href={hrefEs} />
+    {noindex ? (
+      <meta name="robots" content="noindex, nofollow" />
+    ) : (
+      <>
+        <meta name="robots" content="index, follow, max-image-preview:large" />
+        <link rel="canonical" href={canonical} />
+        <link rel="alternate" hreflang="es" href={hrefEs} />
+        <link rel="alternate" hreflang="it" href={hrefIt} />
+        <link rel="alternate" hreflang="x-default" href={hrefEs} />
+      </>
+    )}
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:locale" content={t.ogLocale} />
