@@ -1,0 +1,231 @@
+---
+// PÁGINA PILAR: la guía de referencia sobre bachata dominicana.
+// Es el centro del clúster temático: enlaza a los artículos y a las formaciones.
+import Base from "../layouts/Base.astro";
+import Faq from "../components/Faq.astro";
+import { site } from "../data/site";
+
+const faqs = [
+  { q: "¿Qué es la bachata dominicana?", a: "Es el estilo original de bachata, nacido en la República Dominicana. Se baila desde el suelo, con la pisada y la musicalidad como base, y se caracteriza por el juego de pies y la respuesta directa a los instrumentos." },
+  { q: "¿Es lo mismo bachata dominicana que bachata tradicional?", a: "Sí. Se usan como sinónimos para distinguir la bachata de raíz de las versiones posteriores (moderna y sensual). En República Dominicana simplemente se le llama bachata." },
+  { q: "¿Qué instrumentos tiene la bachata?", a: "Cinco: requinto (la guitarra que lleva la melodía), segunda (guitarra de acompañamiento), bajo, güira y bongó. El diálogo entre el requinto y la güira es lo que le da su sonido reconocible." },
+  { q: "¿Se puede aprender bachata dominicana sin pareja?", a: "Sí. La base —pisada, conteo, musicalidad y movimiento del cuerpo— se trabaja de forma individual. En las clases presenciales se rota, y el curso online está pensado para seguirlo en casa." },
+  { q: "¿Cuánto se tarda en aprender a bailar bachata dominicana?", a: "Con clases regulares, en unas semanas se sale a bailar en social con soltura. Dominar la musicalidad y el juego de pies lleva más tiempo: es un baile que se profundiza durante años." },
+];
+
+const partes = [
+  { n: "Requinto", d: "La primera guitarra: lleva la melodía y los adornos. Es la voz que más te va a marcar el baile." },
+  { n: "Segunda", d: "La guitarra de acompañamiento: sostiene la armonía y el patrón rítmico." },
+  { n: "Bajo", d: "Marca el pulso grave y las entradas. Cuando dudes del tiempo, escúchalo a él." },
+  { n: "Güira", d: "El raspado metálico que ordena el compás. Es tu metrónomo natural en la pista." },
+  { n: "Bongó", d: "Responde y conversa con el requinto; en el mambo se suelta y empuja la canción." },
+];
+
+const artistas = [
+  { n: "Luis Vargas", d: "Guitarra afilada y sabor de amargue. Un clásico de la pista." },
+  { n: "Antony Santos", d: "El bachatú: melodía y requinto que invitan a jugar con los pies." },
+  { n: "Ramón Cordero", d: "Voz de raíz, con esa amargura dominicana que define el género." },
+  { n: "Blas Durán", d: "Quien electrificó la bachata y abrió la puerta a todo lo que vino después." },
+  { n: "Raulín Rodríguez", d: "El cacique: bachata melódica y bailable, perfecta para empezar." },
+  { n: "Juan Luis Guerra", d: "Llevó la bachata a un público mundial y le dio prestigio." },
+];
+
+const schema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      headline: "Bachata dominicana: qué es, cómo suena y cómo se baila",
+      description: "Guía completa de la bachata dominicana (tradicional): origen, instrumentos, cómo se baila y en qué se diferencia de la moderna y la sensual.",
+      author: { "@type": "Person", name: "Évelyn Viana Lovera", url: new URL("/evelyn-la-negra/", Astro.site).href },
+      publisher: { "@type": "Organization", name: "La Negra Salsa" },
+      inLanguage: "es",
+      mainEntityOfPage: new URL("/bachata-dominicana/", Astro.site).href,
+      about: { "@type": "Thing", name: "Bachata", sameAs: "https://es.wikipedia.org/wiki/Bachata" },
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Inicio", item: new URL("/", Astro.site).href },
+        { "@type": "ListItem", position: 2, name: "Bachata dominicana", item: new URL("/bachata-dominicana/", Astro.site).href },
+      ],
+    },
+  ],
+};
+---
+<Base
+  title="Bachata dominicana: qué es, cómo suena y cómo se baila"
+  description="Guía completa de la bachata dominicana: su origen, sus instrumentos, cómo se baila desde la pisada y en qué se diferencia de la moderna y la sensual. Por Évelyn «La Negra»."
+  hasAlternates={false}
+>
+  <article class="pilar">
+    <header class="pilar__head">
+      <div class="container">
+        <p class="pilar__kicker">Guía completa</p>
+        <h1>Bachata dominicana: qué es, cómo suena y cómo se baila</h1>
+        <p class="pilar__lead">
+          Todo lo que necesitas saber sobre la bachata de raíz, explicado por quien lleva
+          treinta años enseñándola y fue a República Dominicana a estudiarla en su origen.
+        </p>
+      </div>
+    </header>
+
+    <div class="container pilar__body prose">
+      <p class="pilar__answer">
+        <strong>La bachata dominicana —también llamada bachata tradicional— es el estilo original
+        del género, nacido en la República Dominicana.</strong> Se baila desde el suelo: la pisada y
+        el peso marcan el ritmo, el cuerpo responde a la música y el juego de pies es el
+        protagonista. A diferencia de la moderna o la sensual, no se construye sobre figuras, sino
+        sobre la musicalidad.
+      </p>
+
+      <nav class="pilar__toc" aria-label="Contenido">
+        <a href="#que-es">Qué es</a>
+        <a href="#origen">De dónde viene</a>
+        <a href="#suena">Cómo suena</a>
+        <a href="#baila">Cómo se baila</a>
+        <a href="#regiones">Estilos por regiones</a>
+        <a href="#estilos">Tradicional, moderna y sensual</a>
+        <a href="#artistas">Artistas</a>
+        <a href="#empezar">Cómo empezar</a>
+      </nav>
+
+      <h2 id="que-es">Qué es la bachata dominicana</h2>
+      <p>Cuando alguien dice «bachata dominicana» está hablando de la bachata a secas: la que se
+        baila en la República Dominicana, la de siempre. El apellido se lo hemos puesto fuera, para
+        distinguirla de las versiones que aparecieron después en Europa y América.</p>
+      <p>Su rasgo distintivo es la <strong>pisada</strong>: cómo apoyas y transfieres el peso en cada
+        tiempo. De ahí sale todo lo demás. Las caderas no se «hacen»: aparecen como consecuencia de
+        pisar bien. Por eso digo siempre que en la bachata no se baila <em>encima</em> de la música:
+        se baila <em>dentro</em> de ella.</p>
+
+      <h2 id="origen">De dónde viene: un ritmo hijo de muchos</h2>
+      <p>La bachata nace en la República Dominicana a mediados del siglo XX, en los barrios y los
+        campos. No surge de la nada: es <strong>hija del bolero y del son</strong>, con influencias
+        de la guaracha, el merengue y hasta la ranchera mexicana que sonaba en las radios.</p>
+      <p>Durante décadas fue música marginada, de cantina, algo que no se ponía en las emisoras
+        «decentes». Ese estigma explica por qué tardó tanto en salir de la isla. Con los años,
+        artistas como Blas Durán la electrificaron, y ya en los noventa convivieron dos caminos:
+        la <strong>bachata de barrio</strong> —Luis Vargas, Antony Santos, Ramón Cordero— y la
+        llamada <strong>neo bachata</strong>, más intelectual, de Víctor Víctor, Sonia Silvestre,
+        Luis «Terror» Díaz o Juan Luis Guerra, que la llevó a públicos que antes la despreciaban.</p>
+      <p>Lo cuento con calma en <a href="/blog/historia-de-la-bachata/">la historia de la bachata</a>.</p>
+      <p class="pilar__note">Un apunte que me importa: detrás de cada canción hay músicos. Nos
+        peleamos mucho por cómo se baila y nos acordamos poco de quienes hacen posible que bailemos.</p>
+
+      <h2 id="suena">Cómo suena: los cinco instrumentos</h2>
+      <p>Entender qué instrumento hace qué es lo que te convierte en un bailarín musical. Estos son
+        los cinco de una bachata:</p>
+      <ol class="pilar__list">
+        {partes.map((p) => (
+          <li><strong>{p.n}.</strong> {p.d}</li>
+        ))}
+      </ol>
+      <p>Cada uno tiene su papel; lo detallo en <a href="/blog/instrumentos-de-la-bachata/">los instrumentos de la bachata</a>.</p>
+      <p>Además, una canción de bachata tiene dos momentos muy distintos: el
+        <strong>derecho</strong> —la parte cantada, más contenida— y el <strong>mambo</strong>, donde
+        los instrumentos se sueltan y la energía sube. Saber cuándo llega el mambo es la diferencia
+        entre seguir la canción y bailarla de verdad. Te lo explico en
+        <a href="/blog/que-es-el-mambo-en-la-bachata/">derecho y mambo</a>.</p>
+
+      <h2 id="baila">Cómo se baila: la base</h2>
+      <p>El paso básico ocupa cuatro tiempos: tres apoyos y un cuarto tiempo marcado —el famoso
+        <em>tap</em>— que no es un adorno, sino la respiración del baile. Se puede desplazar en
+        línea, en cuadrado o en diagonal, y el peso puede ir más adelante o más atrás según la zona
+        y el bailarín.</p>
+      <p>Lo importante no es memorizar figuras, sino que el pie responda a lo que oyes. Si quieres
+        profundizar, lo explico en detalle en
+        <a href="/blog/pisada-bachata-dominicana/">la pisada de la bachata dominicana</a>.
+        Y para no tropezar dos veces, mira <a href="/blog/errores-comunes-al-bailar-bachata/">los errores
+        más comunes al bailar bachata</a>.</p>
+
+      <h2 id="regiones">No hay una sola forma: los estilos por regiones</h2>
+      <p>Esto sorprende a mucha gente: en la República Dominicana <strong>no se baila igual en todas
+        partes</strong>. En La Romana no se baila como en Santo Domingo, ni como en Las Terrenas o
+        en Santiago. Incluso en un pueblo de dos calles encuentras diferencias: unos apoyan más
+        adelante, otros más atrás, cada uno tiene su acento.</p>
+      <p>Es un baile de calle, y la calle no tiene reglamento. Por eso desconfío de quien afirma
+        «esto se hace así y punto». Lo bonito de la bachata es justo que cada quien la baila con su
+        flow.</p>
+
+      <h2 id="estilos">Tradicional, moderna y sensual</h2>
+      <p>Mi postura es clara: <strong>la bachata es una sola y es dominicana</strong>. Lo que cambia
+        son las formas de interpretarla. La tradicional trabaja desde el suelo; la moderna ordenó
+        los pasos y añadió giros para enseñarla en escuelas; la sensual incorporó ondas y trabajo de
+        cuerpo. Todas son hijas de la misma música.</p>
+      <p>Lo desarrollo aquí:
+        <a href="/blog/bachata-tradicional-moderna-sensual/">diferencias entre bachata tradicional,
+        moderna y sensual</a>.</p>
+
+      <h2 id="artistas">Artistas para empezar a escuchar</h2>
+      <p>Si quieres educar el oído, empieza por aquí:</p>
+      <ul class="pilar__artists">
+        {artistas.map((a) => (
+          <li><strong>{a.n}</strong><span>{a.d}</span></li>
+        ))}
+      </ul>
+      <p>La lista completa, con clásicos y voces actuales, está en
+        <a href="/blog/artistas-bachata-dominicana/">artistas de bachata dominicana</a>.</p>
+      <p>Y no te quedes solo en los clásicos: hay gente joven haciendo bachata tradicional muy buena
+        hoy mismo. Si no los escuchamos, esos músicos dejan de grabar.</p>
+
+      <h2 id="empezar">Cómo empezar a bailarla</h2>
+      <p>Da igual el nivel que tengas: se empieza por la base. Si partes de cero, lee primero
+        <a href="/blog/como-empezar-a-bailar-bachata/">cómo empezar a bailar bachata</a>. Estas son
+        las tres formas de aprender conmigo:</p>
+      <ul class="pilar__cta-list">
+        <li><a href="/clases-presenciales/"><strong>Clases presenciales</strong> — Barcelona e Ibiza, cada semana.</a></li>
+        <li><a href="/curso-online-bachata-dominicana/"><strong>Curso online</strong> — en directo por Zoom, y las clases quedan grabadas.</a></li>
+        <li><a href="/profesora-bachata-dominicana/"><strong>Máster de profesorado</strong> — si ya enseñas y quieres formarte desde la raíz.</a></li>
+      </ul>
+    </div>
+
+    <Faq items={faqs} title="Preguntas sobre la bachata dominicana" kicker="Dudas frecuentes" />
+
+    <div class="container">
+      <aside class="pilar__cta">
+        <h2>¿Te lanzas?</h2>
+        <p>Escríbeme y te digo por dónde empezar según tu nivel.</p>
+        <a class="btn btn--red btn--lg" href={site.whatsapp} target="_blank" rel="noopener">Escríbeme por WhatsApp</a>
+      </aside>
+    </div>
+  </article>
+
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+</Base>
+
+<style>
+  .pilar__head{padding:calc(var(--header-h) + 46px) 0 10px}
+  .pilar__kicker{font-size:.72rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--acc);margin:0 0 14px}
+  .pilar__head h1{max-width:20ch}
+  .pilar__lead{color:var(--text);font-size:1.15rem;line-height:1.6;max-width:60ch;margin:18px 0 0}
+
+  .pilar__body{padding:34px 0 20px;max-width:820px;color:#fff}
+  .pilar__body :global(p),.pilar__body :global(li){color:#fff}
+  .pilar__answer{border-left:3px solid var(--acc);padding:4px 0 4px 20px;font-size:1.1rem;line-height:1.6}
+  .pilar__note{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:16px 20px;
+    font-style:italic;color:var(--text)!important}
+
+  .pilar__toc{display:flex;flex-wrap:wrap;gap:10px;margin:30px 0 10px}
+  .pilar__toc a{border:1px solid var(--line);border-radius:999px;padding:8px 16px;font-size:.82rem;
+    color:#fff;font-weight:600}
+  .pilar__toc a:hover{border-color:var(--acc);color:var(--acc);text-decoration:none}
+
+  .pilar__list{padding-left:1.2em;line-height:1.7}
+  .pilar__artists{list-style:none;padding:0;display:grid;gap:10px}
+  .pilar__artists li{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:14px 18px}
+  .pilar__artists strong{display:block;color:#fff}
+  .pilar__artists span{color:var(--text);font-size:.94rem}
+
+  .pilar__cta-list{list-style:none;padding:0;display:grid;gap:12px}
+  .pilar__cta-list a{display:block;background:var(--bg2);border:1px solid var(--line);border-radius:12px;
+    padding:16px 20px;color:var(--text)}
+  .pilar__cta-list a:hover{border-color:var(--acc);text-decoration:none}
+  .pilar__cta-list strong{color:#fff}
+
+  .pilar__cta{max-width:820px;margin:20px 0 80px;padding:34px;border:1px solid var(--line);
+    border-radius:18px;background:var(--bg2)}
+  .pilar__cta h2{margin:0 0 .3em}
+  .pilar__cta p{color:var(--text);margin:0 0 22px}
+</style>

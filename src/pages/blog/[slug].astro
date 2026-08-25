@@ -27,7 +27,7 @@ const schema = {
   inLanguage: "es",
 };
 ---
-<Base title={`${title} · Blog · La Negra`} description={description} image={cover ?? undefined}>
+<Base title={`${title} · Blog · La Negra`} description={description} image={cover ?? undefined} hasAlternates={false}>
   <article class="post">
     <header class="post__head">
       <div class="container">
@@ -47,6 +47,19 @@ const schema = {
       <div class="prose post__body">
         <Content />
       </div>
+
+      <aside class="post__author">
+        <img src="/img/evelyn.png" alt="Évelyn «La Negra»" width="72" height="72" loading="lazy" />
+        <div>
+          <p class="post__author-name">Évelyn Viana Lovera · «La Negra»</p>
+          <p class="post__author-bio">
+            Maestra y DJ de bachata dominicana y salsa. Periodista de formación, lleva treinta años
+            en la pista y viajó a República Dominicana a estudiar la bachata en su origen. Creadora
+            del Mundial de Pasos Libres y formadora de profesores en más de 40 países.
+            <a href="/evelyn-la-negra/">Más sobre Évelyn</a>
+          </p>
+        </div>
+      </aside>
 
       <aside class="post__cta">
         <h2>¿Bailamos?</h2>
@@ -80,6 +93,14 @@ const schema = {
   .post__body :global(li){margin-bottom:.4em}
   .post__body :global(hr){border:0;border-top:1px solid var(--line);margin:2.4em 0}
   .post__body :global(a){color:var(--acc)}
+  .post__author{max-width:760px;margin:44px auto 0;display:flex;gap:18px;align-items:flex-start;
+    padding:22px 24px;border:1px solid var(--line);border-radius:16px;background:var(--bg2)}
+  .post__author img{width:72px;height:72px;border-radius:50%;object-fit:cover;flex:0 0 auto}
+  .post__author-name{color:#fff;font-weight:700;margin:0 0 6px;font-size:.95rem}
+  .post__author-bio{color:var(--text);font-size:.9rem;line-height:1.55;margin:0}
+  .post__author-bio a{color:var(--acc)}
+  @media (max-width:600px){.post__author{flex-direction:column}}
+
   .post__cta{max-width:760px;margin:44px auto 0;padding:34px;border:1px solid var(--line);
     border-radius:18px;background:var(--bg2);text-align:center}
   .post__cta h2{color:#fff;margin:0 0 .3em}

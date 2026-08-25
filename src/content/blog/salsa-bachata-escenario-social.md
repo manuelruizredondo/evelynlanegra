@@ -36,7 +36,7 @@ Empezó siendo de salsa. Con los años metí la bachata, y he ido añadiendo cat
 
 ## Lo que de verdad importa
 
-Sea salsa o bachata, cubana o en línea, tradicional o fusión, lo que separa a quien «sabe pasos» de quien **baila** no es el estilo: es la **musicalidad** y el respeto por la base. Y detrás de todo, siempre, están los músicos, que son los que hacen posible que nosotros bailemos. A ellos no los olvido nunca.
+Sea salsa o [bachata dominicana](/bachata-dominicana/), cubana o en línea, tradicional o fusión, lo que separa a quien «sabe pasos» de quien **baila** no es el estilo: es la **musicalidad** y el respeto por la base. Y detrás de todo, siempre, están los músicos, que son los que hacen posible que nosotros bailemos. A ellos no los olvido nunca.
 
 ---
 

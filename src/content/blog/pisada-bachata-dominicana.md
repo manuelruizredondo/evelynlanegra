@@ -6,7 +6,7 @@ tags: ["bachata dominicana", "bachata tradicional", "pisada", "técnica de baile
 cover: "/img/2024/12/clases-bcn-korke-y-judith-576x1024.jpeg"
 ---
 
-**La pisada es la forma en que apoyas y transfieres el peso en cada tiempo de la bachata dominicana, y es la base sobre la que se sostiene todo el baile.** No es plana ni mecánica: tiene acento e intención. Cuando la pisada está bien, las caderas y el cuerpo se mueven solos; cuando falta, ninguna figura logra que «se sienta» bachata.
+**La pisada es la forma en que apoyas y transfieres el peso en cada tiempo de la [bachata dominicana](/bachata-dominicana/), y es la base sobre la que se sostiene todo el baile.** No es plana ni mecánica: tiene acento e intención. Cuando la pisada está bien, las caderas y el cuerpo se mueven solos; cuando falta, ninguna figura logra que «se sienta» bachata.
 
 En mi campeonato, el [Mundial de Pasos Libres](/), hemos llegado a tener 800 inscritos para 400 plazas. Y una de las cosas que más miro para decidir quién entra es sencilla de decir y difícil de fingir: **la pisada.**
 

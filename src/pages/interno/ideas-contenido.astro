@@ -244,15 +244,7 @@ const sectors = cats.map((c, i) => {
     panels.forEach((p) => { p.hidden = p.dataset.panel !== id; });
     sectors.forEach((s) => s.classList.toggle("is-active", s.dataset.cat === id));
   };
-  sectors.forEach((s) => {
-    const open = () => show(s.dataset.cat!);
-    s.addEventListener("click", open);
-    s.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(); }
-    });
-  });
-
-  // ===== Ruleta: pulsar el centro gira y, al parar, da una idea de la categoría =====
+  // ===== Ruleta: el centro gira al azar; pulsar una porción gira hasta ella =====
   const out = document.querySelector<HTMLElement>("[data-random-out]");
   const outCat = document.querySelector<HTMLElement>("[data-random-cat]");
   const outIdea = document.querySelector<HTMLElement>("[data-random-idea]");
@@ -277,9 +269,10 @@ const sectors = cats.map((c, i) => {
     show(panel.dataset.panel!);
   };
 
-  const spin = () => {
+  // Gira hasta `to` (o a una porción al azar si no se indica)
+  const spin = (to?: number) => {
     if (spinning || !spinG) return;
-    const idx = Math.floor(Math.random() * N);
+    const idx = typeof to === "number" ? to : Math.floor(Math.random() * N);
     // El sector idx está centrado en idx*SEG + SEG/2; llevarlo bajo el puntero (arriba)
     const targetMod = (360 - (idx * SEG + SEG / 2)) % 360;
     const currentMod = ((rotation % 360) + 360) % 360;
@@ -291,7 +284,9 @@ const sectors = cats.map((c, i) => {
 
     spinning = true;
     out?.classList.add("is-rolling");
-    rotation += 360 * (4 + Math.floor(Math.random() * 3)) + delta; // 4-6 vueltas
+    // Menos vueltas si el usuario ha elegido porción: llega antes a lo que pidió
+    const vueltas = typeof to === "number" ? 2 : 4 + Math.floor(Math.random() * 3);
+    rotation += 360 * vueltas + delta;
     spinG.classList.add("is-spinning");
     spinG.style.transform = `rotate(${rotation}deg)`;
 
@@ -300,8 +295,18 @@ const sectors = cats.map((c, i) => {
     window.setTimeout(() => { if (spinning) done(); }, 5200); // por si no llega el evento
   };
 
-  hub?.addEventListener("click", spin);
+  // Centro: gira al azar
+  hub?.addEventListener("click", () => spin());
   hub?.addEventListener("keydown", (e) => {
     if (e.key === "Enter" || e.key === " ") { e.preventDefault(); spin(); }
+  });
+
+  // Porciones: giran hasta la elegida (mismo orden que los paneles)
+  sectors.forEach((s, i) => {
+    const go = () => spin(i);
+    s.addEventListener("click", go);
+    s.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); }
+    });
   });
 </script>

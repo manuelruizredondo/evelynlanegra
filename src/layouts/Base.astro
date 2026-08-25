@@ -13,6 +13,7 @@ const {
   image = "/img/evelynbn.png",
   preloadImage = "",
   noindex = false,
+  hasAlternates = true, // false en páginas sin equivalente en el otro idioma
 } = Astro.props;
 const locale = getLocale(Astro.url);
 const t = ui[locale];
@@ -39,10 +40,21 @@ const schema = {
       knowsAbout: [
         "Bachata dominicana",
         "Bachata tradicional",
+        "Historia de la bachata",
+        "Musicalidad de la bachata",
+        "Pisada de la bachata dominicana",
         "Salsa cubana",
+        "Rueda de casino",
         "DJ de ritmos latinos",
         "Formación de profesores de baile",
       ],
+      nationality: { "@type": "Country", name: "Venezuela" },
+      homeLocation: { "@type": "Place", name: "Barcelona, España" },
+      hasOccupation: {
+        "@type": "Occupation",
+        name: "Maestra de bachata dominicana",
+        occupationalCategory: "Enseñanza de baile",
+      },
       sameAs: [site.instagram, site.spotify, site.festival],
     },
     {
@@ -74,9 +86,13 @@ const schema = {
       <>
         <meta name="robots" content="index, follow, max-image-preview:large" />
         <link rel="canonical" href={canonical} />
-        <link rel="alternate" hreflang="es" href={hrefEs} />
-        <link rel="alternate" hreflang="it" href={hrefIt} />
-        <link rel="alternate" hreflang="x-default" href={hrefEs} />
+        {hasAlternates && (
+          <>
+            <link rel="alternate" hreflang="es" href={hrefEs} />
+            <link rel="alternate" hreflang="it" href={hrefIt} />
+            <link rel="alternate" hreflang="x-default" href={hrefEs} />
+          </>
+        )}
       </>
     )}
     <meta property="og:type" content="website" />

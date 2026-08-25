@@ -48,6 +48,7 @@ export const ui = {
     tagline: "Salsa y bachata dominicana, desde la raíz",
     credit: "Diseño y desarrollo a partir del sitio original",
     nav: [
+      { href: "/bachata-dominicana/", label: "Bachata dominicana" },
       { href: "/evelyn-la-negra/", label: "Sobre Évelyn" },
       { href: "/clases-presenciales/", label: "Clases presenciales" },
       { href: "/curso-online-bachata-dominicana/", label: "Curso online" },
@@ -63,6 +64,7 @@ export const ui = {
           title: "",
           links: [
             { label: "Home", href: "/" },
+            { label: "Bachata dominicana", href: "/bachata-dominicana/" },
             { label: "Sobre Évelyn", href: "/evelyn-la-negra/" },
             { label: "Blog", href: "/blog/" },
             { label: "FOTOS Keeper", href: "/keeper-galeria/" },
