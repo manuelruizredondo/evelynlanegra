@@ -30,6 +30,21 @@ Entiendo y respeto a quien defiende la raíz —yo la defiendo cada día—. Per
 
 La clave no es elegir bando. Es **conocer la raíz** —de dónde viene, cuál es su base— y, desde ahí, permitir que evolucione sin perder su esencia.
 
+## Por qué le doy las gracias a la bachata sensual
+
+Aquí me posiciono, y a mis años ya lo hago tranquila: **gracias a la sensual hay jóvenes bailando
+bachata**. Empezaron por ahí sin tener ni idea de lo que hacían y, con el tiempo, muchos fueron a
+buscar la raíz. Igual que los salseros: entraron con piruetas y acabaron estudiando rumba y afro.
+
+Si la bachata se hubiera quedado tapada, hoy seguiría en los antros dominicanos y ni tú ni yo
+estaríamos hablando de ella. Mira lo que ha pasado con otros géneros preciosos que nadie
+internacionalizó: el porro, el vallenato, el joropo, el forró. **Lo que no se baila, se muere** —
+como casi le pasa al chachachá.
+
+Y una pregunta incómoda: el día que alguien de fuera se invente el «merengue sensual», le caerán
+encima por apropiarse de la cultura. Pero mientras tanto, el merengue se está muriendo y nadie sale
+a defenderlo. ¿Por qué? Quizá porque no mueve el dinero que mueve la bachata.
+
 ## Entonces, ¿qué aprendo?
 
 - Si quieres **entender la bachata de verdad**, empieza por la raíz dominicana: te da oído, base y musicalidad para bailar cualquier estilo después.

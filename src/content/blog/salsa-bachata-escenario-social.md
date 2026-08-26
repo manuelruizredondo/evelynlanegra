@@ -28,9 +28,9 @@ Y aun compitiendo, yo repito lo mismo: enséñame tu base. Puedes meter show, fu
 
 ## Así nació el Mundial de Pasos Libres
 
-Mi campeonato nació precisamente de esa idea. Cuando vi que en los concursos la gente se llenaba de figuras y **se olvidaba de los pasos**, quise rescatarlos. Por eso se llama **Pasos Libres**: para que no perdiéramos el juego de pies.
+Mi campeonato nació precisamente de esa idea. Cuando vi que en los concursos la gente se llenaba de figuras y **se olvidaba de los pasos**, quise rescatarlos. Por eso se llama **Pasos Libres**: para que no perdiéramos el juego de pies. Y el nombre viene de **Mil Pasos**, la discoteca donde yo trabajaba entonces.
 
-Empezó siendo de salsa. Con los años metí la bachata, y he ido añadiendo categorías para que **bailemos más en pareja** y no nos separemos tanto. Es un campeonato abierto: compite tanto el profesional como quien nunca ha bailado, y conviven la fusión, la tradicional, la sensual, el cubano, el estilo en línea… Vienen personas de más de treinta países.
+Empezó siendo de salsa. Con los años metí la bachata, y he ido añadiendo categorías para que **bailemos más en pareja** y no nos separemos tanto. Es un campeonato abierto: compite tanto el profesional como quien nunca ha bailado, y conviven la fusión, la tradicional, la sensual, el cubano, el estilo en línea… Vienen a competir bailarines de **34 países**.
 
 ¿Mi sueño con él? Llevar la bachata al nivel de la salsa como espectáculo, sin perder la raíz. Para eso hay que **estudiar mucho** —aprender de los saleros, de otros bailes— y atreverse a crecer.
 

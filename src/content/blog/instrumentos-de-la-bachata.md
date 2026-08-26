@@ -32,14 +32,17 @@ Ese raspado metálico continuo es lo que mantiene el compás. Para quien empieza
 
 Responde y dialoga con el requinto. Y sobre todo, es el que se suelta cuando llega el momento álgido de la canción.
 
-## Derecho y mambo: los dos momentos
+## Derecho, majao y mambo: los tres momentos
 
-Aquí está la clave práctica. Una bachata tiene dos partes muy distintas:
+Aquí está la clave práctica. Una bachata tiene tres secciones muy distintas:
 
 - **El derecho** — la parte cantada. Más contenida, más melódica. Es donde bailas conversado, tranquilo.
-- **El mambo** — los instrumentos se sueltan, sube la energía, el bongó y el requinto se disparan. Es donde toca jugar, pisar más fuerte, sacar los pies.
+- **El majao** — la percusión aprieta y machaca: el bongó marca más fuerte y la güira se cierra. Sube la energía sin llegar todavía a soltarse.
+- **El mambo** — los instrumentos se sueltan del todo, el requinto se dispara. Es donde toca jugar, pisar más fuerte, sacar los pies.
 
-Bailar igual el derecho que el mambo es como leer un libro entero con el mismo tono de voz. **Ahí se nota quién escucha y quién no.**
+Bailar las tres igual es como leer un libro entero con el mismo tono de voz. **Ahí se nota quién escucha y quién no.**
+
+Lo desarrollo en [derecho, majao y mambo](/blog/que-es-el-mambo-en-la-bachata/).
 
 ## Cómo entrenar el oído
 

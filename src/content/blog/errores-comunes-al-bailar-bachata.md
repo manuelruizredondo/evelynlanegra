@@ -16,6 +16,16 @@ Todo recurso en exceso hace daño: se abusa del pie y ya solo ves pasitos sin m�
 
 **Corrección:** graba un minuto bailando. Si quitas los adornos y no queda nada reconocible, ahí tienes el diagnóstico.
 
+### El abrazo perdido
+
+Y voy a decir algo que incomoda a todos, incluidos los míos: **la bachata es un baile cuerpo a
+cuerpo, romántico, y eso se ha perdido**. Te separas para hacer piecitos dominicanos, te separas
+para hacer figuras de moderna, te separas para hacer ondas de sensual.
+
+Cada estilo rompe el abrazo por su lado, y al final el baile se perdió por el adorno. **Menos
+TikTok, menos «mírenme cómo bailo», más internalizar lo que estás haciendo.** El adorno viene
+después, y viene solo.
+
 ## 2. No escuchar la música
 
 Mucha gente baila *encima* de la canción, no *dentro*. Hacen su repertorio memorizado mientras la música va por otro lado.
