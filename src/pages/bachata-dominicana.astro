@@ -63,12 +63,14 @@ const schema = {
   <article class="pilar">
     <header class="pilar__head">
       <div class="container">
+        <div class="pilar__col">
         <p class="pilar__kicker">Guía completa</p>
         <h1>Bachata dominicana: qué es, cómo suena y cómo se baila</h1>
         <p class="pilar__lead">
           Todo lo que necesitas saber sobre la bachata de raíz, explicado por quien lleva
           treinta años enseñándola y fue a República Dominicana a estudiarla en su origen.
         </p>
+        </div>
       </div>
     </header>
 
@@ -212,12 +214,14 @@ const schema = {
 
 <style>
   .pilar__head{padding:calc(var(--header-h) + 46px) 0 10px}
+  /* Columna de lectura centrada; el texto queda alineado a la izquierda */
+  .pilar__col{max-width:820px;margin-inline:auto}
   .pilar__kicker{font-size:.72rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
     color:var(--acc);margin:0 0 14px}
   .pilar__head h1{max-width:20ch}
   .pilar__lead{color:var(--text);font-size:1.15rem;line-height:1.6;max-width:60ch;margin:18px 0 0}
 
-  .pilar__body{padding:34px 0 20px;max-width:820px;margin-inline:0;color:#fff}
+  .pilar__body{padding:34px 0 20px;max-width:820px;margin-inline:auto;color:#fff}
   .pilar__body :global(p),.pilar__body :global(li){color:#fff}
   .pilar__answer{border-left:3px solid var(--acc);padding:4px 0 4px 20px;font-size:1.1rem;line-height:1.6}
   .pilar__note{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:16px 20px;
@@ -240,7 +244,7 @@ const schema = {
   .pilar__cta-list a:hover{border-color:var(--acc);text-decoration:none}
   .pilar__cta-list strong{color:#fff}
 
-  .pilar__cta{max-width:820px;margin:20px 0 80px;padding:34px;border:1px solid var(--line);
+  .pilar__cta{max-width:820px;margin:20px auto 80px;padding:34px;border:1px solid var(--line);
     border-radius:18px;background:var(--bg2)}
   .pilar__cta h2{margin:0 0 .3em}
   .pilar__cta p{color:var(--text);margin:0 0 22px}

@@ -31,9 +31,11 @@ const schema = {
   <article class="post">
     <header class="post__head">
       <div class="container">
-        <p class="post__back"><a href="/blog/">← Blog</a></p>
-        <p class="post__date">{fmt(date)}</p>
-        <h1 class="post__title">{title}</h1>
+        <div class="post__col">
+          <p class="post__back"><a href="/blog/">← Blog</a></p>
+          <p class="post__date">{fmt(date)}</p>
+          <h1 class="post__title">{title}</h1>
+        </div>
       </div>
     </header>
 
@@ -77,14 +79,16 @@ const schema = {
 
 <style>
   .post__head{padding:calc(var(--header-h) + 40px) 0 24px}
+  /* Columna de lectura: 760px centrada en la página, texto alineado a la izquierda */
+  .post__col{max-width:760px;margin-inline:auto}
   .post__back a{color:var(--muted);font-size:.85rem;font-weight:600}
   .post__back a:hover{color:var(--acc);text-decoration:none}
   .post__date{color:var(--acc);font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin:18px 0 8px}
   .post__title{font-family:var(--serif);font-style:italic;font-weight:500;color:#fff;
     font-size:clamp(2rem,5vw,3.4rem);line-height:1.12;max-width:20ch;margin:0}
   .post__cover{margin:12px auto 40px}
-  .post__cover img{width:100%;max-width:760px;aspect-ratio:16/9;object-fit:cover;border-radius:16px;border:1px solid var(--line)}
-  .post__body{max-width:760px;margin-inline:0;color:#fff}
+  .post__cover img{width:100%;max-width:760px;margin-inline:auto;aspect-ratio:16/9;object-fit:cover;border-radius:16px;border:1px solid var(--line)}
+  .post__body{max-width:760px;margin-inline:auto;color:#fff}
   .post__body :global(p),.post__body :global(li),.post__body :global(strong){color:#fff}
   .post__body :global(h2){font-family:var(--serif);font-style:italic;color:#fff;font-size:1.6rem;margin:1.8em 0 .5em}
   .post__body :global(blockquote){border-left:3px solid var(--acc);margin:1.4em 0;padding:.2em 0 .2em 20px;
@@ -93,7 +97,7 @@ const schema = {
   .post__body :global(li){margin-bottom:.4em}
   .post__body :global(hr){border:0;border-top:1px solid var(--line);margin:2.4em 0}
   .post__body :global(a){color:var(--acc)}
-  .post__author{max-width:760px;margin:44px 0 0;display:flex;gap:18px;align-items:flex-start;
+  .post__author{max-width:760px;margin:44px auto 0;display:flex;gap:18px;align-items:flex-start;
     padding:22px 24px;border:1px solid var(--line);border-radius:16px;background:var(--bg2)}
   .post__author img{width:72px;height:72px;border-radius:50%;object-fit:cover;flex:0 0 auto}
   .post__author-name{color:#fff;font-weight:700;margin:0 0 6px;font-size:.95rem}
@@ -101,7 +105,7 @@ const schema = {
   .post__author-bio a{color:var(--acc)}
   @media (max-width:600px){.post__author{flex-direction:column}}
 
-  .post__cta{max-width:760px;margin:44px 0 0;padding:34px;border:1px solid var(--line);
+  .post__cta{max-width:760px;margin:44px auto 0;padding:34px;border:1px solid var(--line);
     border-radius:18px;background:var(--bg2);text-align:center}
   .post__cta h2{color:#fff;margin:0 0 .3em}
   .post__cta p{color:var(--text);margin:0 0 22px}
