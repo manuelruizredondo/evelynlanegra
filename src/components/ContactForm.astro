@@ -8,7 +8,7 @@ const action = localize("/gracias/", locale);
 const privacy = localize("/privacidad/", locale);
 ---
 <section class="section" id="contacto">
-  <div class="container" style="max-width:640px">
+  <div class="container readcol">
     <h2>{title}</h2>
     {note && <p class="cform__note">{note}</p>}
     <form name={name} method="POST" action={action} data-netlify="true" netlify-honeypot="bot-field" class="cform">

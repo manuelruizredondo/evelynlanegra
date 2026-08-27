@@ -1,16 +1,18 @@
 ---
 // Presentación editorial al inicio de las páginas interiores.
 // title admite HTML con <em> para la palabra acento (en rojo).
-const { kicker, title, lead = [], cue = "Más abajo" } = Astro.props;
+const { kicker, title, lead = [], cue = "Más abajo", narrow = false } = Astro.props;
 ---
 <section class="pintro">
   <div class="container">
+    <div class:list={[{ readcol: narrow }]}>
     {kicker && <p class="pintro__kicker">{kicker}</p>}
     <h1 class="pintro__title" set:html={title} />
     <div class="pintro__lead">
       {lead.map((l) => <p set:html={l} />)}
     </div>
     <p class="pintro__cue">{cue}<span class="pintro__arrow">↓</span></p>
+    </div>
   </div>
 </section>
 
