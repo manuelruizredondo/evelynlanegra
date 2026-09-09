@@ -97,6 +97,13 @@ export const ui = {
         { label: "Cookies", href: "/cookies/" },
       ],
     },
+    waitlist: {
+      kicker: "Lista de espera",
+      title: "Avísame cuando abra el curso",
+      note: "Estoy preparando el curso online de bachata dominicana. Déjame tu email y serás de las primeras personas en saber cuándo abre, con las condiciones de lanzamiento.",
+      cta: "Avísame cuando abra",
+      promise: "Sin spam: te escribo solo para contarte que el curso ya está disponible.",
+    },
     form: {
       nombre: "Nombre",
       email: "Email",
@@ -160,6 +167,13 @@ export const ui = {
         { label: "Privacy", href: "/privacidad/" },
         { label: "Cookie", href: "/cookies/" },
       ],
+    },
+    waitlist: {
+      kicker: "Lista d’attesa",
+      title: "Avvisami quando apre il corso",
+      note: "Sto preparando il corso online di bachata dominicana. Lasciami la tua email e sarai tra i primi a sapere quando apre, con le condizioni di lancio.",
+      cta: "Avvisami quando apre",
+      promise: "Niente spam: ti scrivo solo per dirti che il corso è disponibile.",
     },
     form: {
       nombre: "Nome",

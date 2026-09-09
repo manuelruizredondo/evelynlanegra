@@ -40,4 +40,4 @@ Sea salsa o [bachata dominicana](/bachata-dominicana/), cubana o en línea, trad
 
 ---
 
-¿Te lanzas? Tienes salsa y bachata en las [clases presenciales](/clases-presenciales/) y en las [clases online](/curso-online-bachata-dominicana/). Y si quieres competir o venir a ver el espectáculo, no te pierdas el [LaNegra World Championship](/).
+¿Te lanzas? Tienes salsa y bachata en las [clases presenciales](/clases-presenciales/), y el [curso online](/curso-online-bachata-dominicana/) abrirá próximamente. Y si quieres competir o venir a ver el espectáculo, no te pierdas el [LaNegra World Championship](/).

@@ -57,4 +57,4 @@ Pero ningún ambiente es perfecto, y estas conversaciones hay que tenerlas. **Ba
 
 ---
 
-Estos criterios los trabajo también en clase, porque enseñar a bailar es enseñar a relacionarse. Te espero en las [clases presenciales](/clases-presenciales/) o en el [curso online](/curso-online-bachata-dominicana/).
+Estos criterios los trabajo también en clase, porque enseñar a bailar es enseñar a relacionarse. Te espero en las [clases presenciales](/clases-presenciales/) — y si prefieres desde casa, apúntate a la lista del [curso online](/curso-online-bachata-dominicana/), que abrirá próximamente.

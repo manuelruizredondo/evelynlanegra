@@ -1,86 +1,95 @@
 ---
 import Base from "../layouts/Base.astro";
 import PageIntro from "../components/PageIntro.astro";
-import ContactForm from "../components/ContactForm.astro";
+import WaitlistForm from "../components/WaitlistForm.astro";
 import Faq from "../components/Faq.astro";
-import { site } from "../data/site";
-const wa = "https://api.whatsapp.com/send?phone=34621074054&text=Hola%20Evelyn,%20quiero%20info%20del%20curso%20online%20de%20bachata%20dominicana";
 
 const faqs = [
-  { q: "¿Cómo funciona el curso online de bachata dominicana?", a: "Las clases son en directo por Zoom y se quedan grabadas: si no puedes asistir, las ves cuando quieras y las repasas a tu ritmo." },
-  { q: "¿Necesito pareja para el curso online?", a: "No. El curso trabaja la base individual de la bachata dominicana: pisada, conteo, musicalidad y movimiento corporal. Puedes seguirlo tú solo o tú sola desde casa." },
-  { q: "¿Qué nivel necesito para empezar?", a: "Hay contenidos desde nivel medio, y si empiezas desde cero te oriento en la primera clase para que sigas el curso sin perderte." },
-  { q: "¿Cuánto cuesta el curso online de bachata?", a: "Depende de la modalidad: clases en grupo o particulares. Escríbeme por WhatsApp y te paso precios, horarios y opciones sin compromiso." },
-  { q: "¿En qué se diferencia la bachata dominicana de la sensual?", a: `La dominicana (tradicional) se baila desde el suelo, con la pisada y la musicalidad como base; la sensual prioriza ondas y trabajo de cuerpo. Te lo explico en <a href="/blog/bachata-tradicional-moderna-sensual/">esta guía de estilos</a>.` },
+  { q: "¿Cuándo estará disponible el curso online de bachata dominicana?", a: "Está en preparación y abrirá próximamente. Si dejas tu email en la lista de espera, te aviso en cuanto tenga fecha, antes de anunciarlo públicamente." },
+  { q: "¿Cómo funcionará el curso online?", a: "Serán clases en directo por Zoom que se quedarán grabadas: si no puedes asistir, las verás cuando quieras y las repasarás a tu ritmo." },
+  { q: "¿Necesito pareja para el curso online?", a: "No. El curso trabajará la base individual de la bachata dominicana: pisada, conteo, musicalidad y movimiento corporal. Podrás seguirlo tú solo o tú sola desde casa." },
+  { q: "¿Qué nivel necesito para empezar?", a: "Habrá contenidos desde nivel medio, y si empiezas desde cero te orientaré en la primera clase para que sigas el curso sin perderte." },
+  { q: "¿Puedo empezar a bailar mientras tanto?", a: `Sí. Mientras preparo el curso puedes venir a las <a href="/clases-presenciales/">clases presenciales</a> en Barcelona e Ibiza, y leer la <a href="/bachata-dominicana/">guía completa de la bachata dominicana</a>.` },
 ];
 
 const courseSchema = {
   "@context": "https://schema.org",
   "@type": "Course",
   name: "Curso online de bachata dominicana",
-  description: "Curso online de bachata dominicana (tradicional) en directo por Zoom con Évelyn «La Negra»: pisada, musicalidad y sabor desde la raíz. Las clases quedan grabadas.",
+  description: "Curso online de bachata dominicana (tradicional) con Évelyn «La Negra»: pisada, musicalidad y sabor desde la raíz. En preparación — próximamente disponible.",
   provider: { "@type": "Organization", name: "La Negra Salsa", url: new URL("/", Astro.site).href },
   inLanguage: "es",
-  hasCourseInstance: {
-    "@type": "CourseInstance",
-    courseMode: "Online",
-    courseWorkload: "PT1H",
-    instructor: { "@type": "Person", name: "Évelyn Viana Lovera", alternateName: "La Negra", url: new URL("/evelyn-la-negra/", Astro.site).href },
-  },
+  courseMode: "online",
+  author: { "@type": "Person", name: "Évelyn Viana Lovera", alternateName: "La Negra", url: new URL("/evelyn-la-negra/", Astro.site).href },
 };
 ---
 <Base
-  title="Curso online de bachata dominicana · Clases por Zoom con La Negra"
-  description="Curso online de bachata dominicana en directo por Zoom con Évelyn «La Negra». Las clases quedan grabadas. Pisada, musicalidad y sabor desde la raíz."
+  title="Curso online de bachata dominicana · Próximamente con La Negra"
+  description="Curso online de bachata dominicana con Évelyn «La Negra», en preparación. Déjame tu email y te aviso en cuanto abra: pisada, musicalidad y sabor desde la raíz."
   transparentHeader={true}
 >
   <PageIntro
-    kicker="Curso online"
+    kicker="Próximamente"
     title="Curso online de <em>bachata dominicana</em>."
     lead={[
-      "Bachata dominicana en directo por Zoom, desde donde estés — y las clases se quedan grabadas para ti.",
-      "Aprende la pisada, la musicalidad y el sabor de la raíz con una maestra de maestros.",
+      "Lo estoy creando ahora mismo: bachata dominicana en directo por Zoom, desde donde estés — y con las clases grabadas para ti.",
+      "Déjame tu email y serás de las primeras personas en saber cuándo abre.",
     ]}
-    cue="Cómo funciona"
+    cue="Qué estoy preparando"
     narrow={true}
   />
 
   <section class="section">
     <div class="container readcol">
-      <p class="eyebrow">Te ofrezco dos cursos</p>
+      <p class="eyebrow">En construcción</p>
+      <h2>El curso todavía no está abierto</h2>
+      <p>Estoy grabando y ordenando el material para que aprender bachata dominicana desde casa se
+        parezca lo máximo posible a tenerme delante. Prefiero sacarlo bien que sacarlo rápido, así
+        que aún no hay fecha cerrada — pero está en marcha.</p>
+
+      <h3>Lo que estoy preparando</h3>
       <div class="courses">
         <div class="course"><h3>Bachata Tradicional</h3><p>Nivel medio</p></div>
         <div class="course"><h3>Salsa · Movimiento Corporal</h3><p>Nivel medio</p></div>
       </div>
-      <h2 style="margin-top:40px">Las clases se quedan grabadas</h2>
-      <p>¿Sabes cuál es el secreto de este curso online de bachata? Que puedes ver cada clase cuando
-        quieras: cada sesión en directo se queda grabada para que la repases a tu ritmo.</p>
+
+      <h3>Cómo funcionará</h3>
+      <ul class="feats">
+        <li><strong>Clases en directo por Zoom</strong>, para poder corregirte en el momento.</li>
+        <li><strong>Todo queda grabado</strong>: si no puedes asistir, lo ves cuando quieras.</li>
+        <li><strong>Sin pareja</strong>: la base —pisada, conteo, musicalidad y cuerpo— se trabaja sola.</li>
+      </ul>
     </div>
   </section>
 
+  <WaitlistForm name="lista-espera-online" />
+
   <section class="section">
     <div class="container readcol">
-      <p class="eyebrow">Clases particulares</p>
-      <h2>Precios y horarios</h2>
-      <p style="font-size:1.1rem">Escríbeme y te paso precios, horarios y opciones sin compromiso.</p>
-      <p>
-        <a class="btn btn--red btn--lg" href={`tel:${site.phone.replace(/\s/g, "")}`}>{site.phone}</a>
-        &nbsp;
-        <a class="btn btn--lg" href={wa} target="_blank" rel="noopener">WhatsApp</a>
-      </p>
+      <p class="eyebrow">Mientras tanto</p>
+      <h2>Puedes empezar a bailar ya</h2>
+      <p>No hace falta que esperes al curso para ponerte en marcha:</p>
+      <ul class="feats">
+        <li><a href="/clases-presenciales/"><strong>Clases presenciales</strong></a> — Barcelona e Ibiza, cada semana.</li>
+        <li><a href="/bachata-dominicana/"><strong>Guía de la bachata dominicana</strong></a> — de dónde viene y cómo suena.</li>
+        <li><a href="/blog/como-empezar-a-bailar-bachata/"><strong>Cómo empezar a bailar bachata</strong></a> — los primeros pasos, explicados.</li>
+      </ul>
     </div>
   </section>
 
   <Faq items={faqs} title="Preguntas sobre el curso online" kicker="Dudas" />
 
-  <ContactForm name="contacto-online" title="Más información" note="Contacta conmigo para recibir más información sobre el curso online de bachata dominicana y próximas actividades." />
-
   <script type="application/ld+json" set:html={JSON.stringify(courseSchema)} />
 </Base>
 
 <style>
-  .courses{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:24px}
+  .courses{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:18px 0 8px}
   .course{background:#0f0f10;border:1px solid var(--line);border-radius:12px;padding:26px}
-  .course h3{color:#fff;font-weight:700}
+  .course h3{color:#fff;font-weight:700;margin:0 0 .3em}
+  .course p{margin:0}
+  .feats{padding-left:1.2em;line-height:1.7;color:var(--text)}
+  .feats li{margin-bottom:.5em}
+  .feats strong{color:#fff}
+  .feats a{color:var(--acc)}
   @media (max-width:600px){.courses{grid-template-columns:1fr}}
 </style>

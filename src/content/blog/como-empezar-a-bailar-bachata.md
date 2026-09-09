@@ -47,7 +47,7 @@ Mi consejo: **quédate y sufre un poquito.** El miedo al ridículo es lo único 
 Depende de ti:
 
 - **Presencial** si quieres corrección inmediata, contacto y ambiente. Tienes clases en [Barcelona e Ibiza](/clases-presenciales/).
-- **Online** si tu horario es imposible o no vives cerca. El [curso online](/curso-online-bachata-dominicana/) es en directo por Zoom y las clases quedan grabadas, así que las repasas cuando quieras.
+- **Online** si tu horario es imposible o no vives cerca. El [curso online](/curso-online-bachata-dominicana/) está en preparación: será en directo por Zoom y con las clases grabadas. Puedes dejar tu email y te aviso cuando abra.
 
 Muchos alumnos combinan las dos: online para la base y presencial para soltarse.
 

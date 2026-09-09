@@ -44,4 +44,4 @@ Conocer de dónde viene no es nostalgia: es lo que te permite bailarla con crite
 
 ---
 
-¿Quieres profundizar? Empieza por la [guía completa de la bachata dominicana](/bachata-dominicana/), y si quieres bailarla desde la raíz, te espero en las [clases presenciales](/clases-presenciales/) o en el [curso online](/curso-online-bachata-dominicana/).
+¿Quieres profundizar? Empieza por la [guía completa de la bachata dominicana](/bachata-dominicana/), y si quieres bailarla desde la raíz, te espero en las [clases presenciales](/clases-presenciales/) — y si prefieres desde casa, apúntate a la lista del [curso online](/curso-online-bachata-dominicana/), que abrirá próximamente.

@@ -1,0 +1,65 @@
+---
+// Captación de email para el curso online, que aún está en preparación.
+// Netlify Forms: funciona sin JS igual que el formulario de contacto.
+import { getLocale, localize, ui } from "../i18n";
+const locale = getLocale(Astro.url);
+const f = ui[locale].form;
+const w = ui[locale].waitlist;
+const { name = "lista-espera-online" } = Astro.props;
+const action = localize("/gracias/", locale);
+const privacy = localize("/privacidad/", locale);
+---
+<section class="section" id="lista-espera">
+  <div class="container readcol">
+    <div class="wait">
+      <p class="eyebrow">{w.kicker}</p>
+      <h2 class="wait__title">{w.title}</h2>
+      <p class="wait__note">{w.note}</p>
+
+      <form name={name} method="POST" action={action} data-netlify="true" netlify-honeypot="bot-field" class="wait__form">
+        <input type="hidden" name="form-name" value={name} />
+        <p hidden><label>{f.noFill}: <input name="bot-field" /></label></p>
+        <div class="wait__row">
+          <label class="wait__field">
+            <span>{f.nombre}</span>
+            <input type="text" name="nombre" required />
+          </label>
+          <label class="wait__field">
+            <span>{f.email}</span>
+            <input type="email" name="email" required />
+          </label>
+        </div>
+        <label class="wait__consent">
+          <input type="checkbox" name="consentimiento" value="si" required />
+          <span>{f.consent} <a href={privacy} target="_blank" rel="noopener">{f.consentLink}</a>.</span>
+        </label>
+        <button class="btn btn--red btn--lg" type="submit">{w.cta}</button>
+      </form>
+
+      <p class="wait__promise">{w.promise}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .wait{border:1px solid var(--line);border-radius:18px;background:var(--bg2);padding:34px}
+  .wait__title{color:#fff;margin:0 0 .4em}
+  .wait__note{color:var(--text);margin:0 0 26px;max-width:56ch}
+  .wait__form{display:grid;gap:16px}
+  .wait__row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .wait__field{display:flex;flex-direction:column;gap:6px;font-weight:700;color:#fff;font-size:.78rem;
+    text-transform:uppercase;letter-spacing:.05em}
+  .wait__field input{font:inherit;font-weight:400;text-transform:none;letter-spacing:0;
+    padding:13px 16px;border:1px solid var(--line);border-radius:10px;width:100%;
+    background:var(--bg);color:#fff}
+  .wait__field input:focus{outline:none;border-color:var(--acc)}
+  .wait__consent{display:flex;align-items:flex-start;gap:10px;font-size:.85rem;color:var(--text)}
+  .wait__consent input{width:auto;margin-top:2px;accent-color:var(--acc)}
+  .wait__consent a{color:var(--acc)}
+  .wait__form button{justify-self:start;border:0}
+  .wait__promise{margin:18px 0 0;color:var(--muted);font-size:.82rem}
+  @media (max-width:600px){
+    .wait{padding:26px 22px}
+    .wait__row{grid-template-columns:1fr}
+  }
+</style>

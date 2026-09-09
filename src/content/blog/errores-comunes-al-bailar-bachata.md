@@ -64,4 +64,4 @@ Casi todos estos errores son el mismo con distintas caras: **poner el adorno por
 
 ---
 
-Trabajamos todo esto en las [clases presenciales](/clases-presenciales/), en el [curso online](/curso-online-bachata-dominicana/) y, si enseñas, en el [máster de profesorado](/profesora-bachata-dominicana/).
+Trabajamos todo esto en las [clases presenciales](/clases-presenciales/) y, si enseñas, en el [máster de profesorado](/profesora-bachata-dominicana/). El [curso online](/curso-online-bachata-dominicana/) está en camino: déjame tu email y te aviso cuando abra.
