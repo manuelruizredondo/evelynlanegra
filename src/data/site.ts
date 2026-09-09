@@ -1,9 +1,9 @@
 export const site = {
   name: "La Negra Salsa",
   tagline: "Salsa y bachata dominicana, desde la raíz",
-  phone: "+34 621 07 40 54",
-  phoneShort: "621 07 40 54",
-  whatsapp: "https://wa.me/34621074054",
+  phone: "+34 659 09 06 96",
+  phoneShort: "659 09 06 96",
+  whatsapp: "https://wa.me/34659090696",
   email: "info@evelynlanegra.com",
   instagram: "https://www.instagram.com/evelynlanegrasalsa/",
   spotify: "https://open.spotify.com/user/1165580333",
