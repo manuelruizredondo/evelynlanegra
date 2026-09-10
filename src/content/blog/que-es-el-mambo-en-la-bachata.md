@@ -59,4 +59,4 @@ Si bajas el volumen mentalmente y lo que estás haciendo con el cuerpo ya no enc
 
 ---
 
-Profundizamos en esto en la [guía de la bachata dominicana](/bachata-dominicana/) y en el módulo de musicalidad del [máster de profesorado](/profesora-bachata-dominicana/).
+Profundizamos en esto en la [guía de la bachata dominicana](/bachata-dominicana/) y en el módulo de musicalidad del [máster de enseñanza](/profesora-bachata-dominicana/).
