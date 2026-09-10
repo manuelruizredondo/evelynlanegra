@@ -1,6 +1,6 @@
 export const site = {
   name: "La Negra Salsa",
-  tagline: "Salsa y bachata tradicional, desde la raíz",
+  tagline: "Salsa y bachata dominicana, desde la raíz",
   phone: "+34 659 09 06 96",
   phoneShort: "659 09 06 96",
   whatsapp: "https://wa.me/34659090696",

@@ -45,7 +45,7 @@ export const ui = {
   es: {
     htmlLang: "es",
     ogLocale: "es_ES",
-    tagline: "Salsa y bachata tradicional, desde la raíz",
+    tagline: "Salsa y bachata dominicana, desde la raíz",
     credit: "Diseño y desarrollo a partir del sitio original",
     nav: [
       { href: "/bachata-dominicana/", label: "Bachata dominicana" },
@@ -120,7 +120,7 @@ export const ui = {
   it: {
     htmlLang: "it",
     ogLocale: "it_IT",
-    tagline: "Salsa e bachata tradizionale, dalla radice",
+    tagline: "Salsa e bachata dominicana, dalla radice",
     credit: "Design e sviluppo a partire dal sito originale",
     nav: [
       { href: "/evelyn-la-negra/", label: "Chi è Évelyn" },
