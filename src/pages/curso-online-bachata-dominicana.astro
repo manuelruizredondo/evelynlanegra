@@ -5,18 +5,18 @@ import WaitlistForm from "../components/WaitlistForm.astro";
 import Faq from "../components/Faq.astro";
 
 const faqs = [
-  { q: "¿Cuándo estará disponible el curso online de bachata dominicana?", a: "Está en preparación y abrirá próximamente. Si dejas tu email en la lista de espera, te aviso en cuanto tenga fecha, antes de anunciarlo públicamente." },
+  { q: "¿Cuándo estará disponible el curso online de bachata tradicional?", a: "Está en preparación y abrirá próximamente. Si dejas tu email en la lista de espera, te aviso en cuanto tenga fecha, antes de anunciarlo públicamente." },
   { q: "¿Cómo funcionará el curso online?", a: "Serán clases en directo por Zoom que se quedarán grabadas: si no puedes asistir, las verás cuando quieras y las repasarás a tu ritmo." },
-  { q: "¿Necesito pareja para el curso online?", a: "No. El curso trabajará la base individual de la bachata dominicana: pisada, conteo, musicalidad y movimiento corporal. Podrás seguirlo tú solo o tú sola desde casa." },
+  { q: "¿Necesito pareja para el curso online?", a: "No. El curso trabajará la base individual de la bachata tradicional: pisada, conteo, musicalidad y movimiento corporal. Podrás seguirlo tú solo o tú sola desde casa." },
   { q: "¿Qué nivel necesito para empezar?", a: "Habrá contenidos desde nivel medio, y si empiezas desde cero te orientaré en la primera clase para que sigas el curso sin perderte." },
-  { q: "¿Puedo empezar a bailar mientras tanto?", a: `Sí. Mientras preparo el curso puedes venir a las <a href="/clases-presenciales/">clases presenciales</a> en Barcelona e Ibiza, y leer la <a href="/bachata-dominicana/">guía completa de la bachata dominicana</a>.` },
+  { q: "¿Puedo empezar a bailar mientras tanto?", a: `Sí. Mientras preparo el curso puedes venir a las <a href="/clases-presenciales/">clases presenciales</a> en Barcelona e Ibiza, y leer la <a href="/bachata-dominicana/">guía completa de la bachata</a>.` },
 ];
 
 const courseSchema = {
   "@context": "https://schema.org",
   "@type": "Course",
   name: "Curso online de bachata dominicana",
-  description: "Curso online de bachata dominicana (tradicional) con Évelyn «La Negra»: pisada, musicalidad y sabor desde la raíz. En preparación — próximamente disponible.",
+  description: "Curso online de bachata tradicional —la dominicana, la de raíz— con Évelyn «La Negra»: pisada, musicalidad y sabor desde la raíz. En preparación — próximamente disponible.",
   provider: { "@type": "Organization", name: "La Negra Salsa", url: new URL("/", Astro.site).href },
   inLanguage: "es",
   courseMode: "online",
@@ -25,14 +25,14 @@ const courseSchema = {
 ---
 <Base
   title="Curso online de bachata dominicana · Próximamente con La Negra"
-  description="Curso online de bachata dominicana con Évelyn «La Negra», en preparación. Déjame tu email y te aviso en cuanto abra: pisada, musicalidad y sabor desde la raíz."
+  description="Curso online de bachata tradicional (la dominicana) con Évelyn «La Negra», en preparación. Déjame tu email y te aviso en cuanto abra: pisada, musicalidad y sabor desde la raíz."
   transparentHeader={true}
 >
   <PageIntro
     kicker="Próximamente"
-    title="Curso online de <em>bachata dominicana</em>."
+    title="Curso online de <em>bachata tradicional</em>."
     lead={[
-      "Lo estoy creando ahora mismo: bachata dominicana en directo por Zoom, desde donde estés — y con las clases grabadas para ti.",
+      "Lo estoy creando ahora mismo: la bachata de raíz en directo por Zoom, desde donde estés — y con las clases grabadas para ti.",
       "Déjame tu email y serás de las primeras personas en saber cuándo abre.",
     ]}
     cue="Qué estoy preparando"
@@ -43,7 +43,7 @@ const courseSchema = {
     <div class="container readcol">
       <p class="eyebrow">En construcción</p>
       <h2>El curso todavía no está abierto</h2>
-      <p>Estoy grabando y ordenando el material para que aprender bachata dominicana desde casa se
+      <p>Estoy grabando y ordenando el material para que aprender bachata tradicional desde casa se
         parezca lo máximo posible a tenerme delante. Prefiero sacarlo bien que sacarlo rápido, así
         que aún no hay fecha cerrada — pero está en marcha.</p>
 
@@ -71,7 +71,7 @@ const courseSchema = {
       <p>No hace falta que esperes al curso para ponerte en marcha:</p>
       <ul class="feats">
         <li><a href="/clases-presenciales/"><strong>Clases presenciales</strong></a> — Barcelona e Ibiza, cada semana.</li>
-        <li><a href="/bachata-dominicana/"><strong>Guía de la bachata dominicana</strong></a> — de dónde viene y cómo suena.</li>
+        <li><a href="/bachata-dominicana/"><strong>Guía de la bachata</strong></a> — de dónde viene, cómo suena y por qué «dominicana» sobra.</li>
         <li><a href="/blog/como-empezar-a-bailar-bachata/"><strong>Cómo empezar a bailar bachata</strong></a> — los primeros pasos, explicados.</li>
       </ul>
     </div>

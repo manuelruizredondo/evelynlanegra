@@ -1,6 +1,6 @@
 ---
 title: "Cómo empezar a bailar bachata desde cero"
-description: "Guía para principiantes: qué necesitas para empezar a bailar bachata dominicana, si hace falta pareja, cuánto se tarda y por dónde empezar."
+description: "Guía para principiantes: qué necesitas para empezar a bailar bachata tradicional, si hace falta pareja, cuánto se tarda y por dónde empezar."
 date: 2026-07-25
 tags: ["bachata dominicana", "principiantes", "clases"]
 cover: "/media/clases-ibiza.jpg"
@@ -57,4 +57,4 @@ Ven con ganas y sin prisa. La bachata no premia a quien memoriza más pasos, sin
 
 ---
 
-¿Empezamos? Mira la [guía de la bachata dominicana](/bachata-dominicana/) para entender el terreno, o escríbeme y te digo qué grupo te encaja.
+¿Empezamos? Mira la [guía de la bachata](/bachata-dominicana/) para entender el terreno, o escríbeme y te digo qué grupo te encaja.

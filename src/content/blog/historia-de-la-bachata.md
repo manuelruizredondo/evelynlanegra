@@ -1,6 +1,6 @@
 ---
 title: "Historia de la bachata: del barrio dominicano al mundo"
-description: "El origen de la bachata dominicana: de qué ritmos nace, por qué fue música marginada durante décadas y cómo acabó bailándose en todo el mundo."
+description: "El origen de la bachata tradicional: de qué ritmos nace, por qué fue música marginada durante décadas y cómo acabó bailándose en todo el mundo."
 date: 2026-07-10
 tags: ["bachata dominicana", "historia de la bachata", "cultura"]
 cover: "/media/evelyn-social.jpg"
@@ -44,4 +44,4 @@ Conocer de dónde viene no es nostalgia: es lo que te permite bailarla con crite
 
 ---
 
-¿Quieres profundizar? Empieza por la [guía completa de la bachata dominicana](/bachata-dominicana/), y si quieres bailarla desde la raíz, te espero en las [clases presenciales](/clases-presenciales/) — y si prefieres desde casa, apúntate a la lista del [curso online](/curso-online-bachata-dominicana/), que abrirá próximamente.
+¿Quieres profundizar? Empieza por la [guía completa de la bachata](/bachata-dominicana/), y si quieres bailarla desde la raíz, te espero en las [clases presenciales](/clases-presenciales/) — y si prefieres desde casa, apúntate a la lista del [curso online](/curso-online-bachata-dominicana/), que abrirá próximamente.

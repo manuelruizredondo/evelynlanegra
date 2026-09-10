@@ -1,12 +1,12 @@
 ---
-title: "Artistas de bachata dominicana que tienes que escuchar"
-description: "De Luis Vargas y Ramón Cordero a Grupo Extra: los artistas imprescindibles de la bachata dominicana, clásicos y actuales, seleccionados por Évelyn «La Negra»."
+title: "Artistas de bachata tradicional que tienes que escuchar"
+description: "De Luis Vargas y Ramón Cordero a Grupo Extra: los artistas imprescindibles de la bachata tradicional, clásicos y actuales, seleccionados por Évelyn «La Negra»."
 date: 2026-08-14
 tags: ["bachata dominicana", "música", "artistas"]
 cover: "/media/intensivos-ibiza.jpg"
 ---
 
-**Si quieres bailar bien bachata dominicana, primero tienes que escucharla mucho.** Esta es la selección que doy a mis alumnos: unos clásicos que son escuela y unos cuantos actuales, porque quedarse solo en lo antiguo también es un error.
+**Si quieres bailar bien bachata tradicional, primero tienes que escucharla mucho.** Esta es la selección que doy a mis alumnos: unos clásicos que son escuela y unos cuantos actuales, porque quedarse solo en lo antiguo también es un error.
 
 ## Los clásicos que son escuela
 
@@ -54,4 +54,4 @@ Nos peleamos muchísimo por cómo se baila y nos acordamos poco de los músicos,
 
 ---
 
-Puedes seguir mis selecciones en [mis TOP 10 de Spotify](/spotify/), y si quieres entender qué estás escuchando, empieza por la [guía de la bachata dominicana](/bachata-dominicana/).
+Puedes seguir mis selecciones en [mis TOP 10 de Spotify](/spotify/), y si quieres entender qué estás escuchando, empieza por la [guía de la bachata](/bachata-dominicana/).

@@ -5,9 +5,9 @@ import WaitlistForm from "../../components/WaitlistForm.astro";
 import Faq from "../../components/Faq.astro";
 
 const faqs = [
-  { q: "Quando sarà disponibile il corso online di bachata dominicana?", a: "È in preparazione e aprirà prossimamente. Se lasci la tua email nella lista d’attesa, ti avviso appena ho una data, prima di annunciarlo pubblicamente." },
+  { q: "Quando sarà disponibile il corso online di bachata tradizionale?", a: "È in preparazione e aprirà prossimamente. Se lasci la tua email nella lista d’attesa, ti avviso appena ho una data, prima di annunciarlo pubblicamente." },
   { q: "Come funzionerà il corso online?", a: "Saranno lezioni in diretta su Zoom che resteranno registrate: se non puoi partecipare, le guardi quando vuoi e le ripassi al tuo ritmo." },
-  { q: "Serve un partner per il corso online?", a: "No. Il corso lavorerà sulla base individuale della bachata dominicana: passo, conteggio, musicalità e movimento del corpo. Potrai seguirlo da solo o da sola da casa." },
+  { q: "Serve un partner per il corso online?", a: "No. Il corso lavorerà sulla base individuale della bachata tradizionale: passo, conteggio, musicalità e movimento del corpo. Potrai seguirlo da solo o da sola da casa." },
   { q: "Che livello serve per iniziare?", a: "Ci saranno contenuti dal livello medio, e se parti da zero ti orienterò nella prima lezione così segui il corso senza perderti." },
   { q: "Posso iniziare a ballare nel frattempo?", a: `Sì. Mentre preparo il corso puoi venire alle <a href="/it/clases-presenciales/">lezioni in presenza</a> a Barcellona e Ibiza.` },
 ];
@@ -16,7 +16,7 @@ const courseSchema = {
   "@context": "https://schema.org",
   "@type": "Course",
   name: "Corso online di bachata dominicana",
-  description: "Corso online di bachata dominicana (tradizionale) con Évelyn «La Negra»: passo, musicalità e sapore dalla radice. In preparazione — disponibile prossimamente.",
+  description: "Corso online di bachata tradizionale —quella dominicana, dalla radice— con Évelyn «La Negra»: passo, musicalità e sapore dalla radice. In preparazione — disponibile prossimamente.",
   provider: { "@type": "Organization", name: "La Negra Salsa", url: new URL("/", Astro.site).href },
   inLanguage: "it",
   courseMode: "online",
@@ -25,14 +25,14 @@ const courseSchema = {
 ---
 <Base
   title="Corso online di bachata dominicana · Prossimamente con La Negra"
-  description="Corso online di bachata dominicana con Évelyn «La Negra», in preparazione. Lasciami la tua email e ti avviso appena apre: passo, musicalità e sapore dalla radice."
+  description="Corso online di bachata tradizionale (la dominicana) con Évelyn «La Negra», in preparazione. Lasciami la tua email e ti avviso appena apre: passo, musicalità e sapore dalla radice."
   transparentHeader={true}
 >
   <PageIntro
     kicker="Prossimamente"
-    title="Corso online di <em>bachata dominicana</em>."
+    title="Corso online di <em>bachata tradizionale</em>."
     lead={[
-      "Lo sto creando proprio ora: bachata dominicana in diretta su Zoom, da dove vuoi — e con le lezioni registrate per te.",
+      "Lo sto creando proprio ora: la bachata dalla radice in diretta su Zoom, da dove vuoi — e con le lezioni registrate per te.",
       "Lasciami la tua email e sarai tra i primi a sapere quando apre.",
     ]}
     cue="Cosa sto preparando"
@@ -43,7 +43,7 @@ const courseSchema = {
     <div class="container readcol">
       <p class="eyebrow">In costruzione</p>
       <h2>Il corso non è ancora aperto</h2>
-      <p>Sto registrando e ordinando il materiale perché imparare la bachata dominicana da casa
+      <p>Sto registrando e ordinando il materiale perché imparare la bachata tradizionale da casa
         assomigli il più possibile ad avermi davanti. Preferisco farlo bene che farlo in fretta,
         quindi non c’è ancora una data definita — ma è in corso.</p>
 

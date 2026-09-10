@@ -63,4 +63,4 @@ Me gustaría que los bailarines tuviéramos esa misma cabeza abierta.
 
 ---
 
-Todo esto lo trabajamos a fondo en la [guía de la bachata dominicana](/bachata-dominicana/) y en el [máster de enseñanza](/profesora-bachata-dominicana/), donde la musicalidad es un módulo entero.
+Todo esto lo trabajamos a fondo en la [guía de la bachata](/bachata-dominicana/) y en el [máster de enseñanza](/profesora-bachata-dominicana/), donde la musicalidad es un módulo entero.

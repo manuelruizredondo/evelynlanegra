@@ -7,9 +7,9 @@ import { site } from "../data/site";
 import Breadcrumbs from "../components/Breadcrumbs.astro";
 
 const faqs = [
-  { q: "¿Qué es la bachata dominicana?", a: "Es el estilo original de bachata, nacido en la República Dominicana. Se baila desde el suelo, con la pisada y la musicalidad como base, y se caracteriza por el juego de pies y la respuesta directa a los instrumentos." },
-  { q: "¿Es lo mismo bachata dominicana que bachata tradicional?", a: "Sí. Se usan como sinónimos para distinguir la bachata de raíz de las versiones posteriores (moderna y sensual). En República Dominicana simplemente se le llama bachata." },
-  { q: "¿La bachata es Patrimonio de la Humanidad?", a: "Sí. En diciembre de 2019 la UNESCO inscribió la bachata dominicana en la Lista Representativa del Patrimonio Cultural Inmaterial de la Humanidad." },
+  { q: "¿Qué es la bachata dominicana?", a: "Es como se busca popularmente la bachata tradicional, aunque en rigor sea una redundancia: toda la bachata es dominicana. Se refiere a la forma original de bailarla —desde el suelo, con la pisada y la musicalidad como base— frente a la moderna y la sensual." },
+  { q: "¿Es lo mismo bachata dominicana que bachata tradicional?", a: "En la práctica se usan como sinónimos, pero el término preciso es bachata tradicional: la bachata es una sola y es dominicana, así que «bachata dominicana» sobra. En República Dominicana simplemente se le llama bachata." },
+  { q: "¿La bachata es Patrimonio de la Humanidad?", a: "Sí. En diciembre de 2019 la UNESCO inscribió «la música y el baile de la bachata de la República Dominicana» en la Lista Representativa del Patrimonio Cultural Inmaterial de la Humanidad." },
   { q: "¿Qué instrumentos tiene la bachata?", a: "Cinco: requinto (la guitarra que lleva la melodía), segunda (guitarra de acompañamiento), bajo, güira y bongó. El diálogo entre el requinto y la güira es lo que le da su sonido reconocible." },
   { q: "¿Qué partes tiene una canción de bachata?", a: "Tres: el derecho (la parte cantada y más contenida), el majao (la percusión aprieta y sube la intensidad) y el mambo (los instrumentos se sueltan y el requinto se luce). Cada una se baila distinta." },
   { q: "¿Se puede aprender bachata dominicana sin pareja?", a: "Sí. La base —pisada, conteo, musicalidad y movimiento del cuerpo— se trabaja de forma individual. En las clases presenciales se rota, y el curso online —que está en preparación— está pensado para seguirlo en casa." },
@@ -79,12 +79,24 @@ const schema = {
     <div class="container">
       <div class="pilar__body prose">
       <p class="pilar__answer">
-        <strong>La bachata dominicana —también llamada bachata tradicional— es el estilo original
-        del género, nacido en la República Dominicana.</strong> Se baila desde el suelo: la pisada y
-        el peso marcan el ritmo, el cuerpo responde a la música y el juego de pies es el
-        protagonista. A diferencia de la moderna o la sensual, no se construye sobre figuras, sino
-        sobre la musicalidad.
+        <strong>La bachata es una sola y es dominicana: nació en la República Dominicana y no hay
+        otra.</strong> Lo que cambia no es la música, sino la forma de bailarla. Al modo original
+        —desde el suelo, con la pisada y la musicalidad como base y el juego de pies de
+        protagonista— se le llama <strong>bachata tradicional</strong>, y es lo que mucha gente
+        busca como «bachata dominicana».
       </p>
+
+      <aside class="pilar__nota">
+        <p><strong>Una aclaración, antes de seguir.</strong> Decir «bachata dominicana» es una
+          redundancia: toda la bachata es dominicana. Lo repito en cada formación, y les doy la
+          razón a los dominicanos, a quienes esa etiqueta ofende con motivo: da a entender que
+          existe una bachata que no lo es.</p>
+        <p>Si aquí verás la expresión es porque es como la busca la gente en internet, y prefiero
+          salir a explicarlo antes que dejar correr el malentendido. Lo correcto es hablar de
+          <strong>la bachata</strong> —a secas— cuando hablamos de la música, y de
+          <strong>bachata tradicional</strong>, moderna o sensual cuando hablamos de cómo se
+          interpreta al bailarla. — Évelyn «La Negra»</p>
+      </aside>
 
       <nav class="pilar__toc" aria-label="Contenido">
         <a href="#que-es">Qué es</a>
@@ -97,7 +109,7 @@ const schema = {
         <a href="#empezar">Cómo empezar</a>
       </nav>
 
-      <h2 id="que-es">Qué es la bachata dominicana</h2>
+      <h2 id="que-es">Qué es la bachata tradicional (o «dominicana»)</h2>
       <p>Cuando alguien dice «bachata dominicana» está hablando de la bachata a secas: la que se
         baila en la República Dominicana, la de siempre. El apellido se lo hemos puesto fuera, para
         distinguirla de las versiones que aparecieron después en Europa y América.</p>
@@ -149,7 +161,7 @@ const schema = {
         <a href="/blog/limites-y-respeto-al-bailar/">respeto y límites al bailar</a>.</p>
       <p>Lo importante no es memorizar figuras, sino que el pie responda a lo que oyes. Si quieres
         profundizar, lo explico en detalle en
-        <a href="/blog/pisada-bachata-dominicana/">la pisada de la bachata dominicana</a>.
+        <a href="/blog/pisada-bachata-dominicana/">la pisada de la bachata</a>.
         Y para no tropezar dos veces, mira <a href="/blog/errores-comunes-al-bailar-bachata/">los errores
         más comunes al bailar bachata</a>.</p>
 
@@ -184,7 +196,7 @@ const schema = {
         ))}
       </ul>
       <p>La lista completa, con clásicos y voces actuales, está en
-        <a href="/blog/artistas-bachata-dominicana/">artistas de bachata dominicana</a>.</p>
+        <a href="/blog/artistas-bachata-dominicana/">artistas de bachata</a>.</p>
       <p>Y no te quedes solo en los clásicos: hay gente joven haciendo bachata tradicional muy buena
         hoy mismo. Si no los escuchamos, esos músicos dejan de grabar.</p>
 
@@ -200,7 +212,7 @@ const schema = {
       </div>
     </div>
 
-    <Faq items={faqs} title="Preguntas sobre la bachata dominicana" kicker="Dudas frecuentes" />
+    <Faq items={faqs} title="Preguntas sobre la bachata" kicker="Dudas frecuentes" />
 
     <div class="container">
       <aside class="pilar__cta">
@@ -246,6 +258,11 @@ const schema = {
   .pilar__cta-list a:hover{border-color:var(--acc);text-decoration:none}
   .pilar__cta-list strong{color:#fff}
 
+  .pilar__nota{border-left:3px solid var(--acc);background:var(--bg2);border-radius:0 12px 12px 0;
+    padding:20px 24px;margin:26px 0}
+  .pilar__nota p{color:var(--text);margin:0 0 12px;line-height:1.6}
+  .pilar__nota p:last-child{margin-bottom:0}
+  .pilar__nota strong{color:#fff}
   .pilar__cta{max-width:var(--read);margin:20px auto 80px;padding:34px;border:1px solid var(--line);
     border-radius:18px;background:var(--bg2)}
   .pilar__cta h2{margin:0 0 .3em}

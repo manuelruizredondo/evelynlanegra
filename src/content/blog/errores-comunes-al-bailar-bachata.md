@@ -1,6 +1,6 @@
 ---
 title: "Los 6 errores más comunes al bailar bachata (y cómo corregirlos)"
-description: "Abusar del adorno, no escuchar la música, bailar el escenario en el social… Los fallos que más veo como maestra de bachata dominicana y cómo solucionarlos."
+description: "Abusar del adorno, no escuchar la música, bailar el escenario en el social… Los fallos que más veo como maestra de bachata tradicional y cómo solucionarlos."
 date: 2026-08-05
 tags: ["bachata dominicana", "técnica", "consejos"]
 cover: "/media/evelyn-bailando.jpg"

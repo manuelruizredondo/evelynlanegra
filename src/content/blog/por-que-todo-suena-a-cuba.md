@@ -58,4 +58,4 @@ Conocer la raíz no es para defenderla con un palo. Es para bailar con criterio.
 
 ---
 
-Si quieres entender la bachata desde su origen, empieza por la [guía de la bachata dominicana](/bachata-dominicana/) y por [su historia](/blog/historia-de-la-bachata/).
+Si quieres entender la bachata desde su origen, empieza por la [guía de la bachata](/bachata-dominicana/) y por [su historia](/blog/historia-de-la-bachata/).
