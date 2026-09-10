@@ -40,6 +40,12 @@ const schema = {
       "@type": "Article",
       headline: "Bachata dominicana: qué es, cómo suena y cómo se baila",
       description: "Guía completa de la bachata dominicana (tradicional): origen, instrumentos, cómo se baila y en qué se diferencia de la moderna y la sensual.",
+      about: {
+        "@type": "Thing",
+        name: "Bachata tradicional",
+        alternateName: ["Bachata dominicana", "Bachata de la República Dominicana", "Bachata típica"],
+        description: "Estilo original de baile de la bachata, la música tradicional de la República Dominicana.",
+      },
       author: { "@type": "Person", name: "Évelyn Viana Lovera", url: new URL("/evelyn-la-negra/", Astro.site).href },
       publisher: { "@type": "Organization", name: "La Negra Salsa" },
       inLanguage: "es",
