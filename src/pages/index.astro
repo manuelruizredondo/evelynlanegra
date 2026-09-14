@@ -14,10 +14,10 @@ const faqs = [
 ];
 
 const eventos = [
-  { img: "/media/clases-ibiza.jpg", chip: "Ibiza · dom 20 sept · 18–21h", t: "Convivencia Merenguera",
+  { img: "/media/convivencia-merenguera.jpg", chip: "Ibiza · dom 20 sept · 18–21h", t: "Convivencia Merenguera",
     d: "Una tarde entera de merengue: historia, musicalidad, flow corporal y parejas. Plazas limitadas.",
     href: "/convivencia-merenguera/", cta: "Reservar plaza" },
-  { img: "/img/evelyn-video-cover.jpg", chip: "Ibiza · dom 20 sept · desde 20:30h", t: "Keeper Opening",
+  { img: "/media/keeper-opening.jpg", chip: "Ibiza · dom 20 sept · desde 20:30h", t: "Keeper Opening",
     d: "Arranca la temporada en Keeper: social de salsa y bachata con La Negra y LissJ a los platos.",
     href: "/keeper-opening/", cta: "Ver la noche" },
   { img: "/img/campeonato.webp", chip: "Calpe · Alicante · 21–25 oct", t: "El campeonato mundial",
@@ -284,7 +284,7 @@ const isPastMonth = (mes) => TOUR_YEAR * 12 + (MES_NUM[mes] ?? 0) < _curYM;
       eventStatus: "https://schema.org/EventScheduled",
       eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
       location: { "@type": "Place", name: "Davinia Van Praag Dance Academy", address: "Calle Sa Real 1, Ibiza, España" },
-      image: [new URL("/media/clases-ibiza.jpg", Astro.site).href],
+      image: [new URL("/media/convivencia-merenguera.jpg", Astro.site).href],
       performer: { "@type": "Person", name: "Evelyn «La Negra»", url: new URL("/evelyn-la-negra/", Astro.site).href },
       organizer: { "@type": "Person", name: "Evelyn «La Negra»", url: new URL("/evelyn-la-negra/", Astro.site).href },
       offers: { "@type": "Offer", url: new URL("/convivencia-merenguera/", Astro.site).href, price: "20", priceCurrency: "EUR", availability: "https://schema.org/LimitedAvailability", validFrom: "2026-09-01" },
@@ -298,7 +298,7 @@ const isPastMonth = (mes) => TOUR_YEAR * 12 + (MES_NUM[mes] ?? 0) < _curYM;
       eventStatus: "https://schema.org/EventScheduled",
       eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
       location: { "@type": "Place", name: "Keeper", address: "Passeig Joan Carles I s/n, Ibiza, España" },
-      image: [new URL("/img/evelyn-video-cover.jpg", Astro.site).href],
+      image: [new URL("/media/keeper-opening.jpg", Astro.site).href],
       performer: { "@type": "Person", name: "Evelyn «La Negra»", url: new URL("/evelyn-la-negra/", Astro.site).href },
       organizer: { "@type": "Person", name: "Evelyn «La Negra»", url: new URL("/evelyn-la-negra/", Astro.site).href },
       offers: { "@type": "Offer", url: new URL("/keeper-opening/", Astro.site).href, price: "10", priceCurrency: "EUR", availability: "https://schema.org/InStock", validFrom: "2026-09-01" },

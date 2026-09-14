@@ -30,7 +30,7 @@ const schema = {
     name: lugar,
     address: { "@type": "PostalAddress", streetAddress: "Calle Sa Real, 1", addressLocality: "Ibiza", addressCountry: "ES" },
   },
-  image: [new URL("/media/clases-ibiza.jpg", Astro.site).href],
+  image: [new URL("/media/convivencia-merenguera.jpg", Astro.site).href],
   performer: { "@type": "Person", name: "Evelyn «La Negra»", url: new URL("/evelyn-la-negra/", Astro.site).href },
   organizer: { "@type": "Person", name: "Evelyn «La Negra»", url: new URL("/evelyn-la-negra/", Astro.site).href },
   offers: [
@@ -71,6 +71,11 @@ const schema = {
           <a class="btn btn--ghost btn--lg" href={`tel:${site.phone.replace(/\s/g, "")}`}>{site.phone}</a>
         </div>
 
+        <figure class="evt__cartel">
+          <img src="/media/convivencia-merenguera.jpg" width="900" height="1600" loading="lazy"
+               alt="Cartel de la Convivencia Merenguera: domingo 20 de septiembre, de 18 a 21 h, en Davinia Van Praag Dance Academy, Ibiza" />
+        </figure>
+
         <p class="evt__nota">Ese mismo domingo pincho en el <a href="/keeper-opening/">Keeper Opening</a>,
           a partir de las 20:30 h. Puedes enlazar las dos cosas.</p>
       </div>
@@ -96,6 +101,9 @@ const schema = {
   .evt__fact dd a:hover{color:var(--acc)}
   .evt__extra{color:var(--muted);font-size:.9rem}
   .evt__cta{display:flex;gap:14px;flex-wrap:wrap;margin:34px 0 0}
+  .evt__cartel{margin:40px 0 0}
+  .evt__cartel img{width:100%;max-width:420px;height:auto;display:block;margin-inline:auto;
+    border-radius:14px;border:1px solid var(--line)}
   .evt__nota{margin:30px 0 0;color:var(--muted);font-size:.9rem}
   .evt__nota a{color:var(--acc)}
   @media (max-width:600px){.evt__fact{grid-template-columns:1fr;gap:4px}}

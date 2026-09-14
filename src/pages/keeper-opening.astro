@@ -27,7 +27,7 @@ const schema = {
     name: lugar,
     address: { "@type": "PostalAddress", streetAddress: "Passeig Joan Carles I, s/n", addressLocality: "Ibiza", addressCountry: "ES" },
   },
-  image: [new URL("/img/evelyn-video-cover.jpg", Astro.site).href],
+  image: [new URL("/media/keeper-opening.jpg", Astro.site).href],
   performer: [
     { "@type": "Person", name: "Evelyn «La Negra»", url: new URL("/evelyn-la-negra/", Astro.site).href },
     { "@type": "Person", name: "LissJ" },
@@ -71,6 +71,11 @@ const schema = {
           <a class="btn btn--ghost btn--lg" href="/keeper-galeria/">Ver fotos de otras noches</a>
         </div>
 
+        <figure class="evt__cartel">
+          <img src="/media/keeper-opening.jpg" width="900" height="1600" loading="lazy"
+               alt="Cartel del Keeper Opening: 20 de septiembre, social desde las 20:30 h en Keeper, Ibiza, con DJ Evelyn La Negra y DJ LissJ" />
+        </figure>
+
         <p class="evt__nota">Antes, de 18 a 21 h, doy la
           <a href="/convivencia-merenguera/">Convivencia Merenguera</a> en la academia. Sales de una y
           entras en la otra.</p>
@@ -97,6 +102,9 @@ const schema = {
   .evt__fact dd a:hover{color:var(--acc)}
   .evt__extra{color:var(--muted);font-size:.9rem}
   .evt__cta{display:flex;gap:14px;flex-wrap:wrap;margin:34px 0 0}
+  .evt__cartel{margin:40px 0 0}
+  .evt__cartel img{width:100%;max-width:420px;height:auto;display:block;margin-inline:auto;
+    border-radius:14px;border:1px solid var(--line)}
   .evt__nota{margin:30px 0 0;color:var(--muted);font-size:.9rem}
   .evt__nota a{color:var(--acc)}
   @media (max-width:600px){.evt__fact{grid-template-columns:1fr;gap:4px}}
