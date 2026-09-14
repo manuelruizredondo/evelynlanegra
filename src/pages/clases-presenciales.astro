@@ -5,9 +5,11 @@ import ContactForm from "../components/ContactForm.astro";
 import { site } from "../data/site";
 
 type Clase = { hora: string; estilo: string; nivel?: string };
+type Tarifa = { precio: string; unidad?: string; detalle: string };
 type Ciudad = {
   id: string; name: string; sub: string; image: string; alt: string; flip: boolean;
   intro: string; academy: string; address: string; price: string;
+  tarifas?: Tarifa[]; tarifasNota?: string;
   dias: { dia: string; clases: Clase[] }[];
 };
 
@@ -38,7 +40,14 @@ const ciudades: Ciudad[] = [
     intro: "Cinco niveles cada tarde, desde cero hasta avanzado. Y los domingos, DJ residente de la sesión Keeper en la isla.",
     academy: "Davinia Van Praag Dance Academy",
     address: "Calle Sa Real, 1 · Ibiza",
-    price: "Consultar por WhatsApp",
+    price: "Desde 40 € al mes",
+    tarifas: [
+      { precio: "40 €", unidad: "al mes", detalle: "4 clases de 1 hora" },
+      { precio: "60 €", unidad: "al mes", detalle: "8 clases de 1 hora" },
+      { precio: "100 €", unidad: "al mes", detalle: "Multiclase — todas las que quieras" },
+      { precio: "Consultar", detalle: "Clases particulares" },
+    ],
+    tarifasNota: "El precio es el mismo sea salsa, bachata o expresión corporal.",
     dias: [
       { dia: "Lunes", clases: [
         { hora: "18:30", estilo: "Salsa", nivel: "medio" },
@@ -109,6 +118,21 @@ const mapsUrl = (c: Ciudad) =>
           </div>
         </div>
 
+        {c.tarifas && (
+          <div class="tarifas">
+            <h3 class="tarifas__title">Tarifas</h3>
+            <ul class="tarifas__grid">
+              {c.tarifas.map((tf) => (
+                <li class="tarifa">
+                  <p class="tarifa__precio">{tf.precio}{tf.unidad && <span class="tarifa__unidad"> {tf.unidad}</span>}</p>
+                  <p class="tarifa__detalle">{tf.detalle}</p>
+                </li>
+              ))}
+            </ul>
+            {c.tarifasNota && <p class="tarifas__nota">{c.tarifasNota}</p>}
+          </div>
+        )}
+
         <div class="city__sched">
           {c.dias.map(({ dia, clases }) => (
             <div class="day-card">
@@ -158,6 +182,16 @@ const mapsUrl = (c: Ciudad) =>
   .maps-link:hover .maps-link__cta{text-decoration:underline}
 
   /* Horario en day-cards (misma tarjeta en ambas ciudades) */
+  /* Tarifas */
+  .tarifas{margin:44px 0 10px}
+  .tarifas__title{color:#fff;font-size:1.35rem;margin:0 0 18px}
+  .tarifas__grid{list-style:none;margin:0;padding:0;display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}
+  .tarifa{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:22px 24px}
+  .tarifa__precio{margin:0 0 6px;color:var(--acc);font-weight:700;font-size:1.7rem;line-height:1.1}
+  .tarifa__unidad{color:var(--muted);font-weight:600;font-size:.85rem}
+  .tarifa__detalle{margin:0;color:var(--text);font-size:.92rem;line-height:1.45}
+  .tarifas__nota{margin:16px 0 0;color:var(--muted);font-size:.85rem}
   .city__sched{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,300px));gap:18px}
   .day-card{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:24px 22px}
   .day-card__name{font-size:1.05rem;text-transform:uppercase;letter-spacing:.08em;color:#fff;
@@ -176,5 +210,6 @@ const mapsUrl = (c: Ciudad) =>
     .city__media{max-width:420px}
     .city__facts{grid-template-columns:1fr 1fr}
     .city__sched{grid-template-columns:1fr}
+    .tarifas__grid{grid-template-columns:1fr 1fr}
   }
 </style>
