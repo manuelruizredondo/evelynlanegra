@@ -2,6 +2,7 @@
 import Base from "../layouts/Base.astro";
 import PageIntro from "../components/PageIntro.astro";
 import ContactForm from "../components/ContactForm.astro";
+import Faq from "../components/Faq.astro";
 import { site } from "../data/site";
 const wa = "https://api.whatsapp.com/send?phone=34659090696&text=Hola%20Evelyn,%20quiero%20info%20de%20la%20formacion%20de%20Bachata%20Tradicional";
 
@@ -11,6 +12,13 @@ const clases = [
   { n: "03", title: "Desmontando el básico", meta: "2h · Práctica", d: "Diferencias entre la bachata auténtica, la moderna y la sensual. Elementos para conseguir un estilo: pisada y conteo." },
   { n: "04", title: "Combinaciones y variaciones", meta: "2h · Práctica", d: "Sistema lineal, cuadrado y diagonal. Pasos básicos y su musicalidad. El patín como recurso." },
   { n: "05", title: "Baile en pareja", meta: "2h+1 · Teórico-práctica", d: "La importancia de los brazos y la conducción. La «dominicana» de competición y en el social." },
+];
+
+const faqs = [
+  { q: "¿Cuándo empieza la formación?", a: "El curso arranca el jueves 7 de enero de 2027. Son 5 semanas, con dos horas semanales continuas por Zoom." },
+  { q: "¿Cómo puedo reservar mi plaza?", a: "Con una reserva en firme: una paga y señal de 100&nbsp;€ no reembolsables. Las plazas son muy limitadas y solo trabajo con reservas en firme. El resto puedes abonarlo en 2 o 3 cuotas, siendo la última antes del 1 de enero de 2027." },
+  { q: "¿Por qué esta formación se distingue de otras?", a: "Por las correcciones individuales. Terminadas las 10 horas de clase en directo, presentas tres tareas y cada una se corrige de forma individualizada sobre el material del curso. Y por el dossier: 50 páginas de contenido teórico y práctico —historia, musicalidad, manual de pasos para enseñar— incluidas sin coste adicional." },
+  { q: "¿De dónde sale el contenido del dossier?", a: "De treinta años de oficio. Evelyn Viana es periodista investigadora y lleva tres décadas en el sector: el material no es producto de la IA, sino de fuentes contrastadas y acumuladas a lo largo de todos esos años dedicados a la enseñanza de la bachata tradicional." },
 ];
 
 const testimonios = [
@@ -62,7 +70,8 @@ const testimonios = [
       </ol>
 
       <h3>Horario</h3>
-      <p>5 semanas: dos horas semanales continuas. Mañanas o mediodías a escoger entre miércoles,
+      <p><strong>La próxima edición empieza el jueves 7 de enero de 2027.</strong>
+        5 semanas: dos horas semanales continuas. Mañanas o mediodías a escoger entre miércoles,
         jueves o domingos (según demanda). Podrían abrirse otros horarios según demanda.</p>
 
       <h3>Cómo enseño</h3>
@@ -110,6 +119,8 @@ const testimonios = [
     </div>
   </section>
 
+  <Faq items={faqs} title="Preguntas sobre la formación" kicker="Antes de reservar" />
+
   <ContactForm name="contacto-formacion" title="Más información" note="Contacta conmigo para recibir más información sobre este curso y próximas actividades." />
 </Base>
 
@@ -121,6 +132,14 @@ const testimonios = [
   provider: { "@type": ["Organization", "DanceSchool"], name: "La Negra Salsa", sameAs: site.instagram },
   inLanguage: "es",
   courseMode: "online",
+  hasCourseInstance: {
+    "@type": "CourseInstance",
+    courseMode: "Online",
+    startDate: "2027-01-07",
+    courseWorkload: "PT10H",
+    location: { "@type": "VirtualLocation", url: "https://zoom.us" },
+    instructor: { "@type": "Person", name: "Evelyn Viana Lovera", alternateName: "La Negra", url: new URL("/evelyn-la-negra/", Astro.site).href },
+  },
   aggregateRating: {
     "@type": "AggregateRating",
     ratingValue: "5",

@@ -20,7 +20,7 @@ const {
 
     <div class="mslider__track" data-ms-track>
       {slides.map((s, i) => (
-        <figure class="mslide">
+        <figure class:list={["mslide", { "mslide--link": s.href }]}>
           {s.type === "video" ? (
             <video
               class="mslide__media"
@@ -38,6 +38,8 @@ const {
           ) : (
             <img class="mslide__media" src={s.src} alt={s.alt ?? ""} loading="lazy" decoding="async" draggable="false" />
           )}
+
+          {s.href && <a class="mslide__link" href={s.href} aria-label={s.title ?? s.alt}></a>}
 
           {(s.title || s.subtitle || s.type === "video") && (
             <figcaption class="mslide__cap">
@@ -105,6 +107,10 @@ const {
     -webkit-user-drag:none;user-select:none}
 
   /* Rótulo inferior sobre degradado */
+  .mslide__link{position:absolute;inset:0;z-index:2;border-radius:inherit}
+  .mslide--link{transition:transform .3s ease}
+  .mslide--link:hover{transform:translateY(-4px)}
+  .mslide--link:focus-within{outline:2px solid var(--acc);outline-offset:3px}
   .mslide__cap{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:flex-end;
     justify-content:space-between;gap:16px;padding:26px 24px 22px;
     background:linear-gradient(to top,rgba(0,0,0,.85) 0%,rgba(0,0,0,.55) 45%,rgba(0,0,0,0) 100%);
@@ -114,6 +120,7 @@ const {
     font-size:clamp(1.15rem,2.4vw,1.6rem);line-height:1}
   .mslide__s{color:var(--acc);font-weight:800;font-size:clamp(1.15rem,2.4vw,1.6rem);line-height:1}
   .mslide__ctrls{pointer-events:auto;display:flex;gap:10px;flex:0 0 auto}
+  .mslide__ctrls{position:relative;z-index:3}
   .mslide__btn{width:42px;height:42px;border-radius:50%;
     border:1px solid rgba(255,255,255,.35);background:rgba(0,0,0,.45);color:#fff;cursor:pointer;
     display:grid;place-items:center;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);

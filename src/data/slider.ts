@@ -12,9 +12,18 @@ export type Slide = {
   title?: string;    // texto sobre el degradado inferior
   subtitle?: string; // segunda línea (p. ej. el año)
   sound?: boolean;   // solo vídeos: muestra el botón para activar el audio
+  href?: string;     // si la pieza tiene página propia (un evento, por ejemplo)
 };
 
 export const slides: Slide[] = [
+  { type: "image", src: "/media/convivencia-merenguera.jpg",
+    alt: "Convivencia Merenguera en Ibiza, domingo 20 de septiembre de 18 a 21 h",
+    title: "Convivencia Merenguera", subtitle: "Ibiza · 20 sept",
+    href: "/convivencia-merenguera/" },
+  { type: "image", src: "/media/keeper-opening.jpg",
+    alt: "Keeper Opening en Ibiza, domingo 20 de septiembre desde las 20:30 h",
+    title: "Keeper Opening", subtitle: "Ibiza · 20 sept",
+    href: "/keeper-opening/" },
   { type: "video", src: "/media/evelyn-bailando.mp4", poster: "/media/evelyn-bailando.jpg",
     alt: "Teacher Training 2026 con Evelyn «La Negra»",
     title: "Teacher Training", subtitle: "2026", sound: true },
