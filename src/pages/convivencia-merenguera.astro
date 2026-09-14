@@ -1,0 +1,102 @@
+---
+import Base from "../layouts/Base.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import { site } from "../data/site";
+
+const lugar = "Davinia Van Praag Dance Academy";
+const direccion = "Calle Sa Real, 1 · Ibiza";
+const maps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${lugar}, Calle Sa Real 1, Ibiza`)}`;
+const wa = "https://api.whatsapp.com/send?phone=34659090696&text=Hola%20Evelyn,%20quiero%20reservar%20plaza%20en%20la%20Convivencia%20Merenguera";
+
+const datos = [
+  { k: "Cuándo", v: "Domingo 20 de septiembre, de 18 a 21 h" },
+  { k: "Dónde", v: lugar, extra: direccion, href: maps },
+  { k: "Qué", v: "Historia, musicalidad, flow corporal y parejas" },
+  { k: "Precio", v: "20 € público general · 15 € alumnos activos" },
+  { k: "Plazas", v: "Limitadas — imprescindible reservar" },
+];
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Event",
+  name: "Convivencia Merenguera",
+  description: "Tarde dedicada al merengue: historia, musicalidad, flow corporal y trabajo en pareja, con Evelyn «La Negra» en Ibiza.",
+  startDate: "2026-09-20T18:00:00+02:00",
+  endDate: "2026-09-20T21:00:00+02:00",
+  eventStatus: "https://schema.org/EventScheduled",
+  eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+  location: {
+    "@type": "Place",
+    name: lugar,
+    address: { "@type": "PostalAddress", streetAddress: "Calle Sa Real, 1", addressLocality: "Ibiza", addressCountry: "ES" },
+  },
+  image: [new URL("/media/clases-ibiza.jpg", Astro.site).href],
+  performer: { "@type": "Person", name: "Evelyn «La Negra»", url: new URL("/evelyn-la-negra/", Astro.site).href },
+  organizer: { "@type": "Person", name: "Evelyn «La Negra»", url: new URL("/evelyn-la-negra/", Astro.site).href },
+  offers: [
+    { "@type": "Offer", name: "Público general", price: "20", priceCurrency: "EUR", availability: "https://schema.org/LimitedAvailability", url: new URL("/convivencia-merenguera/", Astro.site).href, validFrom: "2026-09-01" },
+    { "@type": "Offer", name: "Alumnos activos", price: "15", priceCurrency: "EUR", availability: "https://schema.org/LimitedAvailability", url: new URL("/convivencia-merenguera/", Astro.site).href, validFrom: "2026-09-01" },
+  ],
+};
+---
+<Base
+  title="Convivencia Merenguera en Ibiza · 20 de septiembre con La Negra"
+  description="Tarde de merengue en Ibiza con Evelyn «La Negra»: historia, musicalidad, flow corporal y parejas. Domingo 20 de septiembre, de 18 a 21 h. Plazas limitadas."
+  hasAlternates={false}
+>
+  <article class="evt">
+    <div class="container">
+      <div class="evt__col">
+        <Breadcrumbs items={[{ label: "Inicio", href: "/" }, { label: "Convivencia Merenguera" }]} />
+        <p class="evt__kicker">Ibiza · 20 de septiembre</p>
+        <h1 class="evt__title">Convivencia Merenguera</h1>
+        <p class="evt__lead">Una tarde entera dedicada al merengue: de dónde viene, cómo suena y cómo
+          se baila. Historia, musicalidad, flow corporal y trabajo en pareja.</p>
+
+        <dl class="evt__facts">
+          {datos.map((d) => (
+            <div class="evt__fact">
+              <dt>{d.k}</dt>
+              <dd>
+                {d.href
+                  ? <a href={d.href} target="_blank" rel="noopener">{d.v}<br /><span class="evt__extra">{d.extra}</span></a>
+                  : <>{d.v}</>}
+              </dd>
+            </div>
+          ))}
+        </dl>
+
+        <div class="evt__cta">
+          <a class="btn btn--red btn--lg" href={wa} target="_blank" rel="noopener">Reservar plaza</a>
+          <a class="btn btn--ghost btn--lg" href={`tel:${site.phone.replace(/\s/g, "")}`}>{site.phone}</a>
+        </div>
+
+        <p class="evt__nota">Ese mismo domingo pincho en el <a href="/keeper-opening/">Keeper Opening</a>,
+          a partir de las 20:30 h. Puedes enlazar las dos cosas.</p>
+      </div>
+    </div>
+  </article>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+</Base>
+
+<style>
+  .evt{padding:calc(var(--header-h) + 40px) 0 90px}
+  .evt__col{max-width:var(--read);margin-inline:auto}
+  .evt__kicker{color:var(--acc);font-size:.75rem;font-weight:700;text-transform:uppercase;
+    letter-spacing:.08em;margin:22px 0 8px}
+  .evt__title{font-family:var(--serif);font-style:italic;font-weight:500;color:#fff;
+    font-size:clamp(2rem,5vw,3.4rem);line-height:1.12;margin:0 0 18px;text-transform:none}
+  .evt__lead{color:var(--text);font-size:1.05rem;line-height:1.6;margin:0 0 34px;max-width:56ch}
+  .evt__facts{margin:0;border-top:1px solid var(--line)}
+  .evt__fact{display:grid;grid-template-columns:150px 1fr;gap:20px;padding:18px 2px;
+    border-bottom:1px solid var(--line)}
+  .evt__fact dt{color:var(--muted);font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+  .evt__fact dd{margin:0;color:#fff;line-height:1.5}
+  .evt__fact dd a{color:#fff;text-decoration:none}
+  .evt__fact dd a:hover{color:var(--acc)}
+  .evt__extra{color:var(--muted);font-size:.9rem}
+  .evt__cta{display:flex;gap:14px;flex-wrap:wrap;margin:34px 0 0}
+  .evt__nota{margin:30px 0 0;color:var(--muted);font-size:.9rem}
+  .evt__nota a{color:var(--acc)}
+  @media (max-width:600px){.evt__fact{grid-template-columns:1fr;gap:4px}}
+</style>

@@ -1,0 +1,103 @@
+---
+import Base from "../layouts/Base.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import { site } from "../data/site";
+
+const lugar = "Keeper";
+const direccion = "Passeig Joan Carles I, s/n · Ibiza";
+const maps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent("Keeper, Passeig Joan Carles I, Ibiza")}`;
+
+const datos = [
+  { k: "Cuándo", v: "Domingo 20 de septiembre, social desde las 20:30 h" },
+  { k: "Dónde", v: lugar, extra: direccion, href: maps },
+  { k: "DJ", v: "Evelyn «La Negra» y LissJ" },
+  { k: "Precio", v: "10 € con consumición entrando antes de las 21:30 h" },
+];
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Event",
+  name: "Keeper Opening · Social de salsa y bachata",
+  description: "Apertura de temporada en Keeper (Ibiza): social de salsa y bachata con Evelyn «La Negra» y LissJ a los platos.",
+  startDate: "2026-09-20T20:30:00+02:00",
+  eventStatus: "https://schema.org/EventScheduled",
+  eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+  location: {
+    "@type": "Place",
+    name: lugar,
+    address: { "@type": "PostalAddress", streetAddress: "Passeig Joan Carles I, s/n", addressLocality: "Ibiza", addressCountry: "ES" },
+  },
+  image: [new URL("/img/evelyn-video-cover.jpg", Astro.site).href],
+  performer: [
+    { "@type": "Person", name: "Evelyn «La Negra»", url: new URL("/evelyn-la-negra/", Astro.site).href },
+    { "@type": "Person", name: "LissJ" },
+  ],
+  organizer: { "@type": "Person", name: "Evelyn «La Negra»", url: new URL("/evelyn-la-negra/", Astro.site).href },
+  offers: {
+    "@type": "Offer", name: "Entrada anticipada con consumición", price: "10", priceCurrency: "EUR",
+    availability: "https://schema.org/InStock", url: new URL("/keeper-opening/", Astro.site).href, validFrom: "2026-09-01",
+  },
+};
+---
+<Base
+  title="Keeper Opening en Ibiza · 20 de septiembre con La Negra a los platos"
+  description="Social de salsa y bachata en Keeper (Ibiza) con Evelyn «La Negra» y LissJ. Domingo 20 de septiembre desde las 20:30 h. 10 € con consumición antes de las 21:30."
+  hasAlternates={false}
+>
+  <article class="evt">
+    <div class="container">
+      <div class="evt__col">
+        <Breadcrumbs items={[{ label: "Inicio", href: "/" }, { label: "Keeper Opening" }]} />
+        <p class="evt__kicker">Ibiza · 20 de septiembre</p>
+        <h1 class="evt__title">Keeper Opening</h1>
+        <p class="evt__lead">Arranca la temporada en Keeper. Social de salsa y bachata, con la pista
+          abierta desde las 20:30 y LissJ y yo turnándonos a los platos.</p>
+
+        <dl class="evt__facts">
+          {datos.map((d) => (
+            <div class="evt__fact">
+              <dt>{d.k}</dt>
+              <dd>
+                {d.href
+                  ? <a href={d.href} target="_blank" rel="noopener">{d.v}<br /><span class="evt__extra">{d.extra}</span></a>
+                  : <>{d.v}</>}
+              </dd>
+            </div>
+          ))}
+        </dl>
+
+        <div class="evt__cta">
+          <a class="btn btn--red btn--lg" href={site.whatsapp} target="_blank" rel="noopener">Preguntar por WhatsApp</a>
+          <a class="btn btn--ghost btn--lg" href="/keeper-galeria/">Ver fotos de otras noches</a>
+        </div>
+
+        <p class="evt__nota">Antes, de 18 a 21 h, doy la
+          <a href="/convivencia-merenguera/">Convivencia Merenguera</a> en la academia. Sales de una y
+          entras en la otra.</p>
+      </div>
+    </div>
+  </article>
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+</Base>
+
+<style>
+  .evt{padding:calc(var(--header-h) + 40px) 0 90px}
+  .evt__col{max-width:var(--read);margin-inline:auto}
+  .evt__kicker{color:var(--acc);font-size:.75rem;font-weight:700;text-transform:uppercase;
+    letter-spacing:.08em;margin:22px 0 8px}
+  .evt__title{font-family:var(--serif);font-style:italic;font-weight:500;color:#fff;
+    font-size:clamp(2rem,5vw,3.4rem);line-height:1.12;margin:0 0 18px;text-transform:none}
+  .evt__lead{color:var(--text);font-size:1.05rem;line-height:1.6;margin:0 0 34px;max-width:56ch}
+  .evt__facts{margin:0;border-top:1px solid var(--line)}
+  .evt__fact{display:grid;grid-template-columns:150px 1fr;gap:20px;padding:18px 2px;
+    border-bottom:1px solid var(--line)}
+  .evt__fact dt{color:var(--muted);font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+  .evt__fact dd{margin:0;color:#fff;line-height:1.5}
+  .evt__fact dd a{color:#fff;text-decoration:none}
+  .evt__fact dd a:hover{color:var(--acc)}
+  .evt__extra{color:var(--muted);font-size:.9rem}
+  .evt__cta{display:flex;gap:14px;flex-wrap:wrap;margin:34px 0 0}
+  .evt__nota{margin:30px 0 0;color:var(--muted);font-size:.9rem}
+  .evt__nota a{color:var(--acc)}
+  @media (max-width:600px){.evt__fact{grid-template-columns:1fr;gap:4px}}
+</style>
