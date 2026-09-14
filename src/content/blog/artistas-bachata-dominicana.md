@@ -1,6 +1,6 @@
 ---
 title: "Artistas de bachata tradicional que tienes que escuchar"
-description: "De Luis Vargas y Ramón Cordero a Grupo Extra: los artistas imprescindibles de la bachata tradicional, clásicos y actuales, seleccionados por Évelyn «La Negra»."
+description: "De Luis Vargas y Ramón Cordero a Grupo Extra: los artistas imprescindibles de la bachata tradicional, clásicos y actuales, seleccionados por Evelyn «La Negra»."
 date: 2026-08-14
 tags: ["bachata dominicana", "música", "artistas"]
 cover: "/media/intensivos-ibiza.jpg"

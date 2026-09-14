@@ -1,6 +1,6 @@
 ---
 title: "Por qué el reggaetón, la kizomba y la bachata suenan a lo mismo"
-description: "El patrón rítmico que comparten el reggaetón, la kizomba y la bachata viene del Caribe. Évelyn «La Negra» explica de dónde salen esas células rítmicas."
+description: "El patrón rítmico que comparten el reggaetón, la kizomba y la bachata viene del Caribe. Evelyn «La Negra» explica de dónde salen esas células rítmicas."
 date: 2026-08-19
 tags: ["musicalidad", "bachata dominicana", "cultura", "ritmos latinos"]
 cover: "/media/clases-ibiza.jpg"

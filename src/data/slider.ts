@@ -16,9 +16,9 @@ export type Slide = {
 
 export const slides: Slide[] = [
   { type: "video", src: "/media/evelyn-bailando.mp4", poster: "/media/evelyn-bailando.jpg",
-    alt: "Teacher Training 2026 con Évelyn «La Negra»",
+    alt: "Teacher Training 2026 con Evelyn «La Negra»",
     title: "Teacher Training", subtitle: "2026", sound: true },
-  { type: "image", src: "/media/evelyn-social.jpg", alt: "Évelyn «La Negra» en la pista" },
+  { type: "image", src: "/media/evelyn-social.jpg", alt: "Evelyn «La Negra» en la pista" },
   { type: "image", src: "/media/clases-barcelona.jpg", alt: "Clases de bachata tradicional en Barcelona · BS Dance Center" },
   { type: "image", src: "/media/clases-ibiza.jpg", alt: "Clases de salsa y bachata en Ibiza" },
   { type: "image", src: "/media/intensivos-ibiza.jpg", alt: "Intensivos de septiembre en Ibiza" },

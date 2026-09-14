@@ -1,6 +1,6 @@
 ---
 title: "Salsa y bachata: bailar en el escenario no es bailar en el social"
-description: "La diferencia entre bailar salsa y bachata en el escenario y en el social, qué puede aprender la bachata de la salsa y cómo nació el Mundial de Pasos Libres. Por Évelyn «La Negra»."
+description: "La diferencia entre bailar salsa y bachata en el escenario y en el social, qué puede aprender la bachata de la salsa y cómo nació el Mundial de Pasos Libres. Por Evelyn «La Negra»."
 date: 2026-07-02
 tags: ["salsa", "bachata", "competición de baile", "mundial de pasos libres"]
 cover: "/img/campeonato.webp"

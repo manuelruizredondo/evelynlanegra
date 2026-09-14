@@ -1,6 +1,6 @@
 ---
 title: "Límites y respeto al bailar: lo que nadie te explica en clase"
-description: "Dónde están los límites al bailar bachata en pareja, por qué cambian según el país y qué debe saber quien lleva. Por Évelyn «La Negra», maestra con 30 años de pista."
+description: "Dónde están los límites al bailar bachata en pareja, por qué cambian según el país y qué debe saber quien lleva. Por Evelyn «La Negra», maestra con 30 años de pista."
 date: 2026-08-24
 tags: ["baile social", "respeto", "bachata dominicana", "consejos"]
 cover: "/media/evelyn-social.jpg"

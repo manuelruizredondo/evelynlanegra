@@ -1,6 +1,6 @@
 ---
 title: "Bachata tradicional, moderna y sensual: diferencias y cuál aprender"
-description: "Diferencias entre la bachata tradicional (dominicana), la moderna y la sensual, y por qué en el fondo es una sola música. Guía de Évelyn «La Negra»."
+description: "Diferencias entre la bachata tradicional (dominicana), la moderna y la sensual, y por qué en el fondo es una sola música. Guía de Evelyn «La Negra»."
 date: 2026-06-12
 tags: ["bachata tradicional", "bachata sensual", "bachata moderna", "bachata dominicana"]
 cover: "/img/evelyn.png"

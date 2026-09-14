@@ -1,6 +1,6 @@
 ---
 title: "Derecho, majao y mambo: las tres partes de una bachata"
-description: "Qué son el derecho, el majao y el mambo en una bachata, cómo reconocerlos al oído y cómo bailar cada uno. Explicado por Évelyn «La Negra»."
+description: "Qué son el derecho, el majao y el mambo en una bachata, cómo reconocerlos al oído y cómo bailar cada uno. Explicado por Evelyn «La Negra»."
 date: 2026-08-21
 tags: ["bachata dominicana", "musicalidad", "técnica"]
 cover: "/media/evelyn-social.jpg"

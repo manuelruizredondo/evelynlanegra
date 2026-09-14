@@ -1,6 +1,6 @@
 ---
 title: "Los instrumentos de la bachata: requinto, güira, bongó, segunda y bajo"
-description: "Qué instrumentos suenan en una bachata y qué hace cada uno. Aprende a identificarlos para bailar con musicalidad, explicado por Évelyn «La Negra»."
+description: "Qué instrumentos suenan en una bachata y qué hace cada uno. Aprende a identificarlos para bailar con musicalidad, explicado por Evelyn «La Negra»."
 date: 2026-07-18
 tags: ["bachata dominicana", "musicalidad", "instrumentos"]
 cover: "/media/clases-barcelona.jpg"

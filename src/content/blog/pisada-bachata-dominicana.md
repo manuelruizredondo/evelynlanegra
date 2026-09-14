@@ -1,6 +1,6 @@
 ---
 title: "La pisada en la bachata tradicional: qué es y por qué es la base"
-description: "Qué es la pisada en la bachata tradicional, por qué es la base de todo el baile y cómo el abuso del adorno (ondas, figuras) la arruina. Por Évelyn «La Negra»."
+description: "Qué es la pisada en la bachata tradicional, por qué es la base de todo el baile y cómo el abuso del adorno (ondas, figuras) la arruina. Por Evelyn «La Negra»."
 date: 2026-06-26
 tags: ["bachata dominicana", "bachata tradicional", "pisada", "técnica de baile"]
 cover: "/img/2024/12/clases-bcn-korke-y-judith-576x1024.jpeg"
