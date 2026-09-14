@@ -5,6 +5,16 @@ export const site = {
   phoneShort: "659 09 06 96",
   whatsapp: "https://wa.me/34659090696",
   email: "info@evelynlanegra.com",
+  // Titularidad legal del sitio (aviso legal, privacidad y datos estructurados)
+  legal: {
+    razonSocial: "FIRE STAGE PRODUCTIONS S.L.",
+    nif: "B26699561",
+    calle: "Av. Diagonal 40, 4-2",
+    cp: "08019",
+    ciudad: "Barcelona",
+    pais: "España",
+    email: "info@lanegrasalsa.com",
+  },
   instagram: "https://www.instagram.com/evelynlanegrasalsa/",
   spotify: "https://open.spotify.com/user/1165580333",
   festival: "https://www.campeonatopasoslibres.com/",

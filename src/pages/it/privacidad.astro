@@ -13,9 +13,10 @@ import { site } from "../../data/site";
 
       <h2>1. Titolare del trattamento</h2>
       <ul>
-        <li><strong>Titolare:</strong> Evelyn Viana Lovera («La Negra»)</li>
-        <li><strong>NIF/NIE:</strong> [COMPLETAR]</li>
-        <li><strong>Email:</strong> <a href={`mailto:${site.email}`}>{site.email}</a></li>
+        <li><strong>Titolare:</strong> {site.legal.razonSocial}</li>
+        <li><strong>NIF:</strong> {site.legal.nif}</li>
+        <li><strong>Sede:</strong> {site.legal.calle}, {site.legal.cp} Barcellona (Spagna)</li>
+        <li><strong>Email:</strong> <a href={`mailto:${site.legal.email}`}>{site.legal.email}</a></li>
       </ul>
 
       <h2>2. Finalità</h2>

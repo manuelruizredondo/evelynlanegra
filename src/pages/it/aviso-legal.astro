@@ -12,16 +12,16 @@ import { site } from "../../data/site";
       <p>In ottemperanza alla Legge spagnola 34/2002, sui Servizi della Società dell'Informazione e del
         Commercio Elettronico (LSSI-CE), si comunicano i seguenti dati del titolare del sito web:</p>
       <ul>
-        <li><strong>Titolare:</strong> Evelyn Viana Lovera («La Negra»)</li>
-        <li><strong>NIF/NIE:</strong> [COMPLETAR]</li>
-        <li><strong>Domicilio:</strong> [COMPLETAR] · Barcellona (Spagna)</li>
-        <li><strong>Email:</strong> <a href={`mailto:${site.email}`}>{site.email}</a></li>
+        <li><strong>Titolare:</strong> {site.legal.razonSocial}</li>
+        <li><strong>NIF:</strong> {site.legal.nif}</li>
+        <li><strong>Sede:</strong> {site.legal.calle}, {site.legal.cp} Barcellona (Spagna)</li>
+        <li><strong>Email:</strong> <a href={`mailto:${site.legal.email}`}>{site.legal.email}</a></li>
         <li><strong>Telefono:</strong> {site.phone}</li>
       </ul>
 
       <h2>2. Oggetto</h2>
       <p>Il presente sito web ha la finalità di offrire informazioni sulle lezioni, le formazioni e le
-        attività di ballo (salsa e bachata) tenute dalla titolare, oltre a facilitare il
+        attività di ballo (salsa e bachata) tenute da Evelyn «La Negra», oltre a facilitare il
         contatto con le persone interessate.</p>
 
       <h2>3. Condizioni d'uso</h2>

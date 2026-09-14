@@ -13,9 +13,10 @@ import { site } from "../data/site";
 
       <h2>1. Responsable del tratamiento</h2>
       <ul>
-        <li><strong>Responsable:</strong> Evelyn Viana Lovera («La Negra»)</li>
-        <li><strong>NIF/NIE:</strong> [COMPLETAR]</li>
-        <li><strong>Email:</strong> <a href={`mailto:${site.email}`}>{site.email}</a></li>
+        <li><strong>Responsable:</strong> {site.legal.razonSocial}</li>
+        <li><strong>NIF:</strong> {site.legal.nif}</li>
+        <li><strong>Domicilio:</strong> {site.legal.calle}, {site.legal.cp} {site.legal.ciudad} ({site.legal.pais})</li>
+        <li><strong>Email:</strong> <a href={`mailto:${site.legal.email}`}>{site.legal.email}</a></li>
       </ul>
 
       <h2>2. Finalidad</h2>
@@ -38,7 +39,7 @@ import { site } from "../data/site";
 
       <h2>6. Tus derechos</h2>
       <p>Puedes ejercer los derechos de acceso, rectificación, supresión, oposición, limitación y
-        portabilidad escribiendo a <a href={`mailto:${site.email}`}>{site.email}</a>. También puedes
+        portabilidad escribiendo a <a href={`mailto:${site.legal.email}`}>{site.legal.email}</a>. También puedes
         reclamar ante la <strong>Agencia Española de Protección de Datos</strong> (aepd.es).</p>
 
       <p class="legal__note">Última actualización: julio de 2026.</p>
