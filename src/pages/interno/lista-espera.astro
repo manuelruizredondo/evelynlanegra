@@ -122,18 +122,43 @@ import Base from "../../layouts/Base.astro";
   let envios = [];
   let columnas = [];
 
-  // Netlify añade estos campos por su cuenta; no aportan nada al listado
-  const OCULTAS = ["bot-field", "form-name", "user_agent", "user-agent", "userAgent"];
+  const OCULTAS = ["bot-field", "form-name"];
   // Texto libre: ocupa el ancho de la ficha en lugar de una celda
   const TEXTOS = ["expectativas", "mensaje", "como-conociste"];
   // Ya salen en la cabecera de la ficha
   const EN_CABECERA = ["nombre", "apellidos"];
+
+  // El user agent en crudo es ilegible. Interesa de dónde vino y con qué aparato.
+  const desde = (ua) => {
+    if (!ua) return "";
+    const s = String(ua);
+    const app =
+      /Instagram/i.test(s) ? "Instagram" :
+      /FBAN|FBAV|FB_IAB/i.test(s) ? "Facebook" :
+      /TikTok|BytedanceWebview/i.test(s) ? "TikTok" :
+      /WhatsApp/i.test(s) ? "WhatsApp" :
+      /Edg\//.test(s) ? "Edge" :
+      /OPR\/|Opera/.test(s) ? "Opera" :
+      /SamsungBrowser/.test(s) ? "Samsung Internet" :
+      /Firefox/.test(s) ? "Firefox" :
+      /Chrome|CriOS/.test(s) ? "Chrome" :
+      /Safari/.test(s) ? "Safari" : "Navegador";
+    const aparato =
+      /iPhone/.test(s) ? "iPhone" :
+      /iPad/.test(s) ? "iPad" :
+      /Android/.test(s) ? "Android" :
+      /Macintosh|Mac OS X/.test(s) ? "Mac" :
+      /Windows/.test(s) ? "Windows" :
+      /Linux/.test(s) ? "Linux" : "";
+    return aparato ? `${app} · ${aparato}` : app;
+  };
 
   const ETIQUETAS = {
     "nombre-artistico": "Nombre artístico", "otras-disciplinas": "Otras disciplinas",
     "como-conociste": "Cómo nos conoció", "consentimiento": "Acepta privacidad",
     "expectativas": "Qué espera de la formación", "pais": "País",
     "experiencia": "Años de experiencia", "telefono": "Teléfono",
+    "user_agent": "Llegó desde", "referrer": "Página de origen", "ip": "IP",
   };
   const etiqueta = (k) => ETIQUETAS[k] ?? k.charAt(0).toUpperCase() + k.slice(1);
 
@@ -168,6 +193,10 @@ import Base from "../../layouts/Base.astro";
     if (campo === "telefono") {
       const limpio = texto.replace(/[^+\d]/g, "").replace(/^\+/, "");
       return `<p class="li__v"><a href="https://wa.me/${limpio}" target="_blank" rel="noopener">${escapar(texto)}</a></p>`;
+    }
+    if (campo === "user_agent") {
+      const corto = desde(texto);
+      return `<p class="li__v" title="${escapar(texto)}">${escapar(corto)}</p>`;
     }
     if (campo === "instagram") {
       const usuario = texto.replace(/^@/, "");
