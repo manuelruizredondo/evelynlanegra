@@ -126,7 +126,15 @@ import InternoNav from "../../components/InternoNav.astro";
   .md__card{border:1px solid var(--li-linea);border-radius:13px;overflow:hidden;background:#fff}
   .md__previa{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--li-alt)}
   .md__cuerpo{padding:11px 13px 13px}
-  .md__nombre{margin:0 0 3px;font-size:.83rem;font-weight:600;overflow-wrap:anywhere}
+  .md__nombre{display:block;width:100%;margin:0 0 3px;padding:2px 4px;margin-left:-4px;
+    background:none;border:1px solid transparent;border-radius:6px;
+    font:inherit;font-size:.83rem;font-weight:600;color:var(--li-tinta);
+    text-align:left;overflow-wrap:anywhere;cursor:text}
+  .md__nombre:hover{border-color:var(--li-linea);background:var(--li-alt)}
+  .md__editar{display:block;width:100%;margin:0 0 3px;padding:2px 4px;margin-left:-4px;
+    font:inherit;font-size:.83rem;font-weight:600;color:var(--li-tinta);
+    background:#fff;border:1px solid var(--li-acc);border-radius:6px}
+  .md__editar:focus{outline:none}
   .md__meta{margin:0 0 10px;color:var(--li-suave);font-size:.72rem}
   .md__acciones{display:flex;gap:7px}
   .md__mini{flex:1;background:var(--li-alt);border:1px solid var(--li-linea);border-radius:7px;
@@ -210,7 +218,8 @@ import InternoNav from "../../components/InternoNav.astro";
       return `<article class="md__card">
         <a href="${escapar(a.url)}" target="_blank" rel="noopener">${previa}</a>
         <div class="md__cuerpo">
-          <p class="md__nombre">${escapar(a.nombre)}</p>
+          <button type="button" class="md__nombre" data-renombrar="${escapar(a.nombre)}"
+                  title="Pulsa para cambiar el nombre">${escapar(a.nombre)}</button>
           <p class="md__meta">${peso(a.bytes)} · ${fecha(a.fecha)}</p>
           <div class="md__acciones">
             <button type="button" class="md__mini" data-copiar="${escapar(a.url)}">Copiar enlace</button>
@@ -305,6 +314,42 @@ import InternoNav from "../../components/InternoNav.astro";
       } catch { prompt("Copia el enlace:", copiar.dataset.copiar); }
       return;
     }
+    const renombrar = ev.target.closest("[data-renombrar]");
+    if (renombrar && !renombrar.dataset.editando) {
+      const antiguo = renombrar.dataset.renombrar;
+      const punto = antiguo.lastIndexOf(".");
+      const sinExt = punto > 0 ? antiguo.slice(0, punto) : antiguo;
+      const ext = punto > 0 ? antiguo.slice(punto) : "";
+
+      const campo = document.createElement("input");
+      campo.type = "text";
+      campo.className = "md__editar";
+      campo.value = sinExt;
+      renombrar.replaceWith(campo);
+      campo.focus();
+      campo.select();
+
+      let cerrado = false;
+      const cerrar = async (guardar) => {
+        if (cerrado) return;
+        cerrado = true;
+        const nuevo = campo.value.trim();
+        if (!guardar || !nuevo || nuevo === sinExt) { pintar(); return; }
+        try {
+          const data = await alServidor("renombrar", { nombre: antiguo, nuevo: nuevo + ext });
+          archivos = data.archivos ?? archivos;
+          pintar();
+        } catch (e) { alert(e.message); pintar(); }
+      };
+
+      campo.addEventListener("keydown", (k) => {
+        if (k.key === "Enter") { k.preventDefault(); cerrar(true); }
+        if (k.key === "Escape") { k.preventDefault(); cerrar(false); }
+      });
+      campo.addEventListener("blur", () => cerrar(true));
+      return;
+    }
+
     const borrar = ev.target.closest("[data-borrar]");
     if (borrar) {
       const nombre = borrar.dataset.borrar;

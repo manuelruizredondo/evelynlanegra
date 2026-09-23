@@ -105,6 +105,26 @@ if ($accion === 'borrar') {
   salir(200, ['ok' => true, 'archivos' => listado()]);
 }
 
+if ($accion === 'renombrar') {
+  $nombre = basename((string)($_POST['nombre'] ?? ''));
+  $ext = strtolower(pathinfo($nombre, PATHINFO_EXTENSION));
+  if ($nombre === '' || !isset(TIPOS[$ext])) salir(400, ['error' => 'Nombre no válido.']);
+
+  $origen = CARPETA . '/' . $nombre;
+  if (!is_file($origen)) salir(404, ['error' => 'Ese archivo ya no está.']);
+
+  // La extensión no se toca: se conserva la del archivo original, de modo que
+  // renombrar nunca puede convertir una foto en algo ejecutable.
+  $nuevo = nombreSeguro((string)($_POST['nuevo'] ?? ''), $ext);
+  if ($nuevo === '.' . $ext || $nuevo === 'archivo.' . $ext) salir(400, ['error' => 'Escribe un nombre.']);
+
+  $destino = CARPETA . '/' . $nuevo;
+  if ($destino !== $origen && file_exists($destino)) salir(409, ['error' => 'Ya hay un archivo con ese nombre.']);
+  if ($destino !== $origen && !rename($origen, $destino)) salir(500, ['error' => 'No se pudo renombrar.']);
+
+  salir(200, ['ok' => true, 'archivo' => ficha($destino), 'archivos' => listado()]);
+}
+
 if ($accion === 'subir') {
   $f = $_FILES['archivo'] ?? null;
   if (!$f || ($f['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
