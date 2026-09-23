@@ -97,6 +97,7 @@ export const ui = {
         { label: "Cookies", href: "/cookies/" },
       ],
     },
+    areaPrivada: "Área privada",
     waitlist: {
       kicker: "Lista de espera",
       title: "Avísame cuando abra el curso",
@@ -183,6 +184,7 @@ export const ui = {
         { label: "Cookie", href: "/cookies/" },
       ],
     },
+    areaPrivada: "Area riservata",
     waitlist: {
       kicker: "Lista d’attesa",
       title: "Avvisami quando apre il corso",
