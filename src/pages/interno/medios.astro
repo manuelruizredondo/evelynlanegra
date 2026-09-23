@@ -164,8 +164,17 @@ import Base from "../../layouts/Base.astro";
     fd.append("exp", p.exp);
     fd.append("sig", p.sig);
     Object.entries(extra).forEach(([k, v]) => fd.append(k, v));
-    const r = await fetch(p.endpoint, { method: "POST", body: fd });
-    const data = await r.json();
+    let r;
+    try {
+      r = await fetch(p.endpoint, { method: "POST", body: fd });
+    } catch {
+      // Casi siempre: la dirección no existe y su página de error no trae CORS
+      throw new Error(`No se pudo contactar con ${p.endpoint} — revisa MEDIA_ENDPOINT en Netlify.`);
+    }
+    let data = {};
+    try { data = await r.json(); } catch {
+      throw new Error(`${p.endpoint} respondió ${r.status} sin datos. ¿Es esa la ruta correcta del PHP?`);
+    }
     if (!r.ok) throw new Error(data.error || "El servidor de medios ha fallado.");
     return data;
   };
