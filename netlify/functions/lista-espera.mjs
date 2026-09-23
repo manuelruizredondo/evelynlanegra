@@ -46,6 +46,24 @@ export default async (req, context) => {
     const formularios = await pedir(`/sites/${siteId}/forms`, token);
     const resumen = formularios.map((f) => ({ id: f.id, name: f.name, count: f.submission_count }));
 
+    // «Todos»: se juntan los envíos de cada formulario y se ordenan por fecha
+    if (cuerpo.formulario === "__todos") {
+      const juntos = [];
+      for (const f of formularios) {
+        for (let pagina = 1; pagina <= 3; pagina++) {
+          const lote = await pedir(`/forms/${f.id}/submissions?per_page=100&page=${pagina}`, token);
+          juntos.push(...lote.map((e) => ({ ...e, _form: f.name })));
+          if (lote.length < 100) break;
+        }
+      }
+      juntos.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      return json({
+        formularios: resumen,
+        actual: "__todos",
+        envios: juntos.map((e) => ({ fecha: e.created_at, formulario: e._form, datos: e.data ?? {} })),
+      });
+    }
+
     const elegido = cuerpo.formulario
       ? formularios.find((f) => f.name === cuerpo.formulario)
       : formularios.find((f) => f.name === "lista-espera-online") ?? formularios[0];

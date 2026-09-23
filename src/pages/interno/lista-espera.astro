@@ -82,6 +82,7 @@ import Base from "../../layouts/Base.astro";
   .li__tab-num{min-width:22px;height:22px;display:inline-grid;place-items:center;padding:0 6px;
     border-radius:999px;background:var(--li-alt);color:var(--li-suave);
     font-size:.72rem;font-weight:700}
+  .li__tab--todos{border-color:#c9c9d0}
   .li__tab--activo{background:var(--li-acc);border-color:var(--li-acc);color:#fff;font-weight:600}
   .li__tab--activo .li__tab-num{background:rgba(255,255,255,.22);color:#fff}
   /* Los que no han recibido nada, apagados pero accesibles */
@@ -108,6 +109,9 @@ import Base from "../../layouts/Base.astro";
   .li__nombre{margin:0;font-size:1.12rem;font-weight:700;color:var(--li-tinta)}
   .li__ident{min-width:0}
   .li__fecha{margin:0;color:var(--li-suave);font-size:.8rem;white-space:nowrap}
+  .li__sello{display:inline-block;margin:6px 0 0;padding:2px 9px;border-radius:999px;
+    background:var(--li-alt);color:var(--li-suave);font-size:.68rem;font-weight:700;
+    text-transform:uppercase;letter-spacing:.05em}
   .li__origen{margin:4px 0 0;font-size:.8rem;overflow-wrap:anywhere}
   .li__origen a{color:var(--li-acc);text-decoration:none}
   .li__origen a:hover{text-decoration:underline}
@@ -282,7 +286,18 @@ import Base from "../../layouts/Base.astro";
       </div>`;
     };
 
-    tabs.innerHTML = bloque("ES", "Español") + bloque("IT", "Italiano");
+    const total = listaForms.reduce((s, f) => s + f.count, 0);
+    const todos = `<div class="li__grupo">
+      <p class="li__grupo-t">Ver</p>
+      <div class="li__tabs-fila">
+        <button type="button" class="li__tab li__tab--todos${actual === "__todos" ? " li__tab--activo" : ""}" data-form="__todos">
+          <span class="li__tab-txt">Todos</span>
+          <span class="li__tab-num">${total}</span>
+        </button>
+      </div>
+    </div>`;
+
+    tabs.innerHTML = todos + bloque("ES", "Español") + bloque("IT", "Italiano");
   };
 
   const pintar = () => {
@@ -295,6 +310,7 @@ import Base from "../../layouts/Base.astro";
       ? `${envios.length} ${envios.length === 1 ? "envío" : "envíos"}`
       : `${filas.length} de ${envios.length}`;
 
+    const todos = actual === "__todos";
     const cortos = columnas.filter((c) => !TEXTOS.includes(c) && !EN_CABECERA.includes(c));
     const largos = columnas.filter((c) => TEXTOS.includes(c));
 
@@ -302,10 +318,20 @@ import Base from "../../layouts/Base.astro";
       const d = e.datos;
       const nombre = [d.nombre, d.apellidos].filter(Boolean).join(" ").trim() || "Sin nombre";
 
-      const datos = cortos.map((c) =>
+      // Juntando formularios, cada ficha enseña solo sus propios campos:
+      // un alta de newsletter no tiene por qué mostrar «años de experiencia»
+      const suyos = todos
+        ? Object.keys(d).filter((c) => !OCULTAS.includes(c) && !TEXTOS.includes(c) && !EN_CABECERA.includes(c))
+        : cortos;
+
+      const datos = suyos.map((c) =>
         `<div class="li__dato"><p class="li__k">${etiqueta(c)}</p>${valor(c, d[c])}</div>`).join("");
 
-      const textos = largos
+      const textosCampos = todos
+        ? Object.keys(d).filter((c) => TEXTOS.includes(c))
+        : largos;
+
+      const textos = textosCampos
         .map((c) => [c, String(d[c] ?? "").trim()])
         .filter(([, v]) => v)
         .map(([c, v]) =>
@@ -323,6 +349,7 @@ import Base from "../../layouts/Base.astro";
         <header class="li__cab">
           <div class="li__ident">
             <h2 class="li__nombre">${escapar(nombre)}</h2>
+            ${todos && e.formulario ? `<p class="li__sello">${escapar(nombreForm(e.formulario).titulo)}${nombreForm(e.formulario).idioma === "IT" ? " · IT" : ""}</p>` : ""}
             ${linea}
           </div>
           <p class="li__fecha">${fecha(e.fecha)}</p>
@@ -378,14 +405,16 @@ import Base from "../../layouts/Base.astro";
 
   btnCsv.addEventListener("click", () => {
     const esc = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-    const cab = ["fecha", ...columnas].map(esc).join(",");
+    const conForm = actual === "__todos";
+    const cab = [...(conForm ? ["formulario"] : []), "fecha", ...columnas].map(esc).join(",");
     const filas = envios.map((e) =>
-      [e.fecha, ...columnas.map((c) => (Array.isArray(e.datos[c]) ? e.datos[c].join(" | ") : e.datos[c]))]
+      [...(conForm ? [e.formulario ?? ""] : []), e.fecha,
+       ...columnas.map((c) => (Array.isArray(e.datos[c]) ? e.datos[c].join(" | ") : e.datos[c]))]
         .map(esc).join(","));
     const csv = "﻿" + [cab, ...filas].join("\n");
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
-    a.download = `${actual || "formulario"}-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `${actual === "__todos" ? "todos-los-formularios" : actual || "formulario"}-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(a.href);
   });
