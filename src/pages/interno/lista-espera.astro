@@ -8,6 +8,7 @@ import Base from "../../layouts/Base.astro";
     <div class="li__ancho">
       <p class="li__kicker">Uso interno</p>
       <h1 class="li__h1">Formularios recibidos</h1>
+      <p class="li__sub"><a href="/interno/medios/">Fotos y vídeos →</a></p>
 
       <form class="li__login" data-login>
         <label>
@@ -49,7 +50,10 @@ import Base from "../../layouts/Base.astro";
   .li__ancho{padding-inline:clamp(16px,3vw,44px);max-width:1500px;margin-inline:auto}
   .li__kicker{margin:0 0 6px;color:var(--li-acc);font-size:.7rem;font-weight:700;
     text-transform:uppercase;letter-spacing:.1em}
-  .li__h1{color:var(--li-tinta);font-size:clamp(1.7rem,3.5vw,2.4rem);margin:0 0 26px}
+  .li__h1{color:var(--li-tinta);font-size:clamp(1.7rem,3.5vw,2.4rem);margin:0 0 6px}
+  .li__sub{margin:0 0 26px;font-size:.85rem}
+  .li__sub a{color:var(--li-acc);text-decoration:none}
+  .li__sub a:hover{text-decoration:underline}
 
   .li__btn{background:var(--li-acc);color:#fff;border:0;border-radius:9px;padding:11px 20px;
     font:inherit;font-weight:700;font-size:.82rem;cursor:pointer}

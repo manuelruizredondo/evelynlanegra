@@ -1,0 +1,12 @@
+# Va dentro de la carpeta «subidas», renombrado a .htaccess
+# Impide que nada de lo subido se ejecute: si alguien colara un script,
+# el servidor lo trataría como texto en vez de correrlo.
+
+php_flag engine off
+Options -ExecCGI -Indexes
+
+<FilesMatch "\.(php|phar|phtml|php[0-9]|pl|py|cgi|sh|htaccess)$">
+  Require all denied
+</FilesMatch>
+
+AddType text/plain .php .phtml .phar .pl .py .cgi .sh

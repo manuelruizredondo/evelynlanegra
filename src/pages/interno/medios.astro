@@ -1,0 +1,316 @@
+---
+import Base from "../../layouts/Base.astro";
+// Uso interno: no se indexa y /interno/ está bloqueado en robots.txt.
+// Los archivos van directos al servidor de medios, sin pasar por Netlify
+// (sus funciones no admiten más de 6 MB por petición).
+---
+<Base title="Fotos y vídeos · uso interno" description="Subida y listado de material." noindex={true}>
+  <section class="li">
+    <div class="li__ancho">
+      <p class="li__kicker">Uso interno</p>
+      <h1 class="li__h1">Fotos y vídeos</h1>
+      <p class="li__sub"><a href="/interno/lista-espera/">← Formularios recibidos</a></p>
+
+      <form class="li__login" data-login>
+        <label>
+          <span>Contraseña</span>
+          <input type="password" name="clave" autocomplete="current-password" required />
+        </label>
+        <button class="li__btn" type="submit">Entrar</button>
+        <p class="li__error" data-error hidden></p>
+      </form>
+
+      <div class="li__panel" data-panel hidden>
+        <div class="md__zona" data-zona>
+          <input type="file" data-input multiple accept="image/*,video/*" hidden />
+          <p class="md__zona-t">Arrastra aquí las fotos y los vídeos</p>
+          <p class="md__zona-s">o <button type="button" class="md__link" data-elegir>búscalos en tu ordenador</button></p>
+          <p class="md__zona-n">JPG, PNG, WEBP, GIF · MP4, MOV, WEBM · hasta 300 MB cada uno</p>
+        </div>
+
+        <ul class="md__cola" data-cola></ul>
+
+        <div class="li__barra">
+          <label class="li__campo li__campo--ancho">
+            <span>Buscar</span>
+            <input type="search" data-buscar placeholder="nombre del archivo…" />
+          </label>
+          <p class="li__contador" data-contador></p>
+        </div>
+
+        <div class="md__rejilla" data-rejilla></div>
+        <p class="li__vacio" data-vacio hidden>Todavía no has subido nada.</p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style is:global>
+  .li{
+    --li-tinta:#15151a; --li-suave:#6d6d76; --li-linea:#e4e4e8;
+    --li-fondo:#fff; --li-alt:#f6f6f8; --li-acc:#ce0306;
+    background:var(--li-fondo);color:var(--li-tinta);
+    padding:calc(var(--header-h) + 34px) 0 70px;min-height:100vh;
+  }
+  .li__ancho{padding-inline:clamp(16px,3vw,44px);max-width:1500px;margin-inline:auto}
+  .li__kicker{margin:0 0 6px;color:var(--li-acc);font-size:.7rem;font-weight:700;
+    text-transform:uppercase;letter-spacing:.1em}
+  .li__h1{color:var(--li-tinta);font-size:clamp(1.7rem,3.5vw,2.4rem);margin:0 0 6px}
+  .li__sub{margin:0 0 26px;font-size:.85rem}
+  .li__sub a{color:var(--li-acc);text-decoration:none}
+  .li__sub a:hover{text-decoration:underline}
+
+  .li__btn{background:var(--li-acc);color:#fff;border:0;border-radius:9px;padding:11px 20px;
+    font:inherit;font-weight:700;font-size:.82rem;cursor:pointer}
+  .li__btn:hover{filter:brightness(1.1)}
+  .li__login{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;max-width:460px}
+  .li__login[hidden]{display:none}
+  .li__login label{display:flex;flex-direction:column;gap:6px;font-size:.7rem;font-weight:700;
+    color:var(--li-suave);text-transform:uppercase;letter-spacing:.06em}
+  .li__login input{font:inherit;font-weight:400;text-transform:none;letter-spacing:0;padding:11px 14px;
+    border:1px solid var(--li-linea);border-radius:9px;background:#fff;color:var(--li-tinta);min-width:240px}
+  .li__login input:focus{outline:none;border-color:var(--li-acc)}
+  .li__error{width:100%;margin:6px 0 0;color:var(--li-acc);font-size:.88rem}
+
+  .li__barra{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;margin:26px 0 18px}
+  .li__campo{display:flex;flex-direction:column;gap:6px;font-size:.68rem;font-weight:700;
+    color:var(--li-suave);text-transform:uppercase;letter-spacing:.07em}
+  .li__campo--ancho{flex:1 1 240px;max-width:380px}
+  .li__campo input{font:inherit;font-weight:400;text-transform:none;letter-spacing:0;
+    padding:10px 13px;border:1px solid var(--li-linea);border-radius:9px;background:#fff;
+    color:var(--li-tinta);width:100%}
+  .li__campo input:focus{outline:none;border-color:var(--li-acc)}
+  .li__contador{margin:0 auto 11px 0;color:var(--li-tinta);font-weight:700;font-size:.88rem}
+  .li__vacio{color:var(--li-suave);margin-top:18px}
+
+  /* Zona de arrastre */
+  .md__zona{border:2px dashed #d3d3da;border-radius:16px;padding:38px 24px;text-align:center;
+    background:var(--li-alt);transition:border-color .15s,background .15s}
+  .md__zona--activa{border-color:var(--li-acc);background:#fdf3f3}
+  .md__zona-t{margin:0 0 4px;font-weight:700;font-size:1.02rem}
+  .md__zona-s{margin:0 0 10px;color:var(--li-suave);font-size:.9rem}
+  .md__zona-n{margin:0;color:#9a9aa2;font-size:.76rem}
+  .md__link{background:none;border:0;padding:0;font:inherit;color:var(--li-acc);
+    text-decoration:underline;cursor:pointer}
+
+  /* Cola de subida */
+  .md__cola{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:8px}
+  .md__cola:empty{margin:0}
+  .md__item{display:grid;grid-template-columns:1fr auto;gap:4px 14px;align-items:center;
+    border:1px solid var(--li-linea);border-radius:10px;padding:11px 14px;font-size:.85rem}
+  .md__item-n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .md__item-e{color:var(--li-suave);font-size:.78rem;white-space:nowrap}
+  .md__item--error{border-color:var(--li-acc);background:#fdf3f3}
+  .md__item--error .md__item-e{color:var(--li-acc)}
+  .md__barra{grid-column:1/-1;height:4px;border-radius:999px;background:var(--li-linea);overflow:hidden}
+  .md__barra span{display:block;height:100%;width:0;background:var(--li-acc);transition:width .2s}
+
+  /* Rejilla de lo subido */
+  .md__rejilla{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
+  .md__card{border:1px solid var(--li-linea);border-radius:13px;overflow:hidden;background:#fff}
+  .md__previa{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--li-alt)}
+  .md__cuerpo{padding:11px 13px 13px}
+  .md__nombre{margin:0 0 3px;font-size:.83rem;font-weight:600;overflow-wrap:anywhere}
+  .md__meta{margin:0 0 10px;color:var(--li-suave);font-size:.72rem}
+  .md__acciones{display:flex;gap:7px}
+  .md__mini{flex:1;background:var(--li-alt);border:1px solid var(--li-linea);border-radius:7px;
+    padding:6px 8px;font:inherit;font-size:.74rem;font-weight:600;color:var(--li-tinta);cursor:pointer}
+  .md__mini:hover{border-color:var(--li-tinta)}
+  .md__mini--borrar{flex:0 0 auto;color:var(--li-acc)}
+  .md__mini--ok{background:var(--li-acc);border-color:var(--li-acc);color:#fff}
+</style>
+
+<script>
+  const $ = (s) => document.querySelector(s);
+  const login = $("[data-login]"), panel = $("[data-panel]"), error = $("[data-error]");
+  const zona = $("[data-zona]"), input = $("[data-input]"), cola = $("[data-cola]");
+  const rejilla = $("[data-rejilla]"), buscar = $("[data-buscar]");
+  const contador = $("[data-contador]"), vacio = $("[data-vacio]");
+
+  // El secreto no baja nunca: Netlify entrega una firma que caduca
+  let permiso = null;
+  let clave = "";
+  let archivos = [];
+
+  const peso = (b) => b > 1048576 ? (b / 1048576).toFixed(1) + " MB" : Math.max(1, Math.round(b / 1024)) + " KB";
+  const fecha = (iso) => {
+    try { return new Date(iso).toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" }); }
+    catch { return ""; }
+  };
+  const escapar = (s) => String(s).replace(/[<>&"]/g, (m) =>
+    ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;" }[m]));
+
+  const pedirPermiso = async () => {
+    const r = await fetch("/.netlify/functions/media-permiso", {
+      method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ clave }),
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || "Error inesperado");
+    return data;
+  };
+
+  // Caducado o a punto: se pide otro antes de seguir
+  const permisoVigente = async () => {
+    const ahora = Math.floor(Date.now() / 1000);
+    if (!permiso || Number(permiso.exp) - ahora < 60) permiso = await pedirPermiso();
+    return permiso;
+  };
+
+  const alServidor = async (accion, extra = {}) => {
+    const p = await permisoVigente();
+    const fd = new FormData();
+    fd.append("accion", accion);
+    fd.append("exp", p.exp);
+    fd.append("sig", p.sig);
+    Object.entries(extra).forEach(([k, v]) => fd.append(k, v));
+    const r = await fetch(p.endpoint, { method: "POST", body: fd });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || "El servidor de medios ha fallado.");
+    return data;
+  };
+
+  const pintar = () => {
+    const q = buscar.value.trim().toLowerCase();
+    const lista = q ? archivos.filter((a) => a.nombre.toLowerCase().includes(q)) : archivos;
+
+    contador.textContent = lista.length === archivos.length
+      ? `${archivos.length} ${archivos.length === 1 ? "archivo" : "archivos"}`
+      : `${lista.length} de ${archivos.length}`;
+
+    rejilla.innerHTML = lista.map((a) => {
+      const previa = a.tipo === "video"
+        ? `<video class="md__previa" src="${escapar(a.url)}#t=0.5" muted playsinline preload="metadata"></video>`
+        : `<img class="md__previa" src="${escapar(a.url)}" alt="${escapar(a.nombre)}" loading="lazy" />`;
+      return `<article class="md__card">
+        <a href="${escapar(a.url)}" target="_blank" rel="noopener">${previa}</a>
+        <div class="md__cuerpo">
+          <p class="md__nombre">${escapar(a.nombre)}</p>
+          <p class="md__meta">${peso(a.bytes)} · ${fecha(a.fecha)}</p>
+          <div class="md__acciones">
+            <button type="button" class="md__mini" data-copiar="${escapar(a.url)}">Copiar enlace</button>
+            <button type="button" class="md__mini md__mini--borrar" data-borrar="${escapar(a.nombre)}" title="Borrar">✕</button>
+          </div>
+        </div>
+      </article>`;
+    }).join("");
+
+    vacio.hidden = archivos.length > 0;
+  };
+
+  const cargar = async () => {
+    const data = await alServidor("listar");
+    archivos = data.archivos ?? [];
+    pintar();
+  };
+
+  /* ── Subida, de una en una, con barra de progreso ── */
+  const subirUno = (file) => new Promise(async (resolve) => {
+    const li = document.createElement("li");
+    li.className = "md__item";
+    li.innerHTML = `<span class="md__item-n">${escapar(file.name)}</span>
+      <span class="md__item-e">${peso(file.size)}</span>
+      <span class="md__barra"><span></span></span>`;
+    cola.appendChild(li);
+    const barra = li.querySelector(".md__barra span");
+    const estado = li.querySelector(".md__item-e");
+
+    try {
+      const p = await permisoVigente();
+      const fd = new FormData();
+      fd.append("accion", "subir");
+      fd.append("exp", p.exp);
+      fd.append("sig", p.sig);
+      fd.append("archivo", file);
+
+      await new Promise((ok, mal) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", p.endpoint);
+        xhr.upload.addEventListener("progress", (ev) => {
+          if (ev.lengthComputable) barra.style.width = Math.round((ev.loaded / ev.total) * 100) + "%";
+        });
+        xhr.addEventListener("load", () => {
+          let data = {};
+          try { data = JSON.parse(xhr.responseText); } catch { /* respuesta rara */ }
+          if (xhr.status >= 200 && xhr.status < 300) {
+            if (data.archivo) archivos.unshift(data.archivo);
+            ok();
+          } else mal(new Error(data.error || `El servidor respondió ${xhr.status}`));
+        });
+        xhr.addEventListener("error", () => mal(new Error("No se pudo conectar con el servidor de medios.")));
+        xhr.send(fd);
+      });
+
+      estado.textContent = "Subido";
+      barra.style.width = "100%";
+      setTimeout(() => li.remove(), 1800);
+    } catch (e) {
+      li.classList.add("md__item--error");
+      estado.textContent = e.message;
+    }
+    resolve();
+  });
+
+  const subir = async (lista) => {
+    for (const file of lista) await subirUno(file);
+    pintar();
+  };
+
+  /* ── Eventos ── */
+  $("[data-elegir]").addEventListener("click", () => input.click());
+  input.addEventListener("change", () => { subir([...input.files]); input.value = ""; });
+
+  ["dragenter", "dragover"].forEach((ev) =>
+    zona.addEventListener(ev, (e) => { e.preventDefault(); zona.classList.add("md__zona--activa"); }));
+  ["dragleave", "drop"].forEach((ev) =>
+    zona.addEventListener(ev, (e) => { e.preventDefault(); zona.classList.remove("md__zona--activa"); }));
+  zona.addEventListener("drop", (e) => {
+    const files = [...(e.dataTransfer?.files ?? [])].filter((f) => /^(image|video)\//.test(f.type));
+    if (files.length) subir(files);
+  });
+
+  rejilla.addEventListener("click", async (ev) => {
+    const copiar = ev.target.closest("[data-copiar]");
+    if (copiar) {
+      try {
+        await navigator.clipboard.writeText(copiar.dataset.copiar);
+        copiar.textContent = "¡Copiado!";
+        copiar.classList.add("md__mini--ok");
+        setTimeout(() => { copiar.textContent = "Copiar enlace"; copiar.classList.remove("md__mini--ok"); }, 1400);
+      } catch { prompt("Copia el enlace:", copiar.dataset.copiar); }
+      return;
+    }
+    const borrar = ev.target.closest("[data-borrar]");
+    if (borrar) {
+      const nombre = borrar.dataset.borrar;
+      if (!confirm(`¿Borrar «${nombre}»? No se puede deshacer.`)) return;
+      try {
+        const data = await alServidor("borrar", { nombre });
+        archivos = data.archivos ?? archivos.filter((a) => a.nombre !== nombre);
+        pintar();
+      } catch (e) { alert(e.message); }
+    }
+  });
+
+  buscar.addEventListener("input", pintar);
+
+  login.addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    error.hidden = true;
+    clave = login.clave.value;
+    const btn = login.querySelector("button");
+    btn.disabled = true; btn.textContent = "Comprobando…";
+    try {
+      permiso = await pedirPermiso();
+      await cargar();
+      login.hidden = true;
+      panel.hidden = false;
+    } catch (e) {
+      clave = ""; permiso = null;
+      error.textContent = e.message;
+      error.hidden = false;
+    } finally {
+      btn.disabled = false; btn.textContent = "Entrar";
+    }
+  });
+</script>
