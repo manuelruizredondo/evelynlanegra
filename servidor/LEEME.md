@@ -7,11 +7,15 @@ porque sus funciones no aceptan más de 6 MB por petición y un vídeo pesa más
 
 Dentro de la carpeta `media/evelyn/`:
 
-| Archivo de aquí      | Cómo se llama allí     | Dónde va                |
-|----------------------|------------------------|-------------------------|
-| `lanegra-media.php`  | `lanegra-media.php`    | `media/evelyn/`         |
-| `user.ini`           | `.user.ini`            | `media/evelyn/`         |
-| `subidas.htaccess`   | `.htaccess`            | `media/evelyn/subidas/` |
+| Archivo de aquí       | Cómo se llama allí  | Dónde va                |
+|-----------------------|---------------------|-------------------------|
+| `lanegra-media.php`   | `lanegra-media.php` | `media/evelyn/`         |
+| `secreto.php.ejemplo` | `secreto.php`       | `media/evelyn/`         |
+| `user.ini`            | `.user.ini`         | `media/evelyn/`         |
+| `subidas.htaccess`    | `.htaccess`         | `media/evelyn/subidas/` |
+
+**El secreto va en `secreto.php`, nunca dentro de `lanegra-media.php`.** Ese
+archivo está excluido de git precisamente para que no pueda acabar publicado.
 
 La carpeta `media/evelyn/subidas/` se crea sola al primer uso, pero conviene crearla a
 mano para poder dejar dentro el `.htaccess` desde el principio.
@@ -27,17 +31,10 @@ Ese valor va en **dos sitios y tiene que ser idéntico**:
 - En `lanegra-media.php`, en la constante `SECRETO`
 - En Netlify, en la variable `MEDIA_SECRET`
 
-## 3. Revisar las cuatro líneas de configuración del PHP
+## 3. Nada que configurar en el PHP
 
-```php
-const SECRETO  = '...';                                          // el del paso 2
-const CARPETA  = __DIR__ . '/subidas';                           // dónde se guardan
-const URL_BASE = 'https://media.lanegrasalsa.com/media/evelyn/subidas'; // cómo se ven
-const ORIGEN   = 'https://evelynlanegra.com';                    // quién puede llamar
-```
-
-`URL_BASE` debe coincidir con la dirección pública real de esa carpeta. Para
-comprobarlo: sube una foto por SFTP y ábrela en el navegador.
+Las rutas se deducen solas a partir de dónde esté el archivo, así que no hay
+direcciones que mantener a mano. Lo único que se edita es `secreto.php`.
 
 ## 4. Variables en Netlify
 

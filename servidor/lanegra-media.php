@@ -9,12 +9,20 @@ declare(strict_types=1);
  * No guarda contraseñas: Netlify firma un permiso que caduca y aquí se verifica.
  */
 
-// ─── CONFIGURA ESTAS CUATRO LÍNEAS ────────────────────────────────────────
-const SECRETO   = '36729040fe4ca1bcc32558e5456049e156ba193a5031c5ef734b0961ffde49d9';
-const CARPETA   = __DIR__ . '/subidas';                       // dónde se guardan
-const URL_BASE  = 'https://media.lanegrasalsa.com/media/evelyn/subidas'; // cómo se ven
-const ORIGEN    = 'https://evelynlanegra.com';                // quién puede llamar
-// ──────────────────────────────────────────────────────────────────────────
+// El secreto vive en «secreto.php», que se sube por SFTP y nunca entra en git.
+// Así no puede acabar publicado por descuido en el repositorio.
+$SECRETO = @include __DIR__ . '/secreto.php';
+
+const ORIGEN = 'https://evelynlanegra.com';   // quién puede llamar
+const CARPETA = __DIR__ . '/subidas';
+
+// La dirección pública se deduce sola: da igual en qué carpeta se suba
+function urlBase(): string {
+  $esquema = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+  $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+  $dir = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '/');
+  return $esquema . '://' . $host . $dir . '/subidas';
+}
 
 const MAX_BYTES = 314572800; // 300 MB
 const TIPOS = [
@@ -43,7 +51,8 @@ $exp = (string)($_POST['exp'] ?? '');
 $sig = (string)($_POST['sig'] ?? '');
 if ($exp === '' || $sig === '') salir(401, ['error' => 'Falta el permiso de subida.']);
 if (!ctype_digit($exp) || (int)$exp < time()) salir(401, ['error' => 'El permiso ha caducado. Vuelve a entrar.']);
-if (!hash_equals(hash_hmac('sha256', $exp, SECRETO), $sig)) salir(401, ['error' => 'Permiso no válido.']);
+if (!is_string($SECRETO) || strlen($SECRETO) < 20) salir(500, ['error' => 'Falta secreto.php en el servidor.']);
+if (!hash_equals(hash_hmac('sha256', $exp, $SECRETO), $sig)) salir(401, ['error' => 'Permiso no válido.']);
 
 if (!is_dir(CARPETA) && !mkdir(CARPETA, 0755, true)) salir(500, ['error' => 'No se pudo crear la carpeta de subidas.']);
 
@@ -63,7 +72,7 @@ function ficha(string $ruta): array {
   $ext = strtolower(pathinfo($nombre, PATHINFO_EXTENSION));
   return [
     'nombre' => $nombre,
-    'url'    => URL_BASE . '/' . rawurlencode($nombre),
+    'url'    => urlBase() . '/' . rawurlencode($nombre),
     'bytes'  => filesize($ruta) ?: 0,
     'fecha'  => date('c', filemtime($ruta) ?: time()),
     'tipo'   => str_starts_with(TIPOS[$ext] ?? '', 'video') ? 'video' : 'imagen',
