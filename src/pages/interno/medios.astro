@@ -1,15 +1,17 @@
 ---
 import Base from "../../layouts/Base.astro";
+import InternoNav from "../../components/InternoNav.astro";
 // Uso interno: no se indexa y /interno/ está bloqueado en robots.txt.
 // Los archivos van directos al servidor de medios, sin pasar por Netlify
 // (sus funciones no admiten más de 6 MB por petición).
 ---
 <Base title="Fotos y vídeos · uso interno" description="Subida y listado de material." noindex={true}>
+  <InternoNav actual="/interno/medios/" />
+
   <section class="li">
     <div class="li__ancho">
       <p class="li__kicker">Uso interno</p>
       <h1 class="li__h1">Fotos y vídeos</h1>
-      <p class="li__sub"><a href="/interno/lista-espera/">← Formularios recibidos</a></p>
 
       <form class="li__login" data-login>
         <label>
@@ -50,7 +52,7 @@ import Base from "../../layouts/Base.astro";
     --li-tinta:#15151a; --li-suave:#6d6d76; --li-linea:#e4e4e8;
     --li-fondo:#fff; --li-alt:#f6f6f8; --li-acc:#ce0306;
     background:var(--li-fondo);color:var(--li-tinta);
-    padding:calc(var(--header-h) + 34px) 0 70px;min-height:100vh;
+    padding:26px 0 70px;min-height:100vh;
   }
   .li__ancho{padding-inline:clamp(16px,3vw,44px);max-width:1500px;margin-inline:auto}
   .li__kicker{margin:0 0 6px;color:var(--li-acc);font-size:.7rem;font-weight:700;
@@ -82,6 +84,16 @@ import Base from "../../layouts/Base.astro";
   .li__campo input:focus{outline:none;border-color:var(--li-acc)}
   .li__contador{margin:0 auto 11px 0;color:var(--li-tinta);font-weight:700;font-size:.88rem}
   .li__vacio{color:var(--li-suave);margin-top:18px}
+
+  /* La cabecera es blanca sobre blanco en estas páginas y hay que oscurecerla.
+     Lleva !important porque los estilos del componente van marcados con el
+     atributo de Astro y pesan más que un selector normal desde aquí. */
+  .nav-toggle span{background:#15151a !important}
+  .nav-toggle:hover span{background:#ce0306 !important}
+  .lang__btn{color:#15151a !important}
+  .site-header.is-scrolled{background:rgba(255,255,255,.9) !important;
+    border-bottom:1px solid #e4e4e8}
+
 
   /* Zona de arrastre */
   .md__zona{border:2px dashed #d3d3da;border-radius:16px;padding:38px 24px;text-align:center;

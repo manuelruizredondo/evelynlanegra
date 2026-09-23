@@ -1,0 +1,30 @@
+---
+// Conmutador entre las dos páginas del área privada.
+const { actual } = Astro.props;
+const enlaces = [
+  { href: "/interno/lista-espera/", label: "Formularios" },
+  { href: "/interno/medios/", label: "Fotos y vídeos" },
+];
+---
+<nav class="in-nav" aria-label="Área privada">
+  <div class="in-nav__caja">
+    {enlaces.map((e) => (
+      <a
+        href={e.href}
+        class:list={["in-nav__a", { "in-nav__a--activo": e.href === actual }]}
+        {...(e.href === actual ? { "aria-current": "page" } : {})}
+      >{e.label}</a>
+    ))}
+  </div>
+</nav>
+
+<style>
+  .in-nav{display:flex;justify-content:center;padding:calc(var(--header-h) + 26px) 16px 0}
+  .in-nav__caja{display:inline-flex;gap:4px;padding:4px;border-radius:999px;
+    background:#f1f1f4;border:1px solid #e4e4e8}
+  .in-nav__a{display:block;padding:9px 20px;border-radius:999px;
+    color:#6d6d76;font-size:.85rem;font-weight:600;text-decoration:none;
+    transition:background .15s,color .15s}
+  .in-nav__a:hover{color:#15151a;text-decoration:none}
+  .in-nav__a--activo{background:#fff;color:#15151a;box-shadow:0 1px 3px rgba(0,0,0,.09)}
+</style>
