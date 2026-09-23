@@ -5,15 +5,15 @@ porque sus funciones no aceptan más de 6 MB por petición y un vídeo pesa más
 
 ## 1. Subir por SFTP a media.lanegrasalsa.com
 
-Dentro de la carpeta `media/`:
+Dentro de la carpeta `media/evelyn/`:
 
 | Archivo de aquí      | Cómo se llama allí     | Dónde va                |
 |----------------------|------------------------|-------------------------|
-| `lanegra-media.php`  | `lanegra-media.php`    | `media/`                |
-| `user.ini`           | `.user.ini`            | `media/`                |
-| `subidas.htaccess`   | `.htaccess`            | `media/subidas/`        |
+| `lanegra-media.php`  | `lanegra-media.php`    | `media/evelyn/`         |
+| `user.ini`           | `.user.ini`            | `media/evelyn/`         |
+| `subidas.htaccess`   | `.htaccess`            | `media/evelyn/subidas/` |
 
-La carpeta `media/subidas/` se crea sola al primer uso, pero conviene crearla a
+La carpeta `media/evelyn/subidas/` se crea sola al primer uso, pero conviene crearla a
 mano para poder dejar dentro el `.htaccess` desde el principio.
 
 ## 2. Inventar un secreto
@@ -32,7 +32,7 @@ Ese valor va en **dos sitios y tiene que ser idéntico**:
 ```php
 const SECRETO  = '...';                                          // el del paso 2
 const CARPETA  = __DIR__ . '/subidas';                           // dónde se guardan
-const URL_BASE = 'https://media.lanegrasalsa.com/media/subidas'; // cómo se ven
+const URL_BASE = 'https://media.lanegrasalsa.com/media/evelyn/subidas'; // cómo se ven
 const ORIGEN   = 'https://evelynlanegra.com';                    // quién puede llamar
 ```
 
@@ -46,7 +46,7 @@ comprobarlo: sube una foto por SFTP y ábrela en el navegador.
 | Nombre           | Valor                                                       |
 |------------------|-------------------------------------------------------------|
 | `MEDIA_SECRET`   | el secreto del paso 2                                       |
-| `MEDIA_ENDPOINT` | `https://media.lanegrasalsa.com/media/lanegra-media.php`    |
+| `MEDIA_ENDPOINT` | `https://media.lanegrasalsa.com/media/evelyn/lanegra-media.php` |
 
 Después, **Deploys → Trigger deploy**: las variables se leen al desplegar.
 

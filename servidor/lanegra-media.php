@@ -10,9 +10,9 @@ declare(strict_types=1);
  */
 
 // ─── CONFIGURA ESTAS CUATRO LÍNEAS ────────────────────────────────────────
-const SECRETO   = 'CAMBIA-ESTO-POR-UNA-CADENA-LARGA-Y-ALEATORIA';
+const SECRETO   = '36729040fe4ca1bcc32558e5456049e156ba193a5031c5ef734b0961ffde49d9';
 const CARPETA   = __DIR__ . '/subidas';                       // dónde se guardan
-const URL_BASE  = 'https://media.lanegrasalsa.com/media/subidas'; // cómo se ven
+const URL_BASE  = 'https://media.lanegrasalsa.com/media/evelyn/subidas'; // cómo se ven
 const ORIGEN    = 'https://evelynlanegra.com';                // quién puede llamar
 // ──────────────────────────────────────────────────────────────────────────
 
