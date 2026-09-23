@@ -1,0 +1,188 @@
+---
+import Base from "../../layouts/Base.astro";
+// Uso interno: no se indexa y /interno/ está bloqueado en robots.txt.
+// Los datos no viajan al navegador hasta que el servidor valida la contraseña.
+---
+<Base title="Lista de espera · uso interno" description="Listado interno de formularios recibidos." noindex={true}>
+  <section class="section li">
+    <div class="container">
+      <p class="eyebrow">Uso interno</p>
+      <h1 class="li__h1">Formularios recibidos</h1>
+
+      <form class="li__login" data-login>
+        <label>
+          <span>Contraseña</span>
+          <input type="password" name="clave" autocomplete="current-password" required />
+        </label>
+        <button class="btn btn--red" type="submit">Entrar</button>
+        <p class="li__error" data-error hidden></p>
+      </form>
+
+      <div class="li__panel" data-panel hidden>
+        <div class="li__barra">
+          <label class="li__campo">
+            <span>Formulario</span>
+            <select data-formulario></select>
+          </label>
+          <label class="li__campo li__campo--ancho">
+            <span>Buscar</span>
+            <input type="search" data-buscar placeholder="nombre, email, ciudad…" />
+          </label>
+          <p class="li__contador" data-contador></p>
+          <button class="btn btn--ghost" type="button" data-csv>Descargar CSV</button>
+        </div>
+
+        <div class="li__scroll">
+          <table class="li__tabla">
+            <thead data-cabecera></thead>
+            <tbody data-cuerpo></tbody>
+          </table>
+        </div>
+        <p class="li__vacio" data-vacio hidden>Todavía no hay envíos en este formulario.</p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .li{padding-top:calc(var(--header-h) + 30px)}
+  .li__h1{color:#fff;font-size:clamp(1.8rem,4vw,2.6rem);margin:8px 0 28px}
+  .li__login{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;max-width:460px}
+  .li__login label{display:flex;flex-direction:column;gap:6px;font-size:.75rem;font-weight:700;
+    color:#fff;text-transform:uppercase;letter-spacing:.05em}
+  .li__login input{font:inherit;font-weight:400;text-transform:none;letter-spacing:0;padding:12px 15px;
+    border:1px solid var(--line);border-radius:10px;background:var(--bg2);color:#fff;min-width:240px}
+  .li__login input:focus{outline:none;border-color:var(--acc)}
+  .li__login button{border:0}
+  .li__error{width:100%;margin:6px 0 0;color:var(--acc);font-size:.88rem}
+
+  .li__barra{display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;margin-bottom:22px}
+  .li__campo{display:flex;flex-direction:column;gap:6px;font-size:.72rem;font-weight:700;color:var(--muted);
+    text-transform:uppercase;letter-spacing:.06em}
+  .li__campo--ancho{flex:1 1 240px}
+  .li__campo select,.li__campo input{font:inherit;font-weight:400;text-transform:none;letter-spacing:0;
+    padding:10px 13px;border:1px solid var(--line);border-radius:9px;background:var(--bg2);color:#fff;width:100%}
+  .li__campo select:focus,.li__campo input:focus{outline:none;border-color:var(--acc)}
+  .li__contador{margin:0;color:#fff;font-weight:700;font-size:.9rem;padding-bottom:10px}
+
+  .li__scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+  .li__tabla{border-collapse:collapse;width:100%;font-size:.86rem;min-width:900px}
+  .li__tabla th,.li__tabla td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);
+    vertical-align:top;color:var(--text)}
+  .li__tabla th{color:#fff;font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;
+    background:var(--bg2);position:sticky;top:0;white-space:nowrap}
+  .li__tabla tbody tr:hover{background:rgba(255,255,255,.03)}
+  .li__tabla td{max-width:280px}
+  .li__vacio{color:var(--muted);margin-top:18px}
+</style>
+
+<script>
+  const $ = (s) => document.querySelector(s);
+  const login = $("[data-login]"), panel = $("[data-panel]"), error = $("[data-error]");
+  const selForm = $("[data-formulario]"), buscar = $("[data-buscar]");
+  const cabecera = $("[data-cabecera]"), cuerpo = $("[data-cuerpo]");
+  const contador = $("[data-contador]"), vacio = $("[data-vacio]"), btnCsv = $("[data-csv]");
+
+  // La contraseña vive solo en memoria: al recargar se vuelve a pedir.
+  let clave = "";
+  let envios = [];
+  let columnas = [];
+
+  const OCULTAS = ["bot-field", "form-name"];
+  const ETIQUETAS = {
+    "nombre-artistico": "N. artístico", "otras-disciplinas": "Otras discipl.",
+    "como-conociste": "Cómo conoció", "consentimiento": "RGPD",
+  };
+  const etiqueta = (k) => ETIQUETAS[k] ?? k.charAt(0).toUpperCase() + k.slice(1);
+
+  const pedir = async (formulario) => {
+    const r = await fetch("/.netlify/functions/lista-espera", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ clave, formulario }),
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || "Error inesperado");
+    return data;
+  };
+
+  const fecha = (iso) => {
+    try { return new Date(iso).toLocaleString("es-ES", { day: "2-digit", month: "short", year: "2-digit", hour: "2-digit", minute: "2-digit" }); }
+    catch { return iso; }
+  };
+
+  const pintar = () => {
+    const q = buscar.value.trim().toLowerCase();
+    const filas = q
+      ? envios.filter((e) => JSON.stringify(e.datos).toLowerCase().includes(q))
+      : envios;
+
+    contador.textContent = filas.length === envios.length
+      ? `${envios.length} ${envios.length === 1 ? "envío" : "envíos"}`
+      : `${filas.length} de ${envios.length}`;
+
+    cabecera.innerHTML = `<tr><th>Fecha</th>${columnas.map((c) => `<th>${etiqueta(c)}</th>`).join("")}</tr>`;
+    cuerpo.innerHTML = filas.map((e) => {
+      const celdas = columnas.map((c) => {
+        const v = e.datos[c];
+        const texto = Array.isArray(v) ? v.join(", ") : (v ?? "");
+        return `<td>${String(texto).replace(/[<>&]/g, (m) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" }[m]))}</td>`;
+      }).join("");
+      return `<tr><td>${fecha(e.fecha)}</td>${celdas}</tr>`;
+    }).join("");
+
+    vacio.hidden = envios.length > 0;
+  };
+
+  const cargar = async (formulario) => {
+    const data = await pedir(formulario);
+
+    if (selForm.options.length === 0) {
+      selForm.innerHTML = data.formularios
+        .map((f) => `<option value="${f.name}">${f.name} (${f.count})</option>`).join("");
+    }
+    if (data.actual) selForm.value = data.actual;
+
+    envios = data.envios ?? [];
+    const vistas = new Set();
+    envios.forEach((e) => Object.keys(e.datos).forEach((k) => { if (!OCULTAS.includes(k)) vistas.add(k); }));
+    columnas = [...vistas];
+    pintar();
+  };
+
+  login.addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    error.hidden = true;
+    clave = login.clave.value;
+    const btn = login.querySelector("button");
+    btn.disabled = true; btn.textContent = "Comprobando…";
+    try {
+      await cargar();
+      login.hidden = true;
+      panel.hidden = false;
+    } catch (e) {
+      clave = "";
+      error.textContent = e.message;
+      error.hidden = false;
+    } finally {
+      btn.disabled = false; btn.textContent = "Entrar";
+    }
+  });
+
+  selForm.addEventListener("change", () => cargar(selForm.value).catch((e) => alert(e.message)));
+  buscar.addEventListener("input", pintar);
+
+  btnCsv.addEventListener("click", () => {
+    const esc = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const cab = ["fecha", ...columnas].map(esc).join(",");
+    const filas = envios.map((e) =>
+      [e.fecha, ...columnas.map((c) => (Array.isArray(e.datos[c]) ? e.datos[c].join(" | ") : e.datos[c]))]
+        .map(esc).join(","));
+    const csv = "﻿" + [cab, ...filas].join("\n");
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    a.download = `${selForm.value || "formulario"}-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+</script>
