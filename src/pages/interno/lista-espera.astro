@@ -122,7 +122,8 @@ import Base from "../../layouts/Base.astro";
   let envios = [];
   let columnas = [];
 
-  const OCULTAS = ["bot-field", "form-name"];
+  // Netlify añade estos campos por su cuenta; no aportan nada al listado
+  const OCULTAS = ["bot-field", "form-name", "user_agent", "user-agent", "userAgent"];
   // Texto libre: ocupa el ancho de la ficha en lugar de una celda
   const TEXTOS = ["expectativas", "mensaje", "como-conociste"];
   // Ya salen en la cabecera de la ficha
