@@ -1,6 +1,6 @@
-# PLAN B: si el .htaccess normal también diera error 500, borra ese y sube este,
-# que solo usa lo más básico y funciona en cualquier Apache.
+# Versión mínima: solo retira el manejador de PHP, que es lo menos probable que
+# un hosting compartido prohíba. Si esto también diera error 500, quédate sin
+# .htaccess: el receptor ya comprueba extensión y contenido real de cada archivo.
 
-<FilesMatch "\.(php|phps|phar|phtml|php[0-9]|pl|py|cgi|sh)$">
-  Require all denied
-</FilesMatch>
+RemoveHandler .php .phtml .phar .php5 .php7 .php8
+RemoveType .php .phtml .phar .php5 .php7 .php8
