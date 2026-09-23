@@ -82,8 +82,9 @@ import Base from "../../layouts/Base.astro";
   .li__tab-num{min-width:22px;height:22px;display:inline-grid;place-items:center;padding:0 6px;
     border-radius:999px;background:var(--li-alt);color:var(--li-suave);
     font-size:.72rem;font-weight:700}
-  .li__grupo--todos{padding-bottom:4px;border-bottom:1px solid var(--li-linea)}
-  .li__tab--todos{border-color:#c9c9d0;font-weight:600}
+  .li__tab--todos{border-color:transparent;font-weight:600;padding-left:0}
+  .li__tab--todos:hover{border-color:transparent;color:var(--li-acc)}
+  .li__tab--todos.li__tab--activo{padding-left:16px}
   .li__tab--activo{background:var(--li-acc);border-color:var(--li-acc);color:#fff;font-weight:600}
   .li__tab--activo .li__tab-num{background:rgba(255,255,255,.22);color:#fff}
   /* Los que no han recibido nada, apagados pero accesibles */
