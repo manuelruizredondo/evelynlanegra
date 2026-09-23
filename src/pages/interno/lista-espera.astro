@@ -4,9 +4,9 @@ import Base from "../../layouts/Base.astro";
 // Los datos no viajan al navegador hasta que el servidor valida la contraseña.
 ---
 <Base title="Lista de espera · uso interno" description="Listado interno de formularios recibidos." noindex={true}>
-  <section class="section li">
+  <section class="li">
     <div class="li__ancho">
-      <p class="eyebrow">Uso interno</p>
+      <p class="li__kicker">Uso interno</p>
       <h1 class="li__h1">Formularios recibidos</h1>
 
       <form class="li__login" data-login>
@@ -14,7 +14,7 @@ import Base from "../../layouts/Base.astro";
           <span>Contraseña</span>
           <input type="password" name="clave" autocomplete="current-password" required />
         </label>
-        <button class="btn btn--red" type="submit">Entrar</button>
+        <button class="li__btn" type="submit">Entrar</button>
         <p class="li__error" data-error hidden></p>
       </form>
 
@@ -29,18 +29,10 @@ import Base from "../../layouts/Base.astro";
             <input type="search" data-buscar placeholder="nombre, email, ciudad…" />
           </label>
           <p class="li__contador" data-contador></p>
-          <button class="btn btn--ghost" type="button" data-csv>Descargar CSV</button>
+          <button class="li__btn li__btn--claro" type="button" data-csv>Descargar CSV</button>
         </div>
 
-        <p class="li__pista">Pulsa una fila con «+» para leer lo que escribió.</p>
-
-        <div class="li__scroll">
-          <table class="li__tabla">
-            <colgroup data-colgroup></colgroup>
-            <thead data-cabecera></thead>
-            <tbody data-cuerpo></tbody>
-          </table>
-        </div>
+        <div class="li__cards" data-cards></div>
         <p class="li__vacio" data-vacio hidden>Todavía no hay envíos en este formulario.</p>
       </div>
     </div>
@@ -48,73 +40,82 @@ import Base from "../../layouts/Base.astro";
 </Base>
 
 <style is:global>
-  /* Globales a propósito: la tabla la crea el JS y no recibiría los estilos limitados de Astro */
-  .li{padding-top:calc(var(--header-h) + 30px)}
-  /* A lo ancho de la pantalla: una tabla de 14 columnas no cabe en 1200px */
-  .li__ancho{padding-inline:clamp(16px,3vw,40px);max-width:none}
-  .li__h1{color:#fff;font-size:clamp(1.8rem,4vw,2.6rem);margin:8px 0 28px}
+  /* Globales a propósito: las fichas las crea el JS y no recibirían
+     los estilos limitados de Astro. Todo va prefijado con .li */
+  .li{
+    --li-tinta:#15151a; --li-suave:#6d6d76; --li-linea:#e4e4e8;
+    --li-fondo:#fff; --li-card:#fff; --li-alt:#f6f6f8; --li-acc:#ce0306;
+    background:var(--li-fondo);color:var(--li-tinta);
+    padding:calc(var(--header-h) + 34px) 0 70px;min-height:100vh;
+  }
+  .li__ancho{padding-inline:clamp(16px,3vw,44px);max-width:1500px;margin-inline:auto}
+  .li__kicker{margin:0 0 6px;color:var(--li-acc);font-size:.7rem;font-weight:700;
+    text-transform:uppercase;letter-spacing:.1em}
+  .li__h1{color:var(--li-tinta);font-size:clamp(1.7rem,3.5vw,2.4rem);margin:0 0 26px}
+
+  .li__btn{background:var(--li-acc);color:#fff;border:0;border-radius:9px;padding:11px 20px;
+    font:inherit;font-weight:700;font-size:.82rem;cursor:pointer}
+  .li__btn:hover{filter:brightness(1.1)}
+  .li__btn--claro{background:#fff;color:var(--li-tinta);border:1px solid var(--li-linea)}
+  .li__btn--claro:hover{border-color:var(--li-tinta);filter:none}
 
   .li__login{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;max-width:460px}
   .li__login[hidden]{display:none}
-  .li__login label{display:flex;flex-direction:column;gap:6px;font-size:.75rem;font-weight:700;
-    color:#fff;text-transform:uppercase;letter-spacing:.05em}
-  .li__login input{font:inherit;font-weight:400;text-transform:none;letter-spacing:0;padding:12px 15px;
-    border:1px solid var(--line);border-radius:10px;background:var(--bg2);color:#fff;min-width:240px}
-  .li__login input:focus{outline:none;border-color:var(--acc)}
-  .li__login button{border:0}
-  .li__error{width:100%;margin:6px 0 0;color:var(--acc);font-size:.88rem}
+  .li__login label{display:flex;flex-direction:column;gap:6px;font-size:.7rem;font-weight:700;
+    color:var(--li-suave);text-transform:uppercase;letter-spacing:.06em}
+  .li__login input{font:inherit;font-weight:400;text-transform:none;letter-spacing:0;padding:11px 14px;
+    border:1px solid var(--li-linea);border-radius:9px;background:#fff;color:var(--li-tinta);min-width:240px}
+  .li__login input:focus{outline:none;border-color:var(--li-acc)}
+  .li__error{width:100%;margin:6px 0 0;color:var(--li-acc);font-size:.88rem}
 
-  .li__barra{display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;margin-bottom:20px}
-  .li__campo{display:flex;flex-direction:column;gap:6px;font-size:.72rem;font-weight:700;color:var(--muted);
-    text-transform:uppercase;letter-spacing:.06em}
-  .li__campo--ancho{flex:1 1 260px;max-width:420px}
+  .li__barra{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;margin-bottom:24px}
+  .li__campo{display:flex;flex-direction:column;gap:6px;font-size:.68rem;font-weight:700;
+    color:var(--li-suave);text-transform:uppercase;letter-spacing:.07em}
+  .li__campo--ancho{flex:1 1 240px;max-width:380px}
   .li__campo select,.li__campo input{font:inherit;font-weight:400;text-transform:none;letter-spacing:0;
-    padding:10px 13px;border:1px solid var(--line);border-radius:9px;background:var(--bg2);color:#fff;width:100%}
-  .li__campo select:focus,.li__campo input:focus{outline:none;border-color:var(--acc)}
-  .li__contador{margin:0 auto 10px 0;color:#fff;font-weight:700;font-size:.9rem}
-  .li__pista{margin:0 0 14px;color:var(--muted);font-size:.8rem}
+    padding:10px 13px;border:1px solid var(--li-linea);border-radius:9px;background:#fff;
+    color:var(--li-tinta);width:100%}
+  .li__campo select:focus,.li__campo input:focus{outline:none;border-color:var(--li-acc)}
+  .li__contador{margin:0 auto 11px 0;color:var(--li-tinta);font-weight:700;font-size:.88rem}
 
-  .li__scroll{overflow:auto;max-height:calc(100vh - 300px);
-    border:1px solid var(--line);border-radius:12px;background:var(--bg2)}
-  .li__tabla{border-collapse:separate;border-spacing:0;table-layout:fixed;width:max-content;min-width:100%;font-size:.85rem}
+  /* Una ficha por envío. Sin scroll: lo que no cabe, baja de línea */
+  .li__cards{display:grid;gap:18px}
+  .li__card{border:1px solid var(--li-linea);border-radius:14px;background:var(--li-card);
+    padding:22px 24px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  .li__cab{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;
+    padding-bottom:14px;border-bottom:1px solid var(--li-linea);margin-bottom:16px}
+  .li__nombre{margin:0;font-size:1.12rem;font-weight:700;color:var(--li-tinta)}
+  .li__fecha{margin:0;color:var(--li-suave);font-size:.8rem;white-space:nowrap}
 
-  .li__tabla th{color:#fff;font-size:.66rem;text-transform:uppercase;letter-spacing:.07em;
-    background:#16161a;position:sticky;top:0;z-index:2;white-space:nowrap;
-    text-align:left;padding:13px 16px;border-bottom:1px solid var(--line)}
-  .li__tabla td{padding:14px 16px;border-bottom:1px solid var(--line);
-    vertical-align:top;color:var(--text);line-height:1.5}
-  .li__tabla tbody tr:nth-child(even){background:rgba(255,255,255,.02)}
-  .li__tabla tbody tr:hover{background:rgba(206,3,6,.07);cursor:pointer}
-
-  /* Datos cortos: en una línea, sin romperse */
-  .li__tabla td.corta{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .li__tabla tr.abierta td.corta{white-space:normal;overflow:visible}
-  .li__tabla td.fecha{color:var(--muted);font-size:.78rem}
-  .li__tabla td.dato-nombre{color:#fff;font-weight:600}
-  .li__tabla td.vacia{color:#4a4a4e}
-
-  /* Texto largo: sitio de sobra y recortado a 4 líneas hasta que se pulsa */
-  .li__toggle{color:var(--acc);font-weight:700;text-align:center;user-select:none}
-  .li__tabla tr.detalle td{background:#101014;padding:0;white-space:normal}
-  .li__ficha{position:sticky;left:0;width:min(1000px,calc(100vw - 6vw - 40px));padding:18px 22px 20px}
-  .li__bloque{margin:0 0 16px;max-width:90ch}
-  .li__bloque:last-child{margin-bottom:0}
-  .li__k{margin:0 0 4px;color:var(--acc);font-size:.66rem;font-weight:700;
+  /* Datos cortos: caben en una línea si hay sitio; si no, se reparten */
+  .li__datos{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px 22px}
+  .li__dato{min-width:0}
+  .li__k{margin:0 0 3px;color:var(--li-suave);font-size:.63rem;font-weight:700;
     text-transform:uppercase;letter-spacing:.08em}
-  .li__v{margin:0;color:#fff;line-height:1.6;white-space:pre-line}
-  .li__tabla tr.abierta{background:rgba(206,3,6,.05)}
+  .li__v{margin:0;color:var(--li-tinta);font-size:.92rem;line-height:1.45;overflow-wrap:anywhere}
+  .li__v--vacio{color:#b5b5bc}
+  .li__v a{color:var(--li-acc);text-decoration:none}
+  .li__v a:hover{text-decoration:underline}
 
-  .li__tabla td a{color:var(--acc);text-decoration:none}
-  .li__tabla td a:hover{text-decoration:underline}
-  .li__vacio{color:var(--muted);margin-top:18px}
+  /* Lo que escribió: a lo ancho de la ficha */
+  .li__textos{margin-top:18px;padding-top:16px;border-top:1px solid var(--li-linea);display:grid;gap:14px}
+  .li__texto{background:var(--li-alt);border-radius:10px;padding:14px 16px}
+  .li__texto .li__v{white-space:pre-line;max-width:95ch}
+
+  .li__vacio{color:var(--li-suave);margin-top:18px}
+
+  @media (max-width:560px){
+    .li__card{padding:18px 16px}
+    .li__datos{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+  }
 </style>
 
 <script>
   const $ = (s) => document.querySelector(s);
   const login = $("[data-login]"), panel = $("[data-panel]"), error = $("[data-error]");
   const selForm = $("[data-formulario]"), buscar = $("[data-buscar]");
-  const grupo = $("[data-colgroup]"), cabecera = $("[data-cabecera]"), cuerpo = $("[data-cuerpo]");
-  const contador = $("[data-contador]"), vacio = $("[data-vacio]"), btnCsv = $("[data-csv]");
+  const cards = $("[data-cards]"), contador = $("[data-contador]");
+  const vacio = $("[data-vacio]"), btnCsv = $("[data-csv]");
 
   // La contraseña vive solo en memoria: al recargar se vuelve a pedir.
   let clave = "";
@@ -122,19 +123,21 @@ import Base from "../../layouts/Base.astro";
   let columnas = [];
 
   const OCULTAS = ["bot-field", "form-name"];
-  // Estos no caben en una columna: van en la ficha desplegable
-  const FICHA = ["expectativas", "mensaje", "como-conociste"];
-  const ANCHOS = {
-    fecha: 108, nombre: 130, apellidos: 145, "nombre-artistico": 130, instagram: 175,
-    email: 235, telefono: 150, ciudad: 120, pais: 110, experiencia: 95, consentimiento: 80,
-    disciplinas: 190, "otras-disciplinas": 170, "como-conociste": 300, expectativas: 380, mensaje: 380,
-  };
-  const ancho = (c) => ANCHOS[c] ?? 155;
+  // Texto libre: ocupa el ancho de la ficha en lugar de una celda
+  const TEXTOS = ["expectativas", "mensaje", "como-conociste"];
+  // Ya salen en la cabecera de la ficha
+  const EN_CABECERA = ["nombre", "apellidos"];
+
   const ETIQUETAS = {
-    "nombre-artistico": "N. artístico", "otras-disciplinas": "Otras discipl.",
-    "como-conociste": "Cómo conoció", "consentimiento": "RGPD",
+    "nombre-artistico": "Nombre artístico", "otras-disciplinas": "Otras disciplinas",
+    "como-conociste": "Cómo nos conoció", "consentimiento": "Acepta privacidad",
+    "expectativas": "Qué espera de la formación", "pais": "País",
+    "experiencia": "Años de experiencia", "telefono": "Teléfono",
   };
   const etiqueta = (k) => ETIQUETAS[k] ?? k.charAt(0).toUpperCase() + k.slice(1);
+
+  const escapar = (s) => String(s).replace(/[<>&"]/g, (m) =>
+    ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;" }[m]));
 
   const pedir = async (formulario) => {
     const r = await fetch("/.netlify/functions/lista-espera", {
@@ -148,29 +151,28 @@ import Base from "../../layouts/Base.astro";
   };
 
   const fecha = (iso) => {
-    try { return new Date(iso).toLocaleString("es-ES", { day: "2-digit", month: "short", year: "2-digit", hour: "2-digit", minute: "2-digit" }); }
-    catch { return iso; }
+    try {
+      return new Date(iso).toLocaleString("es-ES",
+        { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" });
+    } catch { return iso; }
   };
 
-  const escapar = (s) => String(s).replace(/[<>&"]/g, (m) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;" }[m]));
-
-  // Emails y teléfonos, pulsables; el resto, texto plano
-  const celda = (campo, valor) => {
-    const v = Array.isArray(valor) ? valor.join(", ") : (valor ?? "");
+  const valor = (campo, bruto) => {
+    const v = Array.isArray(bruto) ? bruto.join(", ") : (bruto ?? "");
     const texto = String(v).trim();
-    if (!texto) return `<td class="vacia">—</td>`;
+    if (!texto) return `<p class="li__v li__v--vacio">—</p>`;
 
-    if (campo === "email") return `<td class="corta"><a href="mailto:${escapar(texto)}">${escapar(texto)}</a></td>`;
+    if (campo === "email")
+      return `<p class="li__v"><a href="mailto:${escapar(texto)}">${escapar(texto)}</a></p>`;
     if (campo === "telefono") {
-      const limpio = texto.replace(/[^+\d]/g, "");
-      return `<td class="corta"><a href="https://wa.me/${limpio.replace(/^\+/, "")}" target="_blank" rel="noopener">${escapar(texto)}</a></td>`;
+      const limpio = texto.replace(/[^+\d]/g, "").replace(/^\+/, "");
+      return `<p class="li__v"><a href="https://wa.me/${limpio}" target="_blank" rel="noopener">${escapar(texto)}</a></p>`;
     }
     if (campo === "instagram") {
       const usuario = texto.replace(/^@/, "");
-      return `<td class="corta"><a href="https://instagram.com/${escapar(usuario)}" target="_blank" rel="noopener">@${escapar(usuario)}</a></td>`;
+      return `<p class="li__v"><a href="https://instagram.com/${escapar(usuario)}" target="_blank" rel="noopener">@${escapar(usuario)}</a></p>`;
     }
-    if (campo === "nombre" || campo === "apellidos") return `<td class="corta dato-nombre">${escapar(texto)}</td>`;
-    return `<td class="corta">${escapar(texto)}</td>`;
+    return `<p class="li__v">${escapar(texto)}</p>`;
   };
 
   const pintar = () => {
@@ -183,33 +185,31 @@ import Base from "../../layouts/Base.astro";
       ? `${envios.length} ${envios.length === 1 ? "envío" : "envíos"}`
       : `${filas.length} de ${envios.length}`;
 
-    const enTabla = columnas.filter((c) => !FICHA.includes(c));
-    const enFicha = columnas.filter((c) => FICHA.includes(c));
+    const cortos = columnas.filter((c) => !TEXTOS.includes(c) && !EN_CABECERA.includes(c));
+    const largos = columnas.filter((c) => TEXTOS.includes(c));
 
-    grupo.innerHTML = [`<col style="width:${ancho("fecha")}px">`, `<col style="width:34px">`,
-      ...enTabla.map((c) => `<col style="width:${ancho(c)}px">`)].join("");
-    cabecera.innerHTML = `<tr><th>Fecha</th><th></th>${enTabla.map((c) => `<th>${etiqueta(c)}</th>`).join("")}</tr>`;
+    cards.innerHTML = filas.map((e) => {
+      const d = e.datos;
+      const nombre = [d.nombre, d.apellidos].filter(Boolean).join(" ").trim() || "Sin nombre";
 
-    const total = enTabla.length + 2;
-    cuerpo.innerHTML = filas.map((e, i) => {
-      const textos = enFicha
-        .map((c) => [etiqueta(c), String(e.datos[c] ?? "").trim()])
-        .filter(([, v]) => v);
+      const datos = cortos.map((c) =>
+        `<div class="li__dato"><p class="li__k">${etiqueta(c)}</p>${valor(c, d[c])}</div>`).join("");
 
-      const resumen =
-        `<tr class="fila" data-fila="${i}">` +
-        `<td class="fecha">${fecha(e.fecha)}</td>` +
-        `<td class="li__toggle">${textos.length ? "<span>+</span>" : ""}</td>` +
-        enTabla.map((c) => celda(c, e.datos[c])).join("") +
-        `</tr>`;
+      const textos = largos
+        .map((c) => [c, String(d[c] ?? "").trim()])
+        .filter(([, v]) => v)
+        .map(([c, v]) =>
+          `<div class="li__texto"><p class="li__k">${etiqueta(c)}</p><p class="li__v">${escapar(v)}</p></div>`)
+        .join("");
 
-      const detalle = textos.length
-        ? `<tr class="detalle" data-detalle="${i}" hidden><td colspan="${total}"><div class="li__ficha">` +
-          textos.map(([k, v]) => `<div class="li__bloque"><p class="li__k">${k}</p><p class="li__v">${escapar(v)}</p></div>`).join("") +
-          `</div></td></tr>`
-        : "";
-
-      return resumen + detalle;
+      return `<article class="li__card">
+        <header class="li__cab">
+          <h2 class="li__nombre">${escapar(nombre)}</h2>
+          <p class="li__fecha">${fecha(e.fecha)}</p>
+        </header>
+        <div class="li__datos">${datos}</div>
+        ${textos ? `<div class="li__textos">${textos}</div>` : ""}
+      </article>`;
     }).join("");
 
     vacio.hidden = envios.length > 0;
@@ -252,19 +252,6 @@ import Base from "../../layouts/Base.astro";
 
   selForm.addEventListener("change", () => cargar(selForm.value).catch((e) => alert(e.message)));
   buscar.addEventListener("input", pintar);
-
-  // Al pulsar una fila se despliega el texto recortado (salvo si se pulsa un enlace)
-  cuerpo.addEventListener("click", (ev) => {
-    if (ev.target.closest("a")) return;
-    const fila = ev.target.closest("tr.fila");
-    if (!fila) return;
-    const detalle = cuerpo.querySelector(`[data-detalle="${fila.dataset.fila}"]`);
-    if (!detalle) return;
-    detalle.hidden = !detalle.hidden;
-    fila.classList.toggle("abierta", !detalle.hidden);
-    const signo = fila.querySelector(".li__toggle span");
-    if (signo) signo.textContent = detalle.hidden ? "+" : "−";
-  });
 
   btnCsv.addEventListener("click", () => {
     const esc = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
