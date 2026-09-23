@@ -66,21 +66,24 @@ import Base from "../../layouts/Base.astro";
   .li__login input:focus{outline:none;border-color:var(--li-acc)}
   .li__error{width:100%;margin:6px 0 0;color:var(--li-acc);font-size:.88rem}
 
-  /* Pestañas de formulario: todo a la vista, ordenado por actividad */
-  .li__tabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 20px}
+  /* Pestañas de formulario: separadas por idioma y ordenadas por actividad */
+  .li__tabs{display:flex;flex-wrap:wrap;gap:14px 34px;margin:0 0 22px}
+  .li__grupo{min-width:0}
+  .li__grupo-t{margin:0 0 9px;font-size:.63rem;font-weight:700;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--li-suave);display:flex;align-items:center;gap:7px}
+  .li__grupo-t span{background:var(--li-alt);border-radius:999px;padding:1px 7px;
+    letter-spacing:0;font-size:.68rem;color:var(--li-tinta)}
+  .li__tabs-fila{display:flex;flex-wrap:wrap;gap:8px}
   .li__tab{display:inline-flex;align-items:center;gap:8px;cursor:pointer;
     background:#fff;border:1px solid var(--li-linea);border-radius:999px;
     padding:8px 9px 8px 16px;font:inherit;font-size:.84rem;color:var(--li-tinta);
     transition:border-color .15s,background .15s}
   .li__tab:hover{border-color:var(--li-tinta)}
-  .li__tab-lang{font-size:.6rem;font-weight:700;letter-spacing:.06em;color:var(--li-suave);
-    border:1px solid var(--li-linea);border-radius:4px;padding:1px 4px}
   .li__tab-num{min-width:22px;height:22px;display:inline-grid;place-items:center;padding:0 6px;
     border-radius:999px;background:var(--li-alt);color:var(--li-suave);
     font-size:.72rem;font-weight:700}
   .li__tab--activo{background:var(--li-acc);border-color:var(--li-acc);color:#fff;font-weight:600}
   .li__tab--activo .li__tab-num{background:rgba(255,255,255,.22);color:#fff}
-  .li__tab--activo .li__tab-lang{color:#fff;border-color:rgba(255,255,255,.4)}
   /* Los que no han recibido nada, apagados pero accesibles */
   .li__tab--vacio{color:#9a9aa2}
   .li__tab--vacio .li__tab-num{background:transparent;border:1px solid var(--li-linea)}
@@ -255,20 +258,31 @@ import Base from "../../layouts/Base.astro";
   };
 
   const pintarTabs = () => {
-    const orden = [...listaForms].sort((a, b) =>
-      (b.count - a.count) || a.name.localeCompare(b.name));
+    const grupo = (idioma) => listaForms
+      .filter((f) => nombreForm(f.name).idioma === idioma)
+      .sort((a, b) => (b.count - a.count) || a.name.localeCompare(b.name));
 
-    tabs.innerHTML = orden.map((f) => {
-      const { titulo, idioma } = nombreForm(f.name);
+    const pastilla = (f) => {
       const clases = ["li__tab"];
       if (f.name === actual) clases.push("li__tab--activo");
       if (!f.count) clases.push("li__tab--vacio");
       return `<button type="button" class="${clases.join(" ")}" data-form="${f.name}">
-        <span class="li__tab-txt">${titulo}</span>
-        ${idioma === "IT" ? `<span class="li__tab-lang">IT</span>` : ""}
+        <span class="li__tab-txt">${nombreForm(f.name).titulo}</span>
         <span class="li__tab-num">${f.count}</span>
       </button>`;
-    }).join("");
+    };
+
+    const bloque = (idioma, titulo) => {
+      const lista = grupo(idioma);
+      if (!lista.length) return "";
+      const total = lista.reduce((s, f) => s + f.count, 0);
+      return `<div class="li__grupo">
+        <p class="li__grupo-t">${titulo} <span>${total}</span></p>
+        <div class="li__tabs-fila">${lista.map(pastilla).join("")}</div>
+      </div>`;
+    };
+
+    tabs.innerHTML = bloque("ES", "Español") + bloque("IT", "Italiano");
   };
 
   const pintar = () => {
