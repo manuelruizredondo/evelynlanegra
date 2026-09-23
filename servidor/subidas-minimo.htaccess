@@ -1,0 +1,6 @@
+# PLAN B: si el .htaccess normal también diera error 500, borra ese y sube este,
+# que solo usa lo más básico y funciona en cualquier Apache.
+
+<FilesMatch "\.(php|phps|phar|phtml|php[0-9]|pl|py|cgi|sh)$">
+  Require all denied
+</FilesMatch>

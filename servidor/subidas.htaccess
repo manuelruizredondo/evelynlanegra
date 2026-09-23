@@ -1,12 +1,16 @@
 # Va dentro de la carpeta «subidas», renombrado a .htaccess
-# Impide que nada de lo subido se ejecute: si alguien colara un script,
-# el servidor lo trataría como texto en vez de correrlo.
+#
+# No usa php_flag: esa directiva solo existe cuando PHP corre como módulo de
+# Apache, y en IONOS va por FastCGI, donde provoca un error 500.
+#
+# En su lugar se niega el acceso a todo lo ejecutable y se le quita el manejador
+# de PHP, así que un script colado aquí no llegaría a ejecutarse.
 
-php_flag engine off
-Options -ExecCGI -Indexes
+Options -Indexes
 
-<FilesMatch "\.(php|phar|phtml|php[0-9]|pl|py|cgi|sh|htaccess)$">
+<FilesMatch "\.(php|phps|phar|phtml|php[0-9]|pl|py|cgi|sh|htaccess|ini)$">
   Require all denied
 </FilesMatch>
 
-AddType text/plain .php .phtml .phar .pl .py .cgi .sh
+RemoveHandler .php .phtml .phar .php5 .php7 .php8 .cgi .pl .py
+RemoveType .php .phtml .phar .php5 .php7 .php8
