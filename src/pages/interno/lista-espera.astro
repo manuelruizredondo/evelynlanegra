@@ -85,7 +85,11 @@ import Base from "../../layouts/Base.astro";
   .li__cab{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;
     padding-bottom:14px;border-bottom:1px solid var(--li-linea);margin-bottom:16px}
   .li__nombre{margin:0;font-size:1.12rem;font-weight:700;color:var(--li-tinta)}
+  .li__ident{min-width:0}
   .li__fecha{margin:0;color:var(--li-suave);font-size:.8rem;white-space:nowrap}
+  .li__origen{margin:4px 0 0;font-size:.8rem;overflow-wrap:anywhere}
+  .li__origen a{color:var(--li-acc);text-decoration:none}
+  .li__origen a:hover{text-decoration:underline}
 
   /* Datos cortos: caben en una línea si hay sitio; si no, se reparten */
   .li__datos{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px 22px}
@@ -126,7 +130,7 @@ import Base from "../../layouts/Base.astro";
   // Texto libre: ocupa el ancho de la ficha en lugar de una celda
   const TEXTOS = ["expectativas", "mensaje", "como-conociste"];
   // Ya salen en la cabecera de la ficha
-  const EN_CABECERA = ["nombre", "apellidos"];
+  const EN_CABECERA = ["nombre", "apellidos", "referrer"];
 
   // El user agent en crudo es ilegible. Interesa de dónde vino y con qué aparato.
   const desde = (ua) => {
@@ -151,6 +155,17 @@ import Base from "../../layouts/Base.astro";
       /Windows/.test(s) ? "Windows" :
       /Linux/.test(s) ? "Linux" : "";
     return aparato ? `${app} · ${aparato}` : app;
+  };
+
+  // De dónde salió el formulario: la ruta si es de la web, el dominio si viene de fuera
+  const origen = (url) => {
+    const bruto = String(url ?? "").trim();
+    if (!bruto) return null;
+    try {
+      const u = new URL(bruto);
+      const propio = u.hostname.replace(/^www\./, "") === location.hostname.replace(/^www\./, "");
+      return { href: bruto, texto: propio ? u.pathname : u.hostname.replace(/^www\./, "") + u.pathname };
+    } catch { return { href: null, texto: bruto }; }
   };
 
   const ETIQUETAS = {
@@ -232,9 +247,19 @@ import Base from "../../layouts/Base.astro";
           `<div class="li__texto"><p class="li__k">${etiqueta(c)}</p><p class="li__v">${escapar(v)}</p></div>`)
         .join("");
 
+      const ref = origen(d.referrer);
+      const linea = ref
+        ? `<p class="li__origen">${ref.href
+            ? `<a href="${escapar(ref.href)}" target="_blank" rel="noopener">${escapar(ref.texto)}</a>`
+            : escapar(ref.texto)}</p>`
+        : "";
+
       return `<article class="li__card">
         <header class="li__cab">
-          <h2 class="li__nombre">${escapar(nombre)}</h2>
+          <div class="li__ident">
+            <h2 class="li__nombre">${escapar(nombre)}</h2>
+            ${linea}
+          </div>
           <p class="li__fecha">${fecha(e.fecha)}</p>
         </header>
         <div class="li__datos">${datos}</div>
