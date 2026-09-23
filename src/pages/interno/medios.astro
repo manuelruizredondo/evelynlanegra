@@ -52,7 +52,7 @@ import InternoNav from "../../components/InternoNav.astro";
     --li-tinta:#15151a; --li-suave:#6d6d76; --li-linea:#e4e4e8;
     --li-fondo:#fff; --li-alt:#f6f6f8; --li-acc:#ce0306;
     background:var(--li-fondo);color:var(--li-tinta);
-    padding:26px 0 70px;min-height:100vh;
+    padding:calc(var(--header-h) + 8px) 0 70px;min-height:100vh;
   }
   .li__ancho{padding-inline:clamp(16px,3vw,44px);max-width:1500px;margin-inline:auto}
   .li__kicker{margin:0 0 6px;color:var(--li-acc);font-size:.7rem;font-weight:700;
@@ -84,6 +84,10 @@ import InternoNav from "../../components/InternoNav.astro";
   .li__campo input:focus{outline:none;border-color:var(--li-acc)}
   .li__contador{margin:0 auto 11px 0;color:var(--li-tinta);font-weight:700;font-size:.88rem}
   .li__vacio{color:var(--li-suave);margin-top:18px}
+
+  /* El negro de la cabecera es el fondo del sitio asomando: la barra es
+     transparente. Aquí toda la página va en blanco. */
+  html,body{background:#fff !important}
 
   /* La cabecera es blanca sobre blanco en estas páginas y hay que oscurecerla.
      Lleva !important porque los estilos del componente van marcados con el
