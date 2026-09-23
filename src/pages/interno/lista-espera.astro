@@ -264,9 +264,17 @@ import Base from "../../layouts/Base.astro";
   };
 
   const pintarTabs = () => {
+    // Un único orden para los dos idiomas: por envíos sumando ES + IT.
+    // Ordenar cada grupo por su cuenta los descolocaba entre sí.
+    const base = (n) => (n.endsWith("-it") ? n.slice(0, -3) : n);
+    const totalPorTipo = {};
+    listaForms.forEach((f) => { totalPorTipo[base(f.name)] = (totalPorTipo[base(f.name)] ?? 0) + f.count; });
+    const orden = Object.keys(totalPorTipo)
+      .sort((a, b) => (totalPorTipo[b] - totalPorTipo[a]) || a.localeCompare(b));
+
     const grupo = (idioma) => listaForms
       .filter((f) => nombreForm(f.name).idioma === idioma)
-      .sort((a, b) => (b.count - a.count) || a.name.localeCompare(b.name));
+      .sort((a, b) => orden.indexOf(base(a.name)) - orden.indexOf(base(b.name)));
 
     const pastilla = (f) => {
       const clases = ["li__tab"];
