@@ -2,10 +2,13 @@
 // Presentación editorial al inicio de las páginas interiores.
 // title admite HTML con <em> para la palabra acento (en rojo).
 const { kicker, title, lead = [], cue = "Más abajo", narrow = false } = Astro.props;
+// Con algo en el hueco «lateral» la entradilla se parte en dos columnas,
+// para que eso quede en la primera pantalla junto al titular.
+const tieneLateral = Astro.slots.has("lateral");
 ---
-<section class="pintro">
-  <div class="container">
-    <div class:list={[{ readcol: narrow }]}>
+<section class:list={["pintro", { "pintro--dos": tieneLateral }]}>
+  <div class:list={["container", { "pintro__grid": tieneLateral }]}>
+    <div class:list={[{ readcol: narrow && !tieneLateral }]}>
     {kicker && <p class="pintro__kicker">{kicker}</p>}
     <h1 class="pintro__title" set:html={title} />
     <div class="pintro__lead">
@@ -13,6 +16,7 @@ const { kicker, title, lead = [], cue = "Más abajo", narrow = false } = Astro.p
     </div>
     <p class="pintro__cue">{cue}<span class="pintro__arrow">↓</span></p>
     </div>
+    {tieneLateral && <div class="pintro__lateral"><slot name="lateral" /></div>}
   </div>
 </section>
 
@@ -33,5 +37,16 @@ const { kicker, title, lead = [], cue = "Más abajo", narrow = false } = Astro.p
     text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:12px}
   .pintro__arrow{display:inline-block;animation:pintro-bob 1.8s ease-in-out infinite}
   @keyframes pintro-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+  /* En dos columnas manda el contenido: forzar 74vh dejaría hueco muerto */
+  .pintro--dos{min-height:0;padding-block:calc(var(--header-h) + 20px) 40px}
+  .pintro__grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);
+    gap:clamp(30px,4vw,60px);align-items:start;width:100%}
+  /* El titular arriba: centrarlo contra un formulario tan alto lo hundía
+     fuera de la primera pantalla */
+  .pintro--dos .pintro__cue{display:none}
+  @media (max-width:960px){
+    .pintro__grid{grid-template-columns:1fr;gap:30px}
+    .pintro--dos{padding-block:calc(var(--header-h) + 16px) 30px}
+  }
   @media (max-width:600px){.pintro{min-height:64vh}}
 </style>

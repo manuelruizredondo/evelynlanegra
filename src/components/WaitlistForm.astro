@@ -5,19 +5,21 @@ import { getLocale, localize, ui } from "../i18n";
 const locale = getLocale(Astro.url);
 const f = ui[locale].form;
 const w = ui[locale].waitlist;
-const { name = "lista-espera-online" } = Astro.props;
+const { name = "lista-espera-online", soloFormulario = false } = Astro.props;
 const action = localize("/gracias/", locale);
 const privacy = localize("/privacidad/", locale);
 const disciplinas = ["Bachata", "Salsa", "Ball room"];
 ---
-<section class="section" id="lista-espera">
-  <div class="container wait">
-    <div class="wait__txt">
-      <p class="eyebrow">{w.kicker}</p>
-      <h2 class="wait__title">{w.title}</h2>
-      <p class="wait__note">{w.note}</p>
-      <p class="wait__promise">{w.promise}</p>
-    </div>
+<section class:list={["section", "wait-sec", { "wait-sec--solo": soloFormulario }]} id="lista-espera">
+  <div class:list={["container", "wait", { "wait--solo": soloFormulario }]}>
+    {!soloFormulario && (
+      <div class="wait__txt">
+        <p class="eyebrow">{w.kicker}</p>
+        <h2 class="wait__title">{w.title}</h2>
+        <p class="wait__note">{w.note}</p>
+        <p class="wait__promise">{w.promise}</p>
+      </div>
+    )}
 
       <form name={name} method="POST" action={action} data-netlify="true" netlify-honeypot="bot-field" class="wait__form">
         <input type="hidden" name="form-name" value={name} />
@@ -89,6 +91,10 @@ const disciplinas = ["Bachata", "Salsa", "Ball room"];
      el formulario ocupa el resto a la derecha */
   .wait{display:grid;grid-template-columns:minmax(250px,340px) 1fr;
     gap:clamp(28px,4vw,60px);align-items:start}
+  /* Encajado dentro de otra rejilla: pierde franja, contenedor y sus dos columnas.
+     Va después de .wait a propósito: si no, esa regla lo dejaba en 340px. */
+  .wait-sec--solo{padding:0}
+  .wait--solo{display:block;max-width:none;padding:0;margin:0}
   .wait__txt{position:sticky;top:calc(var(--header-h) + 24px)}
   .wait__title{color:#fff;margin:0 0 .4em}
   .wait__note{color:var(--text);margin:0 0 18px}

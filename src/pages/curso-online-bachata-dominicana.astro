@@ -36,8 +36,9 @@ const courseSchema = {
       "Déjame tus datos y serás de las primeras personas en saber cuándo abre.",
     ]}
     cue="Qué estoy preparando"
-    narrow={true}
-  />
+  >
+    <WaitlistForm slot="lateral" name="lista-espera-online" soloFormulario={true} />
+  </PageIntro>
 
   <section class="section">
     <div class="container readcol">
@@ -64,8 +65,6 @@ const courseSchema = {
       </ul>
     </div>
   </section>
-
-  <WaitlistForm name="lista-espera-online" />
 
   <section class="section">
     <div class="container readcol">
