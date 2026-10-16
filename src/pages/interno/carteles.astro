@@ -1,6 +1,7 @@
 ---
 import Base from "../../layouts/Base.astro";
 import InternoNav from "../../components/InternoNav.astro";
+import SubNavCarteles from "../../components/SubNavCarteles.astro";
 import { CARTEL, CATEGORIAS, HOJA, FASES } from "../../data/carteles";
 const datos = JSON.stringify({ ...CARTEL, HOJA, FASES });
 ---
@@ -10,7 +11,8 @@ const datos = JSON.stringify({ ...CARTEL, HOJA, FASES });
   <section class="li">
     <div class="li__ancho">
       <p class="li__kicker">Uso interno</p>
-      <h1 class="li__h1">Carteles de competidores</h1>
+      <h1 class="li__h1">Carteles</h1>
+      <SubNavCarteles actual="/interno/carteles/" />
 
       <div class="pt">
         <div class="pt__panel">
@@ -95,7 +97,7 @@ const datos = JSON.stringify({ ...CARTEL, HOJA, FASES });
   .li__ancho{padding-inline:clamp(16px,3vw,44px);max-width:1500px;margin-inline:auto}
   .li__kicker{margin:0 0 6px;color:var(--li-acc);font-size:.7rem;font-weight:700;
     text-transform:uppercase;letter-spacing:.1em}
-  .li__h1{color:var(--li-tinta);font-size:clamp(1.7rem,3.5vw,2.4rem);margin:0 0 26px}
+  .li__h1{color:var(--li-tinta);font-size:clamp(1.7rem,3.5vw,2.4rem);margin:0 0 14px}
   .li__btn{background:var(--li-acc);color:#fff;border:0;border-radius:9px;padding:12px 22px;
     font:inherit;font-weight:700;font-size:.85rem;cursor:pointer}
   .li__btn:hover{filter:brightness(1.1)}

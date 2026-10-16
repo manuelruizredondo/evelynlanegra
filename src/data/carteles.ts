@@ -44,3 +44,17 @@ export const FASES = {
   "Semifinal": "SEMIFINAL",
   "Final": "FINAL",
 };
+
+// Cartel de podio: un círculo grande para el ganador y dos menores al lado
+export const PODIO = {
+  w: 1080, h: 1440,
+  // Por debajo de la barra de fechas de la plantilla, que acaba en y=178
+  titulo: { centroY: 240, cuerpo: 48, anchoMax: 900 },
+  puestos: [
+    { n: 1, cx: 540, cy: 648, radio: 184, cuerpoNombre: 44, cuerpoPais: 36 },
+    { n: 2, cx: 196, cy: 782, radio: 122, cuerpoNombre: 30, cuerpoPais: 25 },
+    { n: 3, cx: 884, cy: 782, radio: 122, cuerpoNombre: 30, cuerpoPais: 25 },
+  ],
+  // Del 4 al 10, en dos columnas
+  lista: { desde: 4, hasta: 10, y: 1046, salto: 50, colX: [140, 600], ancho: 400, cuerpo: 29 },
+};
