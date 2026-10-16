@@ -1,0 +1,388 @@
+---
+import Base from "../../layouts/Base.astro";
+import InternoNav from "../../components/InternoNav.astro";
+import { LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS } from "../../data/portadas";
+const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS });
+---
+<Base title="Creador de portadas · uso interno" description="Generador de portadas del campeonato." noindex={true}>
+  <InternoNav actual="/interno/portadas/" />
+
+  <section class="li">
+    <div class="li__ancho">
+      <p class="li__kicker">Uso interno</p>
+      <h1 class="li__h1">Creador de portadas</h1>
+
+      <div class="pt">
+        <div class="pt__panel">
+          <div class="pt__grupo">
+            <p class="pt__t">Textos</p>
+            {LINEAS.map((l) => (
+              <label class="pt__campo">
+                <span>{l.etiqueta}</span>
+                <input type="text" data-linea={l.id} value={l.valor} autocomplete="off" />
+              </label>
+            ))}
+            <p class="pt__pista">Cada línea se ajusta sola para ocupar siempre el mismo ancho.</p>
+          </div>
+
+          <div class="pt__grupo">
+            <p class="pt__t">Logotipo</p>
+            <div class="pt__logos">
+              {LOGOS.map((lg, i) => (
+                <label class="pt__logo">
+                  <input type="radio" name="logo" value={lg.src} checked={i === 0} />
+                  <img src={lg.src} alt={lg.nombre} />
+                  <span>{lg.nombre}</span>
+                </label>
+              ))}
+            </div>
+            <label class="pt__campo">
+              <span>O sube otro</span>
+              <input type="file" accept="image/png,image/jpeg,image/webp" data-logo-propio />
+            </label>
+          </div>
+
+          <div class="pt__grupo">
+            <p class="pt__t">Fondo</p>
+            <div class="pt__fondos">
+              <label class="pt__fondo"><input type="radio" name="fondo" value="imagen" checked /><span>Imagen fija</span></label>
+              <label class="pt__fondo"><input type="radio" name="fondo" value="video" /><span>Vídeo</span></label>
+            </div>
+            <label class="pt__check">
+              <input type="checkbox" data-regla checked />
+              <span>Línea separadora</span>
+            </label>
+          </div>
+
+          <div class="pt__acciones">
+            <button class="li__btn" type="button" data-descargar>Descargar PNG</button>
+            <span class="pt__medida" data-medida>{LIENZO.w} × {LIENZO.h}</span>
+          </div>
+          <p class="pt__pista" data-aviso hidden></p>
+        </div>
+
+        <div class="pt__lienzo">
+          <canvas data-canvas width={LIENZO.w} height={LIENZO.h}></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;800&display=swap" />
+
+<style is:global>
+  .li{
+    --li-tinta:#15151a; --li-suave:#6d6d76; --li-linea:#e4e4e8;
+    --li-fondo:#fff; --li-alt:#f6f6f8; --li-acc:#ce0306;
+    background:var(--li-fondo);color:var(--li-tinta);
+    padding:calc(var(--header-h) + 8px) 0 70px;min-height:100vh;
+  }
+  html,body{background:#fff !important}
+  .li__ancho{padding-inline:clamp(16px,3vw,44px);max-width:1500px;margin-inline:auto}
+  .li__kicker{margin:0 0 6px;color:var(--li-acc);font-size:.7rem;font-weight:700;
+    text-transform:uppercase;letter-spacing:.1em}
+  .li__h1{color:var(--li-tinta);font-size:clamp(1.7rem,3.5vw,2.4rem);margin:0 0 26px}
+  .li__btn{background:var(--li-acc);color:#fff;border:0;border-radius:9px;padding:12px 22px;
+    font:inherit;font-weight:700;font-size:.85rem;cursor:pointer}
+  .li__btn:hover{filter:brightness(1.1)}
+
+  .nav-toggle span{background:#15151a !important}
+  .nav-toggle:hover span{background:#ce0306 !important}
+  .lang__btn{color:#15151a !important}
+  .site-header.is-scrolled{background:rgba(255,255,255,.9) !important;border-bottom:1px solid #e4e4e8}
+
+  /* Controles a la izquierda, lienzo a la derecha */
+  .pt{display:grid;grid-template-columns:minmax(260px,330px) 1fr;gap:clamp(22px,2.5vw,38px);align-items:start}
+  .pt__panel{display:grid;gap:22px;position:sticky;top:calc(var(--header-h) + 16px)}
+  .pt__grupo{border:1px solid var(--li-linea);border-radius:13px;padding:18px;display:grid;gap:12px}
+  .pt__t{margin:0;font-size:.66rem;font-weight:700;text-transform:uppercase;
+    letter-spacing:.09em;color:var(--li-suave)}
+  .pt__campo{display:grid;gap:5px;font-size:.68rem;font-weight:700;color:var(--li-suave);
+    text-transform:uppercase;letter-spacing:.06em}
+  .pt__campo input[type=text]{font:inherit;font-weight:600;text-transform:none;letter-spacing:0;
+    padding:10px 12px;border:1px solid var(--li-linea);border-radius:8px;background:#fff;
+    color:var(--li-tinta);width:100%}
+  .pt__campo input[type=text]:focus{outline:none;border-color:var(--li-acc)}
+  .pt__campo input[type=file]{font:inherit;font-weight:400;text-transform:none;letter-spacing:0;font-size:.78rem}
+  .pt__pista{margin:0;color:var(--li-suave);font-size:.74rem;line-height:1.45}
+
+  .pt__logos{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .pt__logo{display:grid;gap:6px;justify-items:center;cursor:pointer;
+    border:1px solid var(--li-linea);border-radius:10px;padding:10px 8px;background:var(--li-alt)}
+  .pt__logo:has(input:checked){border-color:var(--li-acc);background:#fff}
+  .pt__logo input{margin:0}
+  .pt__logo img{width:52px;height:52px;object-fit:contain}
+  .pt__logo span{font-size:.68rem;text-align:center;line-height:1.3;color:var(--li-suave)}
+
+  .pt__fondos{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .pt__fondo{display:flex;align-items:center;gap:7px;cursor:pointer;font-size:.8rem;
+    border:1px solid var(--li-linea);border-radius:9px;padding:9px 11px;background:var(--li-alt)}
+  .pt__fondo:has(input:checked){border-color:var(--li-acc);background:#fff;font-weight:600}
+  .pt__fondo input{accent-color:var(--li-acc);margin:0}
+  .pt__check{display:flex;align-items:center;gap:9px;font-size:.85rem;cursor:pointer}
+  .pt__check input{accent-color:var(--li-acc)}
+  .pt__acciones{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .pt__medida{color:var(--li-suave);font-size:.75rem}
+
+  .pt__lienzo{border:1px solid var(--li-linea);border-radius:13px;overflow:hidden;background:#000}
+  .pt__lienzo canvas{display:block;width:100%;height:auto}
+
+  @media (max-width:900px){
+    .pt{grid-template-columns:1fr}
+    .pt__panel{position:static}
+  }
+</style>
+
+<script define:vars={{ datos }}>
+  const D = JSON.parse(datos);
+  const canvas = document.querySelector("[data-canvas]");
+  const ctx = canvas.getContext("2d");
+
+  const imagenes = {};
+  const cargar = (src) => new Promise((ok, mal) => {
+    if (imagenes[src]) return ok(imagenes[src]);
+    const im = new Image();
+    im.crossOrigin = "anonymous";
+    im.onload = () => { imagenes[src] = im; ok(im); };
+    im.onerror = () => mal(new Error("No se pudo cargar " + src));
+    im.src = src;
+  });
+
+  const estado = {
+    textos: Object.fromEntries(D.LINEAS.map((l) => [l.id, l.valor])),
+    logo: document.querySelector('input[name="logo"]:checked').value,
+    regla: true,
+    fondo: "imagen",
+  };
+
+  const aviso = document.querySelector("[data-aviso]");
+  const btn = document.querySelector("[data-descargar]");
+  const decir = (txt) => { aviso.textContent = txt || ""; aviso.hidden = !txt; };
+
+  // Vídeo de fondo: en bucle y mudo, se pinta fotograma a fotograma
+  const vid = document.createElement("video");
+  vid.src = D.FIJOS.fondoVideo;
+  vid.muted = true; vid.loop = true; vid.playsInline = true; vid.preload = "auto";
+  vid.crossOrigin = "anonymous";
+  // Algunos navegadores no reproducen un vídeo que no está en el documento
+  vid.style.cssText = "position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;left:-10px";
+  document.body.appendChild(vid);
+
+  let bucle = null;
+  const arrancarBucle = () => {
+    if (bucle) return;
+    const paso = () => { pintar(); bucle = requestAnimationFrame(paso); };
+    bucle = requestAnimationFrame(paso);
+  };
+  const pararBucle = () => { if (bucle) cancelAnimationFrame(bucle); bucle = null; };
+
+  // Cuerpo necesario para que el texto llene exactamente la caja.
+  // Se mide a un tamaño de referencia y se escala: así cualquier texto,
+  // largo o corto, ocupa siempre el mismo ancho.
+  // El texto se dibuja letra a letra: ctx.letterSpacing no mide igual que
+  // pinta y en Safari ni existe, así que el ajuste saldría descuadrado.
+  const avances = (texto, peso) => {
+    const REF = 100;
+    ctx.font = `${peso} ${REF}px Inter, sans-serif`;
+    return [...texto].map((ch) => ctx.measureText(ch).width / REF);
+  };
+
+  // Cuerpo para que la línea llene la caja, con tope en el tamaño del diseño
+  // original: el texto puede encoger para caber, pero nunca crece más.
+  const medidaLinea = (texto, peso, tracking, anchoDestino, maximo) => {
+    const av = avances(texto, peso);
+    const porPunto = av.reduce((s, a) => s + a, 0) + tracking * Math.max(0, texto.length - 1);
+    if (porPunto <= 0) return { cuerpo: maximo, av, ancho: 0 };
+    const cuerpo = Math.min(maximo, anchoDestino / porPunto);
+    return { cuerpo, av, ancho: porPunto * cuerpo };
+  };
+
+  const dibujarLinea = (texto, peso, tracking, centroX, centroY, anchoDestino, maximo) => {
+    const { cuerpo, av, ancho } = medidaLinea(texto, peso, tracking, anchoDestino, maximo);
+    ctx.font = `${peso} ${cuerpo}px Inter, sans-serif`;
+    ctx.textAlign = "left";
+    ctx.textBaseline = "alphabetic";
+
+    // «middle» centra la caja tipográfica, no la tinta: en mayúsculas eso
+    // sube el texto varios píxeles. Se centra midiendo la tinta de verdad.
+    const m = ctx.measureText(texto);
+    const arriba = m.actualBoundingBoxAscent ?? cuerpo * 0.72;
+    const abajo = m.actualBoundingBoxDescent ?? 0;
+    const base = centroY + (arriba - abajo) / 2;
+
+    let x = centroX - ancho / 2;
+    [...texto].forEach((ch, i) => {
+      ctx.fillText(ch, x, base);
+      x += av[i] * cuerpo + tracking * cuerpo;
+    });
+  };
+
+  const pintar = async () => {
+    ctx.clearRect(0, 0, D.LIENZO.w, D.LIENZO.h);
+    if (estado.fondo === "video" && vid.readyState >= 2) {
+      ctx.drawImage(vid, 0, 0, D.LIENZO.w, D.LIENZO.h);
+    } else {
+      const fondo = await cargar(D.FIJOS.fondo);
+      ctx.drawImage(fondo, 0, 0, D.LIENZO.w, D.LIENZO.h);
+    }
+
+    // Logo de arriba, centrado en su hueco y sin deformarse
+    try {
+      const lg = imagenes[estado.logo] ?? await cargar(estado.logo);
+      const c = D.FIJOS.logoCaja;
+      const escala = Math.min(c.ancho / lg.width, c.alto / lg.height);
+      const w = lg.width * escala, h = lg.height * escala;
+      ctx.drawImage(lg, c.x + (c.ancho - w) / 2, c.y + (c.alto - h) / 2, w, h);
+    } catch { /* sin logo */ }
+
+    // Textos
+    ctx.fillStyle = "#fff";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    const centroX = D.CAJA.x + D.CAJA.ancho / 2;
+
+    for (const l of D.LINEAS) {
+      let t = (estado.textos[l.id] ?? "").trim();
+      if (!t) continue;
+      if (l.mayusculas) t = t.toUpperCase();
+      dibujarLinea(t, l.peso, l.tracking, centroX, l.centroY, D.CAJA.ancho, l.cuerpoMax);
+    }
+
+    if (estado.regla) {
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(D.REGLA.x, D.REGLA.y, D.REGLA.ancho, D.REGLA.grosor);
+    }
+
+    for (const k of ["sello", "hotel"]) {
+      try {
+        const p = D.FIJOS[k];
+        const im = imagenes[p.src] ?? await cargar(p.src);
+        ctx.drawImage(im, p.x, p.y, p.ancho, p.alto);
+      } catch { /* pieza ausente */ }
+    }
+  };
+
+  /* ── Controles ── */
+  document.querySelectorAll("[data-linea]").forEach((inp) => {
+    inp.addEventListener("input", () => {
+      estado.textos[inp.dataset.linea] = inp.value;
+      pintar();
+    });
+  });
+
+  document.querySelectorAll('input[name="logo"]').forEach((r) => {
+    r.addEventListener("change", () => { estado.logo = r.value; pintar(); });
+  });
+
+  document.querySelector("[data-logo-propio]").addEventListener("change", (ev) => {
+    const f = ev.target.files?.[0];
+    if (!f) return;
+    const url = URL.createObjectURL(f);
+    estado.logo = url;
+    document.querySelectorAll('input[name="logo"]').forEach((r) => (r.checked = false));
+    pintar();
+  });
+
+  document.querySelectorAll('input[name="fondo"]').forEach((r) => {
+    r.addEventListener("change", async () => {
+      estado.fondo = r.value;
+      const esVideo = estado.fondo === "video";
+      btn.textContent = esVideo ? "Descargar vídeo" : "Descargar PNG";
+      document.querySelector("[data-medida]").textContent =
+        esVideo ? `${D.LIENZO.w} × ${D.LIENZO.h} · 15 s` : `${D.LIENZO.w} × ${D.LIENZO.h}`;
+      if (esVideo) {
+        try { await vid.play(); } catch { /* el navegador lo bloqueó */ }
+        arrancarBucle();
+      } else {
+        pararBucle(); vid.pause(); pintar();
+      }
+      decir("");
+    });
+  });
+
+  document.querySelector("[data-regla]").addEventListener("change", (ev) => {
+    estado.regla = ev.target.checked;
+    pintar();
+  });
+
+  const nombreArchivo = () => (estado.textos.linea2 || "portada").toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "portada";
+
+  const bajar = (blob, nombre) => {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = nombre;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  };
+
+  // Se prefiere MP4 si el navegador sabe grabarlo; si no, WebM
+  const formatoGrabacion = () => {
+    for (const f of ["video/mp4;codecs=avc1.42E01E", "video/mp4",
+                     "video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"]) {
+      if (window.MediaRecorder?.isTypeSupported?.(f)) return f;
+    }
+    return null;
+  };
+
+  const grabarVideo = async () => {
+    const tipo = formatoGrabacion();
+    if (!tipo) return decir("Este navegador no sabe grabar vídeo. Prueba con Chrome o Safari.");
+
+    btn.disabled = true;
+    const original = "Descargar vídeo";
+    try {
+      vid.pause(); vid.currentTime = 0;
+      await new Promise((ok) => { vid.onseeked = ok; setTimeout(ok, 600); });
+
+      const stream = canvas.captureStream(30);
+      const rec = new MediaRecorder(stream, { mimeType: tipo, videoBitsPerSecond: 8000000 });
+      const trozos = [];
+      rec.ondataavailable = (e) => { if (e.data.size) trozos.push(e.data); };
+      const terminado = new Promise((ok) => (rec.onstop = ok));
+
+      arrancarBucle();
+      await vid.play();
+      rec.start();
+
+      const dura = (vid.duration || 15) * 1000;
+      const t0 = performance.now();
+      const reloj = setInterval(() => {
+        btn.textContent = `Grabando… ${Math.min(99, Math.round((performance.now() - t0) / dura * 100))}%`;
+      }, 300);
+
+      await new Promise((ok) => setTimeout(ok, dura));
+      rec.stop();
+      clearInterval(reloj);
+      await terminado;
+
+      const ext = tipo.startsWith("video/mp4") ? "mp4" : "webm";
+      bajar(new Blob(trozos, { type: tipo }), `${nombreArchivo()}-1920x1080.${ext}`);
+      decir(ext === "webm" ? "Guardado en WebM: es lo que graba este navegador. Safari lo da en MP4." : "");
+    } catch (e) {
+      decir("No se pudo grabar: " + e.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = original;
+    }
+  };
+
+  btn.addEventListener("click", () => {
+    if (estado.fondo === "video") return grabarVideo();
+    canvas.toBlob((blob) => bajar(blob, `${nombreArchivo()}-1920x1080.png`), "image/png");
+  });
+
+  // Inter tiene que estar cargada antes de medir, o el ajuste saldría mal
+  Promise.all([
+    document.fonts.load('400 100px Inter'),
+    document.fonts.load('800 100px Inter'),
+    cargar(D.FIJOS.fondo).catch(() => {}),
+    cargar(estado.logo).catch(() => {}),
+    cargar(D.FIJOS.sello.src).catch(() => {}),
+    cargar(D.FIJOS.hotel.src).catch(() => {}),
+  ]).then(pintar).catch(pintar);
+</script>

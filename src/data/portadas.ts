@@ -1,0 +1,33 @@
+// Medidas tomadas del PSD original (lienzo 1920×1080).
+// Las tres líneas de texto ocupan el mismo ancho a propósito: el cuerpo se
+// recalcula para que cualquier texto llene la caja y la portada no baile.
+export const LIENZO = { w: 1920, h: 1080 };
+
+export const CAJA = { x: 614, ancho: 690 };
+
+// centroY y cuerpoMax salen de medir la tinta del PSD aplanado. Cada línea
+// tiene su propio cuerpo: lo que comparten es el ancho de caja, no el tamaño.
+export const LINEAS = [
+  { id: "linea1", etiqueta: "Primera línea", valor: "GRAN FINAL",
+    peso: 400, tracking: 0.10, centroY: 413, cuerpoMax: 130, mayusculas: true },
+  { id: "linea2", etiqueta: "Segunda línea", valor: "SOLISTA",
+    peso: 400, tracking: 0.05, centroY: 598, cuerpoMax: 165, mayusculas: true },
+  { id: "linea3", etiqueta: "Tercera línea", valor: "BACHATA",
+    peso: 800, tracking: -0.025, centroY: 720, cuerpoMax: 152, mayusculas: true },
+];
+
+export const REGLA = { x: 616, y: 484, ancho: 691, grosor: 9 };
+
+export const LOGOS = [
+  { id: "campeonato", nombre: "Campeonato España '26", src: "/img/portadas/logo-campeonato.png" },
+  { id: "metodo", nombre: "Método Bachata Tradicional", src: "/img/2021/02/metodo-la-negra-bachata-tradicional-blanco-1024x1024.jpg" },
+];
+
+// Piezas que no se tocan
+export const FIJOS = {
+  fondo: "/img/portadas/fondo-gran-final.jpg",
+  fondoVideo: "/img/portadas/fondo-gran-final.mp4",
+  logoCaja: { x: 857, y: 108, ancho: 205, alto: 202 },
+  sello: { src: "/img/portadas/sello-15-aniversario.png", x: 870, y: 846, ancho: 189, alto: 180 },
+  hotel: { src: "/img/portadas/logo-diamante-beach.png", x: 1637, y: 889, ancho: 183, alto: 137 },
+};
