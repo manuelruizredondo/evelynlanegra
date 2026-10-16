@@ -155,7 +155,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODI
       const d = P.puestos[i], e = estado.puestos[i];
 
       // El número va primero: la foto y el aro le pasan por encima y lo recortan
-      const num = await cargar(`${P.numeros}${d.n}.png`).catch(() => null);
+      const num = await cargar(`${P.numeros}${d.n}-v3.png`).catch(() => null);
       if (num) {
         const alto = d.radio * 1.18;
         const w = num.width * (alto / num.height);
@@ -344,6 +344,6 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODI
   }).catch((e) => (estadoTxt.textContent = "No se pudo leer la hoja: " + e.message));
 
   Promise.all([document.fonts.load("54px Anton"), cargar(C.plantilla).catch(() => {}), cargar(C.aro.src).catch(() => {}),
-    ...[1,2,3].map((n) => cargar(`${P.numeros}${n}.png`).catch(() => {}))])
+    ...[1,2,3].map((n) => cargar(`${P.numeros}${n}-v3.png`).catch(() => {}))])
     .then(pintar).catch(pintar);
 </script>
