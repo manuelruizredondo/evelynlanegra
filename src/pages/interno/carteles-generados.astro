@@ -127,12 +127,16 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
       return { n: d.n, nombre: p["Nombre / equipo"], pais: M.paisDe(p), foto, banderas, zoom: 1, dx: 0, dy: 0 };
     }));
 
-    const diez = await Promise.all(lista.filter((x) => x.__puesto <= T.filas.cuantas).map(async (p) => ({
-      puesto: p.__puesto,
-      nombre: p["Nombre / equipo"],
-      pais: M.paisDe(p),
-      banderas: (await Promise.all(M.banderasDeFicha(p).map((b) => M.cargar(b).catch(() => null)))).filter(Boolean),
-    })));
+    const diez = await Promise.all(lista.filter((x) => x.__puesto <= T.filas.cuantas).map(async (p) => {
+      const url = M.urlFoto(p);
+      return {
+        puesto: p.__puesto,
+        nombre: p["Nombre / equipo"],
+        pais: M.paisDe(p),
+        banderas: (await Promise.all(M.banderasDeFicha(p).map((b) => M.cargar(b).catch(() => null)))).filter(Boolean),
+        foto: url ? await M.cargar(url).catch(() => null) : null,
+      };
+    }));
 
     const sinFoto = puestos.filter((e) => e.nombre && !e.foto).length;
     return { titulo, podio: { titulo, puestos, lista: "" }, top: { titulo, puestos: diez }, sinFoto, cuantos: lista.length };

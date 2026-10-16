@@ -70,6 +70,28 @@ export function crearPodio(C) {
     return c;
   };
 
+  // Texto con espaciado entre letras. Se dibuja letra a letra porque
+  // ctx.letterSpacing no mide lo mismo que pinta y en Safari ni existe.
+  const textoEspaciado = (ctx, t, cuerpo, x, y, anchoMax, o = {}) => {
+    if (!t) return;
+    const familia = o.familia ?? '"Mona Sans","Lato",sans-serif';
+    const peso = o.peso ?? 400;
+    const esp = o.espaciado ?? 0.14;
+    const letras = [...t];
+    const fijar = (c) => { ctx.font = `${peso} ${c}px ${familia}`; };
+    fijar(cuerpo);
+    const avances = letras.map((ch) => ctx.measureText(ch).width / cuerpo);
+    const anchoEm = avances.reduce((s, a) => s + a, 0) + esp * Math.max(0, letras.length - 1);
+    const c = anchoEm * cuerpo > anchoMax ? anchoMax / anchoEm : cuerpo;
+    fijar(c);
+    const m = ctx.measureText(t);
+    const base = y + ((m.actualBoundingBoxAscent ?? c * 0.72) - (m.actualBoundingBoxDescent ?? 0)) / 2;
+    ctx.fillStyle = o.relleno ?? "#fff";
+    ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+    let px = x;
+    letras.forEach((ch, i) => { ctx.fillText(ch, px, base); px += avances[i] * c + esp * c; });
+  };
+
   const banderasEn = (ctx, banderas, cx, y, lado) => {
     if (!banderas?.length) return;
     const total = banderas.length * lado + (banderas.length - 1) * lado * 0.14;
@@ -173,17 +195,37 @@ export function crearPodio(C) {
         ctx.fillRect(F.numX - 26, Math.round(y + F.salto / 2 - 1), F.banderaX + F.ladoBandera - F.numX + 26, 1);
       }
 
-      texto(ctx, String(e.puesto ?? i + 1), F.cuerpoNum, F.numX, y, 100, "oro", { alineado: "center" });
-
       const hayPais = Boolean(e.pais);
+      const yNombre = hayPais ? y - F.cuerpoPais * 0.72 : y;
+
+      // El número va a la altura del nombre, no al centro de la fila
+      texto(ctx, String(e.puesto ?? i + 1), F.cuerpoNum, F.numX, yNombre, 100, "oro", { alineado: "center" });
+
       texto(ctx, (e.nombre || "").toUpperCase(), F.cuerpoNombre, F.textoX,
-            hayPais ? y - F.cuerpoPais * 0.72 : y, F.anchoTexto, "blanco", { alineado: "left" });
+            yNombre, F.anchoTexto, "blanco", { alineado: "left" });
       if (hayPais) {
-        texto(ctx, e.pais.toUpperCase(), F.cuerpoPais, F.textoX,
-              y + F.cuerpoNombre * 0.62, F.anchoTexto, "tenue", { alineado: "left" });
+        textoEspaciado(ctx, e.pais.toUpperCase(), F.cuerpoPais, F.textoX,
+                       y + F.cuerpoNombre * 0.62, F.anchoTexto,
+                       { familia: F.familiaPais, peso: F.pesoPais, espaciado: F.espaciadoPais });
       }
 
       banderasEn(ctx, e.banderas, F.banderaX, y - F.ladoBandera / 2, F.ladoBandera);
+
+      // La foto, a la derecha y con la altura de la fila
+      if (e.foto) {
+        const f = F.foto;
+        ctx.save();
+        ctx.beginPath(); ctx.arc(f.cx, y, f.radio, 0, Math.PI * 2); ctx.clip();
+        const lado = f.radio * 2;
+        const esc = Math.max(lado / e.foto.width, lado / e.foto.height);
+        const w = e.foto.width * esc, h = e.foto.height * esc;
+        ctx.drawImage(e.foto, f.cx - w / 2, y - h / 2, w, h);
+        ctx.restore();
+        ctx.beginPath(); ctx.arc(f.cx, y, f.radio - 1, 0, Math.PI * 2);
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = oro(ctx, y - f.radio, y + f.radio);
+        ctx.stroke();
+      }
     });
   };
 
@@ -270,6 +312,7 @@ export function crearPodio(C) {
   // Fuente, plantilla, aro y globos: sin esto el primer pintado sale soso
   const precargar = () => Promise.all([
     document.fonts.load("54px Anton"),
+    document.fonts.load('400 24px "Mona Sans"'),
     cargar(P.plantilla).catch(() => {}),
     cargar(C.aro.src).catch(() => {}),
     ...[1, 2, 3].map((n) => cargar(`${P.numeros}${n}-v3.png`).catch(() => {})),
