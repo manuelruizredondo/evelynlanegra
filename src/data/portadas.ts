@@ -21,10 +21,10 @@ export const REGLA = { x: 616, y: 484, ancho: 691, grosor: 9, dorado: true };
 // Puntos de brillo, en proporción a la caja de texto. La fase los desacompasa
 // para que no parpadeen todos a la vez.
 export const DESTELLOS = [
-  { px: 0.985, py: -0.34, radio: 17, fase: 0.0 },
-  { px: 0.013, py: 1.00,  radio: 15, fase: 2.1 },
-  { px: 0.47,  py: 0.38,  radio: 10, fase: 4.0 },
-  { px: 0.78,  py: 1.00,  radio: 11, fase: 1.1 },
+  // Clavado en el remate de la última letra, se escriba lo que se escriba
+  { anclaje: "finTexto", dx: 4, dy: -4, radio: 17, fase: 0.0 },
+  { anclaje: "regla", px: 0.012, radio: 15, fase: 2.1 },
+  { anclaje: "regla", px: 0.78,  radio: 11, fase: 1.1 },
 ];
 
 // Los dos escudos del campeonato, con el texto del aro en blanco para que se

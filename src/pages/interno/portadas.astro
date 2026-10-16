@@ -283,6 +283,13 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS, DESTELLOS });
     }
 
     trazar();
+
+    // Dónde termina y dónde empieza la tinta, para colgar de ahí los destellos
+    return {
+      derecha: centroX + ancho / 2 - tracking * cuerpo,
+      arriba: base - arriba,
+      abajo: base + abajo,
+    };
   };
 
   const pintar = async () => {
@@ -306,12 +313,14 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS, DESTELLOS });
 
     // Textos
     const centroX = D.CAJA.x + D.CAJA.ancho / 2;
+    let remateLinea1 = null;
 
     for (const l of D.LINEAS) {
       let t = (estado.textos[l.id] ?? "").trim();
       if (!t) continue;
       if (l.mayusculas) t = t.toUpperCase();
-      dibujarLinea(t, l.peso, l.tracking, centroX, l.centroY, D.CAJA.ancho, l.cuerpoMax, l.dorado);
+      const caja = dibujarLinea(t, l.peso, l.tracking, centroX, l.centroY, D.CAJA.ancho, l.cuerpoMax, l.dorado);
+      if (l === D.LINEAS[0]) remateLinea1 = caja;
     }
 
     if (estado.regla) {
@@ -328,10 +337,16 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS, DESTELLOS });
 
     if (estado.destellos) {
       const t = estado.fondo === "video" ? performance.now() / 1000 : 1.15;
-      const L1 = D.LINEAS[0];
       for (const d of D.DESTELLOS) {
-        const x = D.CAJA.x + d.px * D.CAJA.ancho;
-        const y = d.py >= 1 ? D.REGLA.y + D.REGLA.grosor / 2 : L1.centroY + d.py * 60;
+        let x, y;
+        if (d.anclaje === "finTexto") {
+          if (!remateLinea1) continue;
+          x = remateLinea1.derecha + (d.dx ?? 0);
+          y = remateLinea1.arriba + (d.dy ?? 0);
+        } else {
+          x = D.CAJA.x + d.px * D.CAJA.ancho;
+          y = D.REGLA.y + D.REGLA.grosor / 2;
+        }
         const onda = 0.5 + 0.5 * Math.sin(t * 1.25 + d.fase);
         destello(x, y, d.radio * (0.72 + 0.28 * onda), 0.3 + 0.7 * onda);
       }
