@@ -41,10 +41,9 @@ const datos = JSON.stringify(CARTEL);
               <span>Encuadre <em data-zoom-val>100 %</em></span>
               <input type="range" data-zoom min="100" max="260" step="2" value="100" />
             </label>
-            <div class="pt__row">
-              <label class="pt__campo"><span>Mover ↔</span><input type="range" data-dx min="-50" max="50" value="0" /></label>
-              <label class="pt__campo"><span>Mover ↕</span><input type="range" data-dy min="-50" max="50" value="0" /></label>
-            </div>
+            <p class="pt__pista">Arrastra la foto sobre el cartel para moverla y usa la rueda
+              del ratón encima para acercarla. El deslizador sirve para afinar.</p>
+            <button type="button" class="pt__reset" data-reencuadrar>Volver a centrar</button>
           </div>
 
           <div class="pt__grupo">
@@ -111,6 +110,11 @@ const datos = JSON.stringify(CARTEL);
   .pt__campo input[type=range]{accent-color:var(--li-acc);width:100%}
   .pt__campo input[type=file]{font:inherit;font-weight:400;text-transform:none;letter-spacing:0;font-size:.76rem}
   .pt__row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .pt__reset{justify-self:start;background:var(--li-alt);border:1px solid var(--li-linea);
+    border-radius:8px;padding:8px 14px;font:inherit;font-size:.76rem;font-weight:600;
+    color:var(--li-tinta);cursor:pointer}
+  .pt__reset:hover{border-color:var(--li-tinta)}
+  .pt__lienzo canvas{touch-action:none}
   .pt__pista{margin:0;color:var(--li-suave);font-size:.74rem;line-height:1.45}
   .pt__acciones{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
   .pt__medida{color:var(--li-suave);font-size:.75rem}
@@ -278,8 +282,58 @@ const datos = JSON.stringify(CARTEL);
     document.querySelector("[data-zoom-val]").textContent = `${zoom.value} %`;
     pintar();
   });
-  document.querySelector("[data-dx]").addEventListener("input", (e) => { estado.dx = +e.target.value * 4; pintar(); });
-  document.querySelector("[data-dy]").addEventListener("input", (e) => { estado.dy = +e.target.value * 4; pintar(); });
+  // ── Mover arrastrando y escalar con la rueda, sobre la propia foto ──
+  const aLienzo = (ev) => {
+    const r = canvas.getBoundingClientRect();
+    return { x: (ev.clientX - r.left) * (C.w / r.width), y: (ev.clientY - r.top) * (C.h / r.height) };
+  };
+  const sobreLaFoto = (p) => Math.hypot(p.x - C.foto.cx, p.y - C.foto.cy) <= C.foto.radio;
+
+  let arrastrando = false, previo = null;
+
+  canvas.addEventListener("pointermove", (ev) => {
+    const p = aLienzo(ev);
+    if (!arrastrando) { canvas.style.cursor = estado.foto && sobreLaFoto(p) ? "grab" : "default"; return; }
+    estado.dx += p.x - previo.x;
+    estado.dy += p.y - previo.y;
+    previo = p;
+    pintar();
+  });
+
+  canvas.addEventListener("pointerdown", (ev) => {
+    const p = aLienzo(ev);
+    if (!estado.foto || !sobreLaFoto(p)) return;
+    arrastrando = true; previo = p;
+    canvas.setPointerCapture(ev.pointerId);
+    canvas.style.cursor = "grabbing";
+  });
+
+  const soltar = (ev) => {
+    if (!arrastrando) return;
+    arrastrando = false;
+    canvas.releasePointerCapture?.(ev.pointerId);
+    canvas.style.cursor = "grab";
+  };
+  canvas.addEventListener("pointerup", soltar);
+  canvas.addEventListener("pointercancel", soltar);
+
+  canvas.addEventListener("wheel", (ev) => {
+    const p = aLienzo(ev);
+    if (!estado.foto || !sobreLaFoto(p)) return;
+    ev.preventDefault();
+    const z = Math.min(4, Math.max(1, estado.zoom * (1 - ev.deltaY * 0.0015)));
+    estado.zoom = z;
+    zoom.value = Math.round(z * 100);
+    document.querySelector("[data-zoom-val]").textContent = `${Math.round(z * 100)} %`;
+    pintar();
+  }, { passive: false });
+
+  document.querySelector("[data-reencuadrar]").addEventListener("click", () => {
+    estado.zoom = 1; estado.dx = 0; estado.dy = 0;
+    zoom.value = 100;
+    document.querySelector("[data-zoom-val]").textContent = "100 %";
+    pintar();
+  });
 
   document.querySelector("[data-descargar]").addEventListener("click", () => {
     const n = `${estado.nombre}-${estado.pais}`.toLowerCase()
