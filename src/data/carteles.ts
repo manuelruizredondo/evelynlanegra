@@ -72,3 +72,21 @@ export const PODIO = {
   // Del 4 al 10, en dos columnas
   lista: { desde: 4, hasta: 10, y: 1046, salto: 50, colX: [140, 600], ancho: 400, cuerpo: 29 },
 };
+
+// Cartel del top 10: los diez uno debajo de otro. La plantilla sólo tiene
+// contenido propio de y=0 a 258 (cabecera) y de 1251 a 1409 (pie), así que las
+// filas caben holgadas entre medias.
+export const TOP10 = {
+  w: 1080, h: 1440,
+  plantilla: "/img/ganadores/plantilla-podio.jpg",
+  antetitulo: "CLASIFICACIÓN",
+  ante: { centroY: 318, cuerpo: 30 },
+  titulo: { centroY: 214, cuerpo: 52, anchoMax: 940 },
+  filas: {
+    cuantas: 10,
+    y0: 412, salto: 88,
+    numX: 142, textoX: 232, anchoTexto: 600,
+    banderaX: 902, ladoBandera: 54,
+    cuerpoNum: 54, cuerpoNombre: 38, cuerpoPais: 23,
+  },
+};

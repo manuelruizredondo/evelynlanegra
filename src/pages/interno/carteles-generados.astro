@@ -1,0 +1,216 @@
+---
+import Base from "../../layouts/Base.astro";
+import InternoNav from "../../components/InternoNav.astro";
+import SubNavCarteles from "../../components/SubNavCarteles.astro";
+import { CARTEL, PODIO, TOP10, HOJA, FASES } from "../../data/carteles";
+import { BANDERAS, ES_EN } from "../../data/banderas";
+const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDERAS, ES_EN });
+---
+<Base title="Carteles generados · uso interno" description="Genera los carteles de podio y top 10 leyendo la hoja." noindex={true}>
+  <InternoNav actual="/interno/carteles/" />
+
+  <section class="li">
+    <div class="li__ancho">
+      <p class="li__kicker">Uso interno</p>
+      <h1 class="li__h1">Carteles</h1>
+      <SubNavCarteles actual="/interno/carteles-generados/" />
+
+      <div class="ge__barra">
+        <button class="li__btn" type="button" data-generar disabled>Generar carteles</button>
+        <button type="button" class="pt__reset" data-bajar-todo hidden>Descargar todos</button>
+        <span class="ge__estado" data-estado>Leyendo la hoja…</span>
+      </div>
+
+      <div class="ge__rejilla" data-salida></div>
+    </div>
+  </section>
+</Base>
+
+<script type="application/json" data-config set:html={datos}></script>
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&display=swap" />
+
+<style is:global>
+  .li{--li-tinta:#15151a;--li-suave:#6d6d76;--li-linea:#e4e4e8;--li-fondo:#fff;--li-alt:#f6f6f8;--li-acc:#ce0306;
+    background:var(--li-fondo);color:var(--li-tinta);padding:calc(var(--header-h) + 8px) 0 70px;min-height:100vh}
+  html,body{background:#fff !important}
+  .li__ancho{max-width:var(--maxw);margin-inline:auto;padding-inline:clamp(18px,4vw,34px)}
+  .li__kicker{margin:0 0 6px;font-size:.72rem;font-weight:800;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--li-acc)}
+  .li__h1{color:var(--li-tinta);margin:0 0 18px;font-size:clamp(1.7rem,3.5vw,2.4rem);line-height:1.05}
+  .li__btn{border:0;border-radius:10px;padding:11px 20px;background:var(--li-acc);color:#fff;
+    font:inherit;font-size:.85rem;font-weight:700;cursor:pointer}
+  .li__btn[disabled]{background:#c9c9d0;cursor:default}
+  .pt__reset{background:var(--li-alt);border:1px solid var(--li-linea);border-radius:9px;
+    padding:10px 15px;font:inherit;font-size:.78rem;font-weight:600;color:var(--li-tinta);cursor:pointer}
+  .pt__reset:hover{border-color:var(--li-tinta)}
+  .pt__reset[hidden]{display:none}
+
+  .ge__barra{display:flex;align-items:center;gap:13px;flex-wrap:wrap;margin:0 0 26px}
+  .ge__estado{color:var(--li-suave);font-size:.82rem}
+
+  .ge__rejilla{display:grid;gap:22px;
+    grid-template-columns:repeat(auto-fill,minmax(236px,1fr))}
+  .ge__ficha{border:1px solid var(--li-linea);border-radius:14px;overflow:hidden;background:#fff;
+    display:flex;flex-direction:column}
+  .ge__lienzo{display:block;width:100%;height:auto;background:#06202b;cursor:zoom-in}
+  .ge__pie{padding:11px 13px 13px;display:grid;gap:8px}
+  .ge__t{margin:0;font-size:.79rem;font-weight:700;line-height:1.3}
+  .ge__sub{margin:0;color:var(--li-suave);font-size:.72rem}
+  .ge__acciones{display:flex;gap:7px}
+  .ge__a{flex:1;text-align:center;text-decoration:none;background:var(--li-alt);
+    border:1px solid var(--li-linea);border-radius:8px;padding:7px 9px;
+    font-size:.74rem;font-weight:600;color:var(--li-tinta)}
+  .ge__a:hover{border-color:var(--li-tinta);text-decoration:none}
+
+  .ge__visor{position:fixed;inset:0;z-index:4000;background:rgba(8,8,12,.86);
+    display:flex;align-items:center;justify-content:center;padding:26px}
+  .ge__visor[hidden]{display:none}
+  .ge__visor img{max-width:min(100%,760px);max-height:100%;border-radius:10px}
+  .ge__cerrar{position:fixed;top:18px;right:20px;border:0;border-radius:999px;width:38px;height:38px;
+    background:#fff;color:#15151a;font-size:1.1rem;font-weight:700;cursor:pointer;line-height:1}
+</style>
+
+<div class="ge__visor" data-visor hidden>
+  <button type="button" class="ge__cerrar" data-cerrar aria-label="Cerrar">×</button>
+  <img data-visor-img alt="" />
+</div>
+
+<script>
+  import { crearPodio } from "../../scripts/carteles-podio.mjs";
+
+  const C = JSON.parse(document.querySelector("[data-config]").textContent);
+  const M = crearPodio(C);
+  const { P, T } = M;
+
+  const estadoTxt = document.querySelector("[data-estado]");
+  const salida = document.querySelector("[data-salida]");
+  const btnGenerar = document.querySelector("[data-generar]");
+  const btnTodo = document.querySelector("[data-bajar-todo]");
+
+  let fichas = [];
+  let hechos = [];
+
+  /* ── Visor ── */
+  const visor = document.querySelector("[data-visor]");
+  const visorImg = document.querySelector("[data-visor-img]");
+  const cerrar = () => { visor.hidden = true; visorImg.removeAttribute("src"); };
+  visor.addEventListener("click", (e) => { if (e.target === visor || e.target.closest("[data-cerrar]")) cerrar(); });
+  addEventListener("keydown", (e) => { if (e.key === "Escape" && !visor.hidden) cerrar(); });
+
+  /* ── Un lienzo de trabajo, fuera de pantalla ── */
+  const taller = document.createElement("canvas");
+  taller.width = P.w; taller.height = P.h;
+  const tctx = taller.getContext("2d");
+
+  const aBlob = () => new Promise((ok) => taller.toBlob(ok, "image/png"));
+
+  // Miniatura visible: el PNG a tamaño completo en la rejilla sería un derroche
+  const miniatura = () => {
+    const m = document.createElement("canvas");
+    m.width = 472; m.height = Math.round(472 * P.h / P.w);
+    m.getContext("2d").drawImage(taller, 0, 0, m.width, m.height);
+    return m;
+  };
+
+  /* ── Montar el estado de una prueba a partir de sus fichas ── */
+  const montar = async (lista) => {
+    const titulo = M.cat(lista[0]);
+
+    const puestos = await Promise.all(P.puestos.map(async (d) => {
+      const p = lista.find((x) => x.__puesto === d.n);
+      if (!p) return { n: d.n, nombre: "", pais: "", foto: null, banderas: [], zoom: 1, dx: 0, dy: 0 };
+      const banderas = (await Promise.all(M.banderasDeFicha(p).map((b) => M.cargar(b).catch(() => null)))).filter(Boolean);
+      const url = M.urlFoto(p);
+      const foto = url ? await M.cargar(url).catch(() => null) : null;
+      return { n: d.n, nombre: p["Nombre / equipo"], pais: M.paisDe(p), foto, banderas, zoom: 1, dx: 0, dy: 0 };
+    }));
+
+    const diez = await Promise.all(lista.filter((x) => x.__puesto <= T.filas.cuantas).map(async (p) => ({
+      puesto: p.__puesto,
+      nombre: p["Nombre / equipo"],
+      pais: M.paisDe(p),
+      banderas: (await Promise.all(M.banderasDeFicha(p).map((b) => M.cargar(b).catch(() => null)))).filter(Boolean),
+    })));
+
+    const sinFoto = puestos.filter((e) => e.nombre && !e.foto).length;
+    return { titulo, podio: { titulo, puestos, lista: "" }, top: { titulo, puestos: diez }, sinFoto, cuantos: lista.length };
+  };
+
+  const ficha = (titulo, sub, lienzo, blob, archivo) => {
+    const url = URL.createObjectURL(blob);
+    const caja = document.createElement("div");
+    caja.className = "ge__ficha";
+    lienzo.className = "ge__lienzo";
+    caja.append(lienzo);
+    const pie = document.createElement("div");
+    pie.className = "ge__pie";
+    pie.innerHTML = `<p class="ge__t"></p><p class="ge__sub"></p>
+      <div class="ge__acciones">
+        <a class="ge__a" data-ver href="#">Ver</a>
+        <a class="ge__a" download="${archivo}" href="${url}">Descargar</a>
+      </div>`;
+    pie.querySelector(".ge__t").textContent = titulo;
+    pie.querySelector(".ge__sub").textContent = sub;
+    const abrir = (e) => { e.preventDefault(); visorImg.src = url; visor.hidden = false; };
+    pie.querySelector("[data-ver]").addEventListener("click", abrir);
+    lienzo.addEventListener("click", abrir);
+    caja.append(pie);
+    salida.append(caja);
+    return { url, archivo };
+  };
+
+  /* ── Generar todo ── */
+  btnGenerar.addEventListener("click", async () => {
+    const m = M.pruebas(fichas);
+    if (!m.size) return;
+    btnGenerar.disabled = true;
+    btnTodo.hidden = true;
+    salida.innerHTML = "";
+    hechos = [];
+
+    const claves = [...m.keys()];
+    for (let i = 0; i < claves.length; i++) {
+      const lista = m.get(claves[i]);
+      estadoTxt.textContent = `Montando ${i + 1} de ${claves.length}: ${M.cat(lista[0])}…`;
+      const d = await montar(lista);
+      const base = M.nombreArchivo(d.titulo);
+
+      await M.pintarPodio(tctx, d.podio);
+      hechos.push(ficha(d.titulo, `Podio · ${d.sinFoto ? d.sinFoto + " sin foto" : "con sus fotos"}`,
+        miniatura(), await aBlob(), `${base}-podio.png`));
+
+      if (d.cuantos > P.puestos.length) {
+        await M.pintarTop10(tctx, d.top);
+        hechos.push(ficha(d.titulo, `Top ${Math.min(d.cuantos, T.filas.cuantas)}`,
+          miniatura(), await aBlob(), `${base}-top10.png`));
+      }
+    }
+
+    estadoTxt.textContent = `${hechos.length} carteles de ${claves.length} ${claves.length === 1 ? "prueba" : "pruebas"}.`;
+    btnGenerar.disabled = false;
+    btnTodo.hidden = hechos.length === 0;
+  });
+
+  btnTodo.addEventListener("click", async () => {
+    btnTodo.disabled = true;
+    for (const h of hechos) {
+      const a = document.createElement("a");
+      a.href = h.url; a.download = h.archivo; a.click();
+      await new Promise((r) => setTimeout(r, 450));
+    }
+    btnTodo.disabled = false;
+  });
+
+  /* ── Arranque ── */
+  M.precargar();
+  fetch(C.HOJA.url).then((r) => r.text()).then((t) => {
+    fichas = M.leerCSV(t).map((p, i) => ({ ...p, __i: i }));
+    const m = M.pruebas(fichas);
+    btnGenerar.disabled = m.size === 0;
+    estadoTxt.textContent = m.size
+      ? `${fichas.length} participantes, ${m.size} ${m.size === 1 ? "prueba resuelta" : "pruebas resueltas"}.`
+      : `${fichas.length} participantes, pero ningún puesto todavía. En cuanto rellenes la columna «Puesto» de la hoja, el botón se activa solo.`;
+  }).catch((e) => (estadoTxt.textContent = "No se pudo leer la hoja: " + e.message));
+</script>

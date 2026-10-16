@@ -2,9 +2,9 @@
 import Base from "../../layouts/Base.astro";
 import InternoNav from "../../components/InternoNav.astro";
 import SubNavCarteles from "../../components/SubNavCarteles.astro";
-import { CARTEL, PODIO, HOJA, FASES } from "../../data/carteles";
+import { CARTEL, PODIO, TOP10, HOJA, FASES } from "../../data/carteles";
 import { BANDERAS, ES_EN } from "../../data/banderas";
-const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODIO, HOJA, FASES, BANDERAS, ES_EN });
+const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDERAS, ES_EN });
 ---
 <Base title="Carteles de ganadores · uso interno" description="Generador de carteles de podio." noindex={true}>
   <InternoNav actual="/interno/carteles/" />
@@ -99,6 +99,10 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODI
     max-height:210px;overflow-y:auto}
   .pt__puesto{border-top:1px solid var(--li-linea);padding-top:11px;display:grid;gap:8px}
   .pt__campo input[type=range]{accent-color:var(--li-acc);width:100%}
+  .pt__campo select{border:1px solid var(--li-linea);border-radius:9px;padding:9px 10px;
+    font:inherit;font-size:.82rem;font-weight:500;color:var(--li-tinta);background:#fff;
+    text-transform:none;letter-spacing:0;width:100%}
+  .pt__campo select:disabled{color:var(--li-suave);background:var(--li-alt)}
   .pt__reset{justify-self:start;background:var(--li-alt);border:1px solid var(--li-linea);
     border-radius:8px;padding:7px 12px;font:inherit;font-size:.74rem;font-weight:600;
     color:var(--li-tinta);cursor:pointer}
@@ -110,21 +114,18 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODI
     .pt__panel,.pt__lienzo{position:static}.pt__lienzo--alto{max-width:620px}}
 </style>
 
-<script define:vars={{ datos }}>
-  const C = JSON.parse(datos);
-  const P = C.PODIO;
+<script type="application/json" data-config set:html={datos}></script>
+
+<script>
+  import { crearPodio } from "../../scripts/carteles-podio.mjs";
+
+  const C = JSON.parse(document.querySelector("[data-config]").textContent);
+  const M = crearPodio(C);
+  const { P, cargar, radioFoto, urlFoto, cat, paisDe: pais, banderasDeFicha, sinTildes } = M;
+
   const canvas = document.querySelector("[data-canvas]");
   const ctx = canvas.getContext("2d");
   const estadoTxt = document.querySelector("[data-estado]");
-
-  const img = {};
-  const cargar = (src) => new Promise((ok, mal) => {
-    if (img[src]) return ok(img[src]);
-    const im = new Image(); im.crossOrigin = "anonymous";
-    im.onload = () => { img[src] = im; ok(im); };
-    im.onerror = () => mal(new Error("no se pudo cargar"));
-    im.src = src;
-  });
 
   const estado = {
     titulo: "SEMIFINAL SOLISTA FEMENINO BACHATA",
@@ -132,140 +133,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODI
     lista: "",
   };
 
-  // Centro de masa horizontal de una imagen, en fracción de su ancho.
-  // Sirve para centrar los globos por lo que se ve y no por el recorte.
-  const centros = {};
-  const centroOptico = (im) => {
-    if (centros[im.src] != null) return centros[im.src];
-    const ancho = 160, alto = Math.max(1, Math.round(im.height * ancho / im.width));
-    const m = document.createElement("canvas");
-    m.width = ancho; m.height = alto;
-    const mc = m.getContext("2d", { willReadFrequently: true });
-    mc.drawImage(im, 0, 0, ancho, alto);
-    const px = mc.getImageData(0, 0, ancho, alto).data;
-    let suma = 0, total = 0;
-    for (let y = 0; y < alto; y++) {
-      for (let x = 0; x < ancho; x++) {
-        const a = px[(y * ancho + x) * 4 + 3];
-        if (a) { suma += (x + 0.5) * a; total += a; }
-      }
-    }
-    return (centros[im.src] = total ? suma / total / ancho : 0.5);
-  };
-
-  // Radio al que hay que recortar la foto para un aro dibujado a este ancho.
-  const radioFoto = (anchoAro) => C.aro.radioInterior * anchoAro / C.aro.ancho;
-
-  const oro = (y0, y1) => {
-    const g = ctx.createLinearGradient(0, y0, 0, y1);
-    g.addColorStop(0, "#FFF0CC"); g.addColorStop(0.26, "#E0AC46");
-    g.addColorStop(0.58, "#E9C97C"); g.addColorStop(0.89, "#A66B12"); g.addColorStop(1, "#7D3F09");
-    return g;
-  };
-
-  const texto = (t, cuerpo, cx, cy, anchoMax, relleno, familia = "Anton, sans-serif") => {
-    if (!t) return;
-    ctx.font = `${cuerpo}px ${familia}`;
-    let c = cuerpo;
-    if (ctx.measureText(t).width > anchoMax) {
-      c = cuerpo * (anchoMax / ctx.measureText(t).width);
-      ctx.font = `${c}px ${familia}`;
-    }
-    const m = ctx.measureText(t);
-    const base = cy + ((m.actualBoundingBoxAscent ?? c * 0.72) - (m.actualBoundingBoxDescent ?? 0)) / 2;
-    ctx.fillStyle = relleno === "oro" ? oro(base - c * 0.74, base + c * 0.12) : "#fff";
-    ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
-    ctx.fillText(t, cx, base);
-    return c;
-  };
-
-  const pintar = async () => {
-    const base = await cargar(C.plantilla);
-    ctx.clearRect(0, 0, P.w, P.h);
-    ctx.drawImage(base, 0, 0, P.w, P.h);
-    texto((estado.titulo || "").toUpperCase(), P.titulo.cuerpo, P.w / 2, P.titulo.centroY, P.titulo.anchoMax, "blanco");
-
-    const aro = await cargar(C.aro.src).catch(() => null);
-
-    for (let i = 0; i < P.puestos.length; i++) {
-      const d = P.puestos[i], e = estado.puestos[i];
-
-      // El número va primero: la foto y el aro le pasan por encima y lo recortan
-      const num = await cargar(`${P.numeros}${d.n}-v3.png`).catch(() => null);
-      if (num) {
-        const alto = d.radio * 1.18;
-        const w = num.width * (alto / num.height);
-        // Apoyado sobre el borde: solo la base entra en el círculo.
-        // El globo no está centrado dentro de su propio recorte, así que lo
-        // cuadro por donde está la tinta y no por el borde de la imagen.
-        ctx.drawImage(num, d.cx - centroOptico(num) * w, d.cy - d.radio - alto * 0.86, w, alto);
-      }
-
-      // La foto acaba bajo la línea dorada del aro, no en el radio nominal:
-      // así queda un marco y no asoma nada por fuera.
-      const rFoto = radioFoto(d.radio * 2.2);
-
-      if (e.foto) {
-        ctx.save();
-        ctx.beginPath(); ctx.arc(d.cx, d.cy, rFoto, 0, Math.PI * 2); ctx.clip();
-        const lado = rFoto * 2 * e.zoom;
-        const esc = Math.max(lado / e.foto.width, lado / e.foto.height);
-        const w = e.foto.width * esc, h = e.foto.height * esc;
-        ctx.drawImage(e.foto, d.cx - w / 2 + e.dx, d.cy - h / 2 + e.dy, w, h);
-        ctx.restore();
-      } else {
-        ctx.save();
-        ctx.beginPath(); ctx.arc(d.cx, d.cy, rFoto, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(10,32,44,.92)"; ctx.fill();
-        ctx.restore();
-      }
-
-      if (aro) {
-        const lado = d.radio * 2.2;
-        ctx.drawImage(aro, d.cx - lado / 2, d.cy - lado / 2, lado, lado * (C.aro.alto / C.aro.ancho));
-      }
-
-      // Número de puesto, en oro y por encima del círculo
-
-      // Banderas apoyadas en el borde inferior del círculo
-      if (e.banderas?.length) {
-        const lado = d.radio * 0.42;
-        const total = e.banderas.length * lado + (e.banderas.length - 1) * lado * 0.14;
-        let bx = d.cx - total / 2;
-        for (const bim of e.banderas) {
-          ctx.drawImage(bim, bx, d.cy + d.radio - lado * 0.56, lado, lado);
-          bx += lado * 1.14;
-        }
-      }
-
-      texto((e.nombre || "").toUpperCase(), d.cuerpoNombre, d.cx,
-            d.cy + d.radio + d.cuerpoNombre * 1.55, d.radio * 2.5, "blanco");
-      texto((e.pais || "").toUpperCase(), d.cuerpoPais, d.cx,
-            d.cy + d.radio + d.cuerpoNombre * 1.55 + d.cuerpoPais * 1.25, d.radio * 2.5, "blanco");
-    }
-
-    // Del 4 al 10
-    const filas = (estado.lista || "").split("\n").map((l) => l.trim()).filter(Boolean);
-    const L = P.lista;
-    filas.slice(0, L.hasta - L.desde + 1).forEach((fila, i) => {
-      const col = i < 4 ? 0 : 1;
-      const y = L.y + (i % 4) * L.salto;
-      const x = L.colX[col];
-      const [nombre, pais] = fila.split(",").map((s) => s.trim());
-      ctx.textAlign = "left"; ctx.textBaseline = "middle";
-      ctx.font = `${L.cuerpo}px Anton, sans-serif`;
-      ctx.fillStyle = oro(y - L.cuerpo * 0.6, y + L.cuerpo * 0.3);
-      ctx.fillText(`${L.desde + i}`, x, y);
-      ctx.fillStyle = "#fff";
-      ctx.font = `${L.cuerpo * 0.86}px Anton, sans-serif`;
-      ctx.fillText((nombre || "").toUpperCase(), x + 52, y - 2);
-      if (pais) {
-        ctx.font = `${L.cuerpo * 0.66}px Anton, sans-serif`;
-        ctx.fillStyle = "rgba(255,255,255,.82)";
-        ctx.fillText(pais.toUpperCase(), x + 52, y + L.cuerpo * 0.72);
-      }
-    });
-  };
+  const pintar = () => M.pintarPodio(ctx, estado);
 
   /* ── Panel de los tres puestos ── */
   const cont = document.querySelector("[data-puestos]");
@@ -286,64 +154,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODI
     </div>`).join("");
 
   let fichas = [];
-  const leerCSV = (txt) => {
-    const filas = []; let f = [], c = "", q = false;
-    for (let i = 0; i < txt.length; i++) {
-      const ch = txt[i];
-      if (q) { if (ch === '"' && txt[i+1] === '"') { c += '"'; i++; } else if (ch === '"') q = false; else c += ch; }
-      else if (ch === '"') q = true;
-      else if (ch === ",") { f.push(c); c = ""; }
-      else if (ch === "\n") { f.push(c); filas.push(f); f = []; c = ""; }
-      else if (ch !== "\r") c += ch;
-    }
-    if (c || f.length) { f.push(c); filas.push(f); }
-    const cab = filas.shift().map((h) => h.trim());
-    return filas.filter((r) => r.some((v) => v.trim()))
-      .map((r) => Object.fromEntries(cab.map((h, i) => [h, (r[i] ?? "").trim()])));
-  };
-  const { BANDERAS, ES_EN } = C;
-
-  // Del país de la hoja al archivo de bandera. «Rumanía / Turquía» da dos.
-  const sinAcentos = (s) => (s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-
-  // La hoja ya dice qué bandera lleva cada ficha, con el nombre del archivo
-  // que está subido al servidor. Es la vía buena: nada que adivinar.
-  const banderasDeFicha = (p) => ["Bandera 1", "Bandera 2"]
-    .map((c) => (p?.[c] || "").trim())
-    .filter(Boolean).slice(0, 2)
-    .map((a) => C.HOJA.banderas + encodeURIComponent(a));
-
-  // Para un país escrito a mano: primero se busca una ficha de la hoja con ese
-  // mismo país y se reaprovechan sus banderas; si no aparece, se cae al juego
-  // local. Ahí se mira antes la traducción al inglés, que es el icono redondo
-  // del juego; algunos nombres en español son recortes sueltos de otro estilo.
-  const banderasDe = (pais) => {
-    const clave = sinAcentos(pais);
-    const ficha = clave && fichas.find((f) => sinAcentos(f["País"]) === clave && (f["Bandera 1"] || "").trim());
-    if (ficha) return banderasDeFicha(ficha);
-    return (pais || "").split(/[\/\-]/)
-      .map((p) => sinAcentos(p)).filter(Boolean)
-      .map((p) => {
-        const archivo = (ES_EN[p] && BANDERAS.includes(ES_EN[p])) ? ES_EN[p] : (BANDERAS.includes(p) ? p : null);
-        return archivo ? `/img/banderas/${archivo}.png` : null;
-      })
-      .filter(Boolean).slice(0, 2);
-  };
-
-  // Sin tildes y en minúsculas: buscar «belen» tiene que encontrar «Belén»
-  const sinTildes = (s) => (s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-  // La hoja no guarda la ruta de la foto, pero sí la del PDF del que salió:
-  // se reaprovecha su carpeta.
-  const urlFoto = (p) => {
-    const foto = (p["Foto"] || "").trim();
-    if (!foto) return null;
-    const pdf = (p["PDF fuente"] || "").trim();
-    const carpeta = pdf.includes("/") ? pdf.slice(0, pdf.lastIndexOf("/") + 1) : "";
-    return C.HOJA.fotos + (carpeta + foto).split("/").map(encodeURIComponent).join("/");
-  };
-  const cat = (p) => [C.FASES[p["Fase"]] ?? p["Fase"], p["Categoría"], p["Disciplina"]].filter(Boolean).join(" ").toUpperCase();
-  const pais = (p) => (p["País"] || "").replace(/\s*\/\s*/g, "-").toUpperCase();
+  const banderasDe = (p) => M.banderasDe(p, fichas);
 
   cont.addEventListener("input", (ev) => {
     const b = ev.target.closest("[data-b]");
@@ -478,21 +289,19 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODI
   document.querySelector("[data-lista]").addEventListener("input", (e) => { estado.lista = e.target.value; pintar(); });
 
   document.querySelector("[data-descargar]").addEventListener("click", () => {
-    const n = (estado.titulo || "podio").toLowerCase().normalize("NFD")
-      .replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
     canvas.toBlob((b) => {
       const a = document.createElement("a");
-      a.href = URL.createObjectURL(b); a.download = `${n}-podio.png`; a.click();
+      a.href = URL.createObjectURL(b);
+      a.download = `${M.nombreArchivo(estado.titulo)}-podio.png`;
+      a.click();
       setTimeout(() => URL.revokeObjectURL(a.href), 4000);
     }, "image/png");
   });
 
   fetch(C.HOJA.url).then((r) => r.text()).then((t) => {
-    fichas = leerCSV(t).map((p, i) => ({ ...p, __i: i }));
+    fichas = M.leerCSV(t).map((p, i) => ({ ...p, __i: i }));
     estadoTxt.textContent = `${fichas.length} participantes en la hoja.`;
   }).catch((e) => (estadoTxt.textContent = "No se pudo leer la hoja: " + e.message));
 
-  Promise.all([document.fonts.load("54px Anton"), cargar(C.plantilla).catch(() => {}), cargar(C.aro.src).catch(() => {}),
-    ...[1,2,3].map((n) => cargar(`${P.numeros}${n}-v3.png`).catch(() => {}))])
-    .then(pintar).catch(pintar);
+  M.precargar().then(pintar).catch(pintar);
 </script>
