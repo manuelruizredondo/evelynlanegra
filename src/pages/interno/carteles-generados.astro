@@ -21,7 +21,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
         <span class="ge__estado" data-estado>Leyendo la hoja…</span>
       </div>
 
-      <div class="ge__rejilla" data-salida></div>
+      <div data-salida></div>
     </div>
   </section>
 </Base>
@@ -52,6 +52,12 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
 
   .ge__rejilla{display:grid;gap:22px;
     grid-template-columns:repeat(auto-fill,minmax(236px,1fr))}
+  .ge__disc{display:block;margin:0 0 38px}
+  .ge__h2{margin:0 0 4px;font-size:1.15rem;font-weight:800;letter-spacing:.02em;
+    color:var(--li-tinta);padding-bottom:9px;border-bottom:2px solid var(--li-tinta)}
+  .ge__cat{margin:20px 0 0}
+  .ge__h3{margin:0 0 12px;font-size:.76rem;font-weight:800;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--li-suave)}
   .ge__ficha{border:1px solid var(--li-linea);border-radius:14px;overflow:hidden;background:#fff;
     display:flex;flex-direction:column}
   .ge__lienzo{display:block;width:100%;height:auto;background:#06202b;cursor:zoom-in}
@@ -143,7 +149,59 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
     return { titulo, podio: { titulo, puestos, lista: "" }, top: { titulo, puestos: diez }, sinFoto, cuantos: lista.length };
   };
 
-  const ficha = (titulo, sub, lienzo, blob, archivo) => {
+  /* ── Orden de salida: salsa antes que bachata, y dentro por tipo ── */
+  const ORDEN_DISC = ["salsa", "bachata"];
+  const ORDEN_CAT = ["parejas", "duos", "duo-femenino", "duo-masculino", "equipos",
+                     "solista-femenino", "solista-masculino"];
+  const ORDEN_FASE = ["final", "semifinal", "eliminatoria", "preeliminatoria"];
+  // Lo que no esté en la lista va detrás, en orden alfabético
+  const puesto = (lista, v) => {
+    const i = lista.indexOf(M.sinAcentos(v));
+    return i < 0 ? lista.length : i;
+  };
+  const compara = (a, b) => (a > b ? 1 : a < b ? -1 : 0);
+
+  const ordenadas = (m) => [...m.entries()].sort(([, a], [, b]) => {
+    const x = a[0], y = b[0];
+    return puesto(ORDEN_DISC, x["Disciplina"]) - puesto(ORDEN_DISC, y["Disciplina"])
+        || compara(x["Disciplina"], y["Disciplina"])
+        || puesto(ORDEN_CAT, x["Categoría"]) - puesto(ORDEN_CAT, y["Categoría"])
+        || compara(x["Categoría"], y["Categoría"])
+        || puesto(ORDEN_FASE, x["Fase"]) - puesto(ORDEN_FASE, y["Fase"])
+        || compara(x["Fase"], y["Fase"]);
+  });
+
+  // Devuelve la rejilla de esta disciplina y categoría, creándola si hace falta
+  const rejillaDe = (p) => {
+    const d = M.sinAcentos(p["Disciplina"]), c = M.sinAcentos(p["Categoría"]);
+    let sec = salida.querySelector(`[data-disc="${d}"]`);
+    if (!sec) {
+      sec = document.createElement("section");
+      sec.className = "ge__disc";
+      sec.dataset.disc = d;
+      const h = document.createElement("h2");
+      h.className = "ge__h2";
+      h.textContent = (p["Disciplina"] || "").toUpperCase();
+      sec.append(h);
+      salida.append(sec);
+    }
+    let grupo = sec.querySelector(`[data-cat="${c}"]`);
+    if (!grupo) {
+      grupo = document.createElement("div");
+      grupo.className = "ge__cat";
+      grupo.dataset.cat = c;
+      const h = document.createElement("h3");
+      h.className = "ge__h3";
+      h.textContent = p["Categoría"] || "";
+      const rej = document.createElement("div");
+      rej.className = "ge__rejilla";
+      grupo.append(h, rej);
+      sec.append(grupo);
+    }
+    return grupo.querySelector(".ge__rejilla");
+  };
+
+  const ficha = (donde, titulo, sub, lienzo, blob, archivo) => {
     const url = URL.createObjectURL(blob);
     const caja = document.createElement("div");
     caja.className = "ge__ficha";
@@ -162,7 +220,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
     pie.querySelector("[data-ver]").addEventListener("click", abrir);
     lienzo.addEventListener("click", abrir);
     caja.append(pie);
-    salida.append(caja);
+    donde.append(caja);
     return { url, archivo };
   };
 
@@ -175,25 +233,26 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
     salida.innerHTML = "";
     hechos = [];
 
-    const claves = [...m.keys()];
-    for (let i = 0; i < claves.length; i++) {
-      const lista = m.get(claves[i]);
-      estadoTxt.textContent = `Montando ${i + 1} de ${claves.length}: ${M.cat(lista[0])}…`;
+    const pruebas = ordenadas(m);
+    for (let i = 0; i < pruebas.length; i++) {
+      const lista = pruebas[i][1];
+      estadoTxt.textContent = `Montando ${i + 1} de ${pruebas.length}: ${M.cat(lista[0])}…`;
+      const donde = rejillaDe(lista[0]);
       const d = await montar(lista);
       const base = M.nombreArchivo(d.titulo);
 
       await M.pintarPodio(tctx, d.podio);
-      hechos.push(ficha(d.titulo, `Podio · ${d.sinFoto ? d.sinFoto + " sin foto" : "con sus fotos"}`,
+      hechos.push(ficha(donde, d.titulo, `Podio · ${d.sinFoto ? d.sinFoto + " sin foto" : "con sus fotos"}`,
         miniatura(), await aBlob(), `${base}-podio.png`));
 
       if (d.cuantos > P.puestos.length) {
         await M.pintarTop10(tctx, d.top);
-        hechos.push(ficha(d.titulo, `Top ${Math.min(d.cuantos, T.filas.cuantas)}`,
+        hechos.push(ficha(donde, d.titulo, `Top ${Math.min(d.cuantos, T.filas.cuantas)}`,
           miniatura(), await aBlob(), `${base}-top10.png`));
       }
     }
 
-    estadoTxt.textContent = `${hechos.length} carteles de ${claves.length} ${claves.length === 1 ? "prueba" : "pruebas"}.`;
+    estadoTxt.textContent = `${hechos.length} carteles de ${pruebas.length} ${pruebas.length === 1 ? "prueba" : "pruebas"}.`;
     btnGenerar.disabled = false;
     btnTodo.hidden = hechos.length === 0;
   });
