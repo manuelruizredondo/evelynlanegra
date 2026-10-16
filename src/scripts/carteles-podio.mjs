@@ -67,6 +67,12 @@ export function crearPodio(C) {
       : relleno === "tenue" ? "rgba(255,255,255,.82)" : "#fff";
     ctx.textAlign = alineado; ctx.textBaseline = "alphabetic";
     ctx.fillText(t, cx, base);
+    if (opciones.borde) {
+      ctx.lineWidth = opciones.borde.grosor ?? 1;
+      ctx.strokeStyle = opciones.borde.color;
+      ctx.lineJoin = "round";
+      ctx.strokeText(t, cx, base);
+    }
     return c;
   };
 
@@ -177,7 +183,8 @@ export function crearPodio(C) {
     ctx.drawImage(base, 0, 0, T.w, T.h);
     texto(ctx, (estado.titulo || "").toUpperCase(), T.titulo.cuerpo, T.w / 2,
           T.titulo.centroY, T.titulo.anchoMax, "blanco");
-    texto(ctx, T.antetitulo, T.ante.cuerpo, T.w / 2, T.ante.centroY, T.titulo.anchoMax, "oro");
+    texto(ctx, T.antetitulo, T.ante.cuerpo, T.w / 2, T.ante.centroY, T.titulo.anchoMax, "oro",
+          { borde: T.ante.borde });
 
     const F = T.filas;
     const puestos = (estado.puestos || []).slice(0, F.cuantas);
