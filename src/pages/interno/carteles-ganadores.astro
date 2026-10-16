@@ -3,7 +3,8 @@ import Base from "../../layouts/Base.astro";
 import InternoNav from "../../components/InternoNav.astro";
 import SubNavCarteles from "../../components/SubNavCarteles.astro";
 import { CARTEL, PODIO, HOJA, FASES } from "../../data/carteles";
-const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODIO, HOJA, FASES });
+import { BANDERAS, ES_EN } from "../../data/banderas";
+const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODIO, HOJA, FASES, BANDERAS, ES_EN });
 ---
 <Base title="Carteles de ganadores · uso interno" description="Generador de carteles de podio." noindex={true}>
   <InternoNav actual="/interno/carteles/" />
@@ -115,7 +116,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODI
 
   const estado = {
     titulo: "SEMIFINAL SOLISTA FEMENINO BACHATA",
-    puestos: P.puestos.map((p) => ({ n: p.n, nombre: "", pais: "", foto: null, zoom: 1, dx: 0, dy: 0 })),
+    puestos: P.puestos.map((p) => ({ n: p.n, nombre: "", pais: "", foto: null, banderas: [], zoom: 1, dx: 0, dy: 0 })),
     lista: "",
   };
 
@@ -159,7 +160,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODI
         const alto = d.radio * 1.18;
         const w = num.width * (alto / num.height);
         // Apoyado sobre el borde: solo la base entra en el círculo
-        ctx.drawImage(num, d.cx - w / 2, d.cy - d.radio - alto * 0.80, w, alto);
+        ctx.drawImage(num, d.cx - w / 2, d.cy - d.radio - alto * 0.86, w, alto);
       }
 
       if (e.foto) {
@@ -184,10 +185,21 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODI
 
       // Número de puesto, en oro y por encima del círculo
 
+      // Banderas apoyadas en el borde inferior del círculo
+      if (e.banderas?.length) {
+        const lado = d.radio * 0.42;
+        const total = e.banderas.length * lado + (e.banderas.length - 1) * lado * 0.14;
+        let bx = d.cx - total / 2;
+        for (const bim of e.banderas) {
+          ctx.drawImage(bim, bx, d.cy + d.radio - lado * 0.56, lado, lado);
+          bx += lado * 1.14;
+        }
+      }
+
       texto((e.nombre || "").toUpperCase(), d.cuerpoNombre, d.cx,
-            d.cy + d.radio + d.cuerpoNombre * 0.95, d.radio * 2.5, "blanco");
+            d.cy + d.radio + d.cuerpoNombre * 1.55, d.radio * 2.5, "blanco");
       texto((e.pais || "").toUpperCase(), d.cuerpoPais, d.cx,
-            d.cy + d.radio + d.cuerpoNombre * 0.95 + d.cuerpoPais * 1.25, d.radio * 2.5, "blanco");
+            d.cy + d.radio + d.cuerpoNombre * 1.55 + d.cuerpoPais * 1.25, d.radio * 2.5, "blanco");
     }
 
     // Del 4 al 10
@@ -241,6 +253,20 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODI
     return filas.filter((r) => r.some((v) => v.trim()))
       .map((r) => Object.fromEntries(cab.map((h, i) => [h, (r[i] ?? "").trim()])));
   };
+  const { BANDERAS, ES_EN } = C;
+
+  // Del país de la hoja al archivo de bandera. «Rumanía / Turquía» da dos.
+  const sinAcentos = (s) => (s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+  const banderasDe = (pais) => (pais || "").split(/[\/\-]/)
+    .map((p) => sinAcentos(p)).filter(Boolean)
+    .map((p) => {
+      const archivo = BANDERAS.includes(p) ? p : (ES_EN[p] && BANDERAS.includes(ES_EN[p]) ? ES_EN[p] : null);
+      return archivo ? `/img/banderas/${archivo}.png` : null;
+    })
+    .filter(Boolean).slice(0, 2);
+
   // Sin tildes y en minúsculas: buscar «belen» tiene que encontrar «Belén»
   const sinTildes = (s) => (s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
   // La hoja no guarda la ruta de la foto, pero sí la del PDF del que salió:
@@ -266,7 +292,14 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODI
       return;
     }
     const n = ev.target.closest("[data-nom]"); if (n) { estado.puestos[+n.dataset.nom].nombre = n.value; return pintar(); }
-    const pa = ev.target.closest("[data-pais]"); if (pa) { estado.puestos[+pa.dataset.pais].pais = pa.value; return pintar(); }
+    const pa = ev.target.closest("[data-pais]");
+    if (pa) {
+      const e = estado.puestos[+pa.dataset.pais];
+      e.pais = pa.value;
+      Promise.all(banderasDe(pa.value).map((b) => cargar(b).catch(() => null)))
+        .then((bs) => { e.banderas = bs.filter(Boolean); pintar(); });
+      return;
+    }
   });
 
   cont.addEventListener("click", async (ev) => {
@@ -277,6 +310,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODI
     cont.querySelector(`[data-nom="${i}"]`).value = e.nombre;
     cont.querySelector(`[data-pais="${i}"]`).value = e.pais;
     cont.querySelector(`[data-res="${i}"]`).innerHTML = "";
+    e.banderas = (await Promise.all(banderasDe(p["País"]).map((b) => cargar(b).catch(() => null)))).filter(Boolean);
     const url = urlFoto(p);
     if (url) e.foto = await cargar(url).catch(() => null);
     pintar();

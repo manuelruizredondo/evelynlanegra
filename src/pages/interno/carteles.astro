@@ -3,7 +3,8 @@ import Base from "../../layouts/Base.astro";
 import InternoNav from "../../components/InternoNav.astro";
 import SubNavCarteles from "../../components/SubNavCarteles.astro";
 import { CARTEL, CATEGORIAS, HOJA, FASES } from "../../data/carteles";
-const datos = JSON.stringify({ ...CARTEL, HOJA, FASES });
+import { BANDERAS, ES_EN } from "../../data/banderas";
+const datos = JSON.stringify({ ...CARTEL, HOJA, FASES, BANDERAS, ES_EN });
 ---
 <Base title="Carteles de competidores · uso interno" description="Generador de carteles." noindex={true}>
   <InternoNav actual="/interno/carteles/" />
@@ -293,6 +294,20 @@ const datos = JSON.stringify({ ...CARTEL, HOJA, FASES });
 
   // «Final» + «Dúo masculino» + «Salsa» → FINAL DÚO MASCULINO SALSA
   // Sin tildes y en minúsculas: buscar «belen» tiene que encontrar «Belén»
+  const { BANDERAS, ES_EN } = C;
+
+  // Del país de la hoja al archivo de bandera. «Rumanía / Turquía» da dos.
+  const sinAcentos = (s) => (s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+  const banderasDe = (pais) => (pais || "").split(/[\/\-]/)
+    .map((p) => sinAcentos(p)).filter(Boolean)
+    .map((p) => {
+      const archivo = BANDERAS.includes(p) ? p : (ES_EN[p] && BANDERAS.includes(ES_EN[p]) ? ES_EN[p] : null);
+      return archivo ? `/img/banderas/${archivo}.png` : null;
+    })
+    .filter(Boolean).slice(0, 2);
+
   const sinTildes = (s) => (s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
   // La hoja no guarda la ruta de la foto, pero sí la del PDF del que salió:
   // se reaprovecha su carpeta.
@@ -332,6 +347,8 @@ const datos = JSON.stringify({ ...CARTEL, HOJA, FASES });
     estado.zoom = 1; estado.dx = 0; estado.dy = 0;
     zoom.value = 100;
     document.querySelector("[data-zoom-val]").textContent = "100 %";
+
+    estado.banderas = (await Promise.all(banderasDe(p["País"]).map((b) => cargar(b).catch(() => null)))).filter(Boolean);
 
     const url = urlFoto(p);
     if (url) {
@@ -377,7 +394,12 @@ const datos = JSON.stringify({ ...CARTEL, HOJA, FASES });
   };
   conectar("[data-categoria]", "categoria");
   conectar("[data-nombre]", "nombre");
-  conectar("[data-pais]", "pais");
+  const campoPais = document.querySelector("[data-pais]");
+  campoPais.addEventListener("input", async () => {
+    estado.pais = campoPais.value;
+    estado.banderas = (await Promise.all(banderasDe(campoPais.value).map((b) => cargar(b).catch(() => null)))).filter(Boolean);
+    pintar();
+  });
 
   const leerImagen = (file) => new Promise((ok, mal) => {
     const im = new Image();
