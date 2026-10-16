@@ -300,13 +300,29 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODI
   const sinAcentos = (s) => (s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "")
     .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
-  const banderasDe = (pais) => (pais || "").split(/[\/\-]/)
-    .map((p) => sinAcentos(p)).filter(Boolean)
-    .map((p) => {
-      const archivo = BANDERAS.includes(p) ? p : (ES_EN[p] && BANDERAS.includes(ES_EN[p]) ? ES_EN[p] : null);
-      return archivo ? `/img/banderas/${archivo}.png` : null;
-    })
-    .filter(Boolean).slice(0, 2);
+  // La hoja ya dice qué bandera lleva cada ficha, con el nombre del archivo
+  // que está subido al servidor. Es la vía buena: nada que adivinar.
+  const banderasDeFicha = (p) => ["Bandera 1", "Bandera 2"]
+    .map((c) => (p?.[c] || "").trim())
+    .filter(Boolean).slice(0, 2)
+    .map((a) => C.HOJA.banderas + encodeURIComponent(a));
+
+  // Para un país escrito a mano: primero se busca una ficha de la hoja con ese
+  // mismo país y se reaprovechan sus banderas; si no aparece, se cae al juego
+  // local. Ahí se mira antes la traducción al inglés, que es el icono redondo
+  // del juego; algunos nombres en español son recortes sueltos de otro estilo.
+  const banderasDe = (pais) => {
+    const clave = sinAcentos(pais);
+    const ficha = clave && fichas.find((f) => sinAcentos(f["País"]) === clave && (f["Bandera 1"] || "").trim());
+    if (ficha) return banderasDeFicha(ficha);
+    return (pais || "").split(/[\/\-]/)
+      .map((p) => sinAcentos(p)).filter(Boolean)
+      .map((p) => {
+        const archivo = (ES_EN[p] && BANDERAS.includes(ES_EN[p])) ? ES_EN[p] : (BANDERAS.includes(p) ? p : null);
+        return archivo ? `/img/banderas/${archivo}.png` : null;
+      })
+      .filter(Boolean).slice(0, 2);
+  };
 
   // Sin tildes y en minúsculas: buscar «belen» tiene que encontrar «Belén»
   const sinTildes = (s) => (s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -352,7 +368,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODI
     cont.querySelector(`[data-nom="${i}"]`).value = e.nombre;
     cont.querySelector(`[data-pais="${i}"]`).value = e.pais;
     cont.querySelector(`[data-res="${i}"]`).innerHTML = "";
-    e.banderas = (await Promise.all(banderasDe(p["País"]).map((b) => cargar(b).catch(() => null)))).filter(Boolean);
+    e.banderas = (await Promise.all(banderasDeFicha(p).map((b) => cargar(b).catch(() => null)))).filter(Boolean);
     const url = urlFoto(p);
     if (url) { e.foto = await cargar(url).catch(() => null); recentrar(i); }
     pintar();

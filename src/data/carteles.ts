@@ -38,6 +38,9 @@ export const HOJA = {
   // Las fotos cuelgan de aquí, con la misma estructura de carpetas que la
   // columna «PDF fuente» de la hoja
   fotos: "https://media.lanegrasalsa.com/media/competidores2026/",
+  // Las banderas también están en el servidor, nombradas con el código ISO
+  // que la hoja guarda en «Bandera 1» y «Bandera 2» (it.png, es.png, …)
+  banderas: "https://media.lanegrasalsa.com/media/competidores2026/banderas/",
 };
 
 // La hoja escribe «Preeliminatoria»; en el cartel va con guion
