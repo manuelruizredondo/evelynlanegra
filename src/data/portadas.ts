@@ -18,9 +18,11 @@ export const LINEAS = [
 
 export const REGLA = { x: 616, y: 484, ancho: 691, grosor: 9 };
 
+// Los dos escudos del campeonato, con el texto del aro en blanco para que se
+// lea sobre el fondo oscuro. Los originales lo traen en negro.
 export const LOGOS = [
-  { id: "campeonato", nombre: "Campeonato España '26", src: "/img/portadas/logo-campeonato.png" },
-  { id: "metodo", nombre: "Método Bachata Tradicional", src: "/img/2021/02/metodo-la-negra-bachata-tradicional-blanco-1024x1024.jpg" },
+  { id: "salsa", nombre: "Salsa · XV", src: "/img/portadas/logo-salsa-blanco.png" },
+  { id: "bachata", nombre: "Bachata · VI", src: "/img/portadas/logo-bachata-blanco.png" },
 ];
 
 // Piezas que no se tocan
