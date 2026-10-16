@@ -133,7 +133,6 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
         puesto: p.__puesto,
         nombre: p["Nombre / equipo"],
         pais: M.paisDe(p),
-        banderas: (await Promise.all(M.banderasDeFicha(p).map((b) => M.cargar(b).catch(() => null)))).filter(Boolean),
         foto: url ? await M.cargar(url).catch(() => null) : null,
       };
     }));

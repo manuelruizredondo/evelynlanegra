@@ -86,10 +86,10 @@ export const TOP10 = {
   filas: {
     cuantas: 10,
     y0: 412, salto: 88,
-    numX: 142, textoX: 232, anchoTexto: 546,
-    // A la derecha, la foto a la altura de la fila; la bandera, justo antes
+    numX: 142, textoX: 232, anchoTexto: 640,
+    // A la derecha, la foto a la altura de la fila. Aquí no van banderas: el
+    // país ya está escrito debajo del nombre.
     foto: { cx: 958, radio: 40 },
-    banderaX: 846, ladoBandera: 46,
     cuerpoNum: 54, cuerpoNombre: 38, cuerpoPais: 21,
     // El país va en la tipografía de texto, no en la de titulares
     familiaPais: '"Mona Sans","Lato",sans-serif', pesoPais: 400, espaciadoPais: 0.16,

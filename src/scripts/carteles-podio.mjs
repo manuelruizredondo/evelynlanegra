@@ -194,12 +194,13 @@ export function crearPodio(C) {
 
       // Raya tenue de separación, menos debajo del último
       if (i < puestos.length - 1) {
-        const g = ctx.createLinearGradient(F.numX - 26, 0, F.banderaX + F.ladoBandera, 0);
+        const izq = F.numX - 26, der = F.foto.cx + F.foto.radio;
+        const g = ctx.createLinearGradient(izq, 0, der, 0);
         g.addColorStop(0, "rgba(224,172,70,0)");
         g.addColorStop(0.5, "rgba(233,201,124,.34)");
         g.addColorStop(1, "rgba(224,172,70,0)");
         ctx.fillStyle = g;
-        ctx.fillRect(F.numX - 26, Math.round(y + F.salto / 2 - 1), F.banderaX + F.ladoBandera - F.numX + 26, 1);
+        ctx.fillRect(izq, Math.round(y + F.salto / 2 - 1), der - izq, 1);
       }
 
       const hayPais = Boolean(e.pais);
@@ -215,8 +216,6 @@ export function crearPodio(C) {
                        y + F.cuerpoNombre * 0.62, F.anchoTexto,
                        { familia: F.familiaPais, peso: F.pesoPais, espaciado: F.espaciadoPais });
       }
-
-      banderasEn(ctx, e.banderas, F.banderaX, y - F.ladoBandera / 2, F.ladoBandera);
 
       // La foto, a la derecha y con la altura de la fila
       if (e.foto) {
