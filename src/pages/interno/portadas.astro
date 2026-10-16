@@ -261,13 +261,30 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS, DESTELLOS });
     const abajo = m.actualBoundingBoxDescent ?? 0;
     const base = centroY + (arriba - abajo) / 2;
 
+    const trazar = () => {
+      let x = centroX - ancho / 2;
+      [...texto].forEach((ch, i) => {
+        ctx.fillText(ch, x, base);
+        x += av[i] * cuerpo + tracking * cuerpo;
+      });
+    };
+
     ctx.fillStyle = dorado ? oro(base - arriba, base + abajo * 0.4) : "#fff";
 
-    let x = centroX - ancho / 2;
-    [...texto].forEach((ch, i) => {
-      ctx.fillText(ch, x, base);
-      x += av[i] * cuerpo + tracking * cuerpo;
-    });
+    // Aureola cálida: dos pasadas borrosas, la segunda más corta, para que el
+    // halo tenga cuerpo cerca de la letra y se diluya hacia fuera.
+    if (dorado) {
+      ctx.save();
+      ctx.shadowColor = "rgba(255,186,66,0.60)";
+      ctx.shadowBlur = cuerpo * 0.42;
+      trazar();
+      ctx.shadowColor = "rgba(255,214,120,0.45)";
+      ctx.shadowBlur = cuerpo * 0.16;
+      trazar();
+      ctx.restore();
+    }
+
+    trazar();
   };
 
   const pintar = async () => {
@@ -301,8 +318,15 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS, DESTELLOS });
 
     if (estado.regla) {
       const R = D.REGLA;
+      ctx.save();
       ctx.fillStyle = R.dorado ? oro(R.y, R.y + R.grosor) : "#fff";
+      if (R.dorado) {
+        ctx.shadowColor = "rgba(255,186,66,0.55)";
+        ctx.shadowBlur = 22;
+      }
       ctx.fillRect(R.x, R.y, R.ancho, R.grosor);
+      ctx.fillRect(R.x, R.y, R.ancho, R.grosor);
+      ctx.restore();
     }
 
     if (estado.destellos) {
