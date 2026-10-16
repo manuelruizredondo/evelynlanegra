@@ -29,7 +29,9 @@ export const LOGOS = [
 export const FIJOS = {
   fondo: "/img/portadas/fondo-gran-final.jpg",
   fondoVideo: "/img/portadas/fondo-gran-final.mp4",
-  logoCaja: { x: 857, y: 108, ancho: 205, alto: 202 },
+  // Centrado en el lienzo; el tamaño se regula desde la propia página.
+  // El tope lo marca «GRAN FINAL», cuya tinta empieza en y=368.
+  logoCaja: { centroX: 960, centroY: 209, lado: 280, min: 160, max: 320 },
   sello: { src: "/img/portadas/sello-15-aniversario.png", x: 870, y: 846, ancho: 189, alto: 180 },
   hotel: { src: "/img/portadas/logo-diamante-beach.png", x: 1637, y: 889, ancho: 183, alto: 137 },
 };

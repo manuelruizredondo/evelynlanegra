@@ -37,6 +37,12 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS });
               ))}
             </div>
             <label class="pt__campo">
+              <span>Tamaño <em data-tam-valor>{FIJOS.logoCaja.lado} px</em></span>
+              <input type="range" data-logo-tam
+                     min={FIJOS.logoCaja.min} max={FIJOS.logoCaja.max} step="4"
+                     value={FIJOS.logoCaja.lado} />
+            </label>
+            <label class="pt__campo">
               <span>O sube otro</span>
               <input type="file" accept="image/png,image/jpeg,image/webp" data-logo-propio />
             </label>
@@ -106,6 +112,8 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS });
     padding:10px 12px;border:1px solid var(--li-linea);border-radius:8px;background:#fff;
     color:var(--li-tinta);width:100%}
   .pt__campo input[type=text]:focus{outline:none;border-color:var(--li-acc)}
+  .pt__campo em{font-style:normal;color:var(--li-tinta);text-transform:none;letter-spacing:0}
+  .pt__campo input[type=range]{accent-color:var(--li-acc);width:100%}
   .pt__campo input[type=file]{font:inherit;font-weight:400;text-transform:none;letter-spacing:0;font-size:.78rem}
   .pt__pista{margin:0;color:var(--li-suave);font-size:.74rem;line-height:1.45}
 
@@ -156,6 +164,7 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS });
     logo: document.querySelector('input[name="logo"]:checked').value,
     regla: true,
     fondo: "imagen",
+    logoTam: D.FIJOS.logoCaja.lado,
   };
 
   const aviso = document.querySelector("[data-aviso]");
@@ -233,9 +242,10 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS });
     try {
       const lg = imagenes[estado.logo] ?? await cargar(estado.logo);
       const c = D.FIJOS.logoCaja;
-      const escala = Math.min(c.ancho / lg.width, c.alto / lg.height);
+      const lado = estado.logoTam;
+      const escala = Math.min(lado / lg.width, lado / lg.height);
       const w = lg.width * escala, h = lg.height * escala;
-      ctx.drawImage(lg, c.x + (c.ancho - w) / 2, c.y + (c.alto - h) / 2, w, h);
+      ctx.drawImage(lg, c.centroX - w / 2, c.centroY - h / 2, w, h);
     } catch { /* sin logo */ }
 
     // Textos
@@ -284,6 +294,13 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS });
     estado.logo = url;
     document.querySelectorAll('input[name="logo"]').forEach((r) => (r.checked = false));
     pintar();
+  });
+
+  const tam = document.querySelector("[data-logo-tam]");
+  tam.addEventListener("input", () => {
+    estado.logoTam = +tam.value;
+    document.querySelector("[data-tam-valor]").textContent = `${tam.value} px`;
+    if (estado.fondo !== "video") pintar();
   });
 
   document.querySelectorAll('input[name="fondo"]').forEach((r) => {
