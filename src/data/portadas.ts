@@ -9,14 +9,23 @@ export const CAJA = { x: 614, ancho: 690 };
 // tiene su propio cuerpo: lo que comparten es el ancho de caja, no el tamaño.
 export const LINEAS = [
   { id: "linea1", etiqueta: "Primera línea", valor: "GRAN FINAL",
-    peso: 400, tracking: 0.10, centroY: 413, cuerpoMax: 130, mayusculas: true },
+    peso: 400, tracking: 0.10, centroY: 413, cuerpoMax: 130, mayusculas: true, dorado: true },
   { id: "linea2", etiqueta: "Segunda línea", valor: "SOLISTA",
     peso: 400, tracking: 0.05, centroY: 598, cuerpoMax: 165, mayusculas: true },
   { id: "linea3", etiqueta: "Tercera línea", valor: "BACHATA",
     peso: 800, tracking: -0.025, centroY: 720, cuerpoMax: 152, mayusculas: true },
 ];
 
-export const REGLA = { x: 616, y: 484, ancho: 691, grosor: 9 };
+export const REGLA = { x: 616, y: 484, ancho: 691, grosor: 9, dorado: true };
+
+// Puntos de brillo, en proporción a la caja de texto. La fase los desacompasa
+// para que no parpadeen todos a la vez.
+export const DESTELLOS = [
+  { px: 0.985, py: -0.34, radio: 17, fase: 0.0 },
+  { px: 0.013, py: 1.00,  radio: 15, fase: 2.1 },
+  { px: 0.47,  py: 0.38,  radio: 10, fase: 4.0 },
+  { px: 0.78,  py: 1.00,  radio: 11, fase: 1.1 },
+];
 
 // Los dos escudos del campeonato, con el texto del aro en blanco para que se
 // lea sobre el fondo oscuro. Los originales lo traen en negro.

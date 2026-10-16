@@ -1,8 +1,8 @@
 ---
 import Base from "../../layouts/Base.astro";
 import InternoNav from "../../components/InternoNav.astro";
-import { LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS } from "../../data/portadas";
-const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS });
+import { LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTELLOS } from "../../data/portadas";
+const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS, DESTELLOS });
 ---
 <Base title="Creador de portadas · uso interno" description="Generador de portadas del campeonato." noindex={true}>
   <InternoNav actual="/interno/portadas/" />
@@ -57,6 +57,10 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS });
             <label class="pt__check">
               <input type="checkbox" data-regla checked />
               <span>Línea separadora</span>
+            </label>
+            <label class="pt__check">
+              <input type="checkbox" data-destellos checked />
+              <span>Destellos dorados</span>
             </label>
           </div>
 
@@ -165,6 +169,7 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS });
     regla: true,
     fondo: "imagen",
     logoTam: D.FIJOS.logoCaja.lado,
+    destellos: true,
   };
 
   const aviso = document.querySelector("[data-aviso]");
@@ -209,7 +214,41 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS });
     return { cuerpo, av, ancho: porPunto * cuerpo };
   };
 
-  const dibujarLinea = (texto, peso, tracking, centroX, centroY, anchoDestino, maximo) => {
+  // Degradado metálico: claro arriba, veta oscura al medio y brillo abajo
+  const oro = (y0, y1) => {
+    const g = ctx.createLinearGradient(0, y0, 0, y1);
+    g.addColorStop(0.00, "#FCF5D6");
+    g.addColorStop(0.15, "#EDD28C");
+    g.addColorStop(0.38, "#C08F30");
+    g.addColorStop(0.52, "#97631A");
+    g.addColorStop(0.63, "#D29B31");
+    g.addColorStop(0.85, "#F6E6A8");
+    g.addColorStop(1.00, "#D4AE50");
+    return g;
+  };
+
+  // Brillo de cuatro puntas, suave
+  const destello = (x, y, r, alfa) => {
+    if (alfa <= 0.01) return;
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+    g.addColorStop(0, `rgba(255,253,240,${alfa})`);
+    g.addColorStop(0.3, `rgba(255,226,150,${alfa * 0.42})`);
+    g.addColorStop(1, "rgba(255,200,80,0)");
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+
+    ctx.strokeStyle = `rgba(255,250,228,${alfa * 0.9})`;
+    ctx.lineCap = "round";
+    ctx.lineWidth = Math.max(1, r * 0.10);
+    ctx.beginPath(); ctx.moveTo(x - r * 2.5, y); ctx.lineTo(x + r * 2.5, y); ctx.stroke();
+    ctx.lineWidth = Math.max(1, r * 0.08);
+    ctx.beginPath(); ctx.moveTo(x, y - r * 1.5); ctx.lineTo(x, y + r * 1.5); ctx.stroke();
+    ctx.restore();
+  };
+
+  const dibujarLinea = (texto, peso, tracking, centroX, centroY, anchoDestino, maximo, dorado) => {
     const { cuerpo, av, ancho } = medidaLinea(texto, peso, tracking, anchoDestino, maximo);
     ctx.font = `${peso} ${cuerpo}px Inter, sans-serif`;
     ctx.textAlign = "left";
@@ -221,6 +260,8 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS });
     const arriba = m.actualBoundingBoxAscent ?? cuerpo * 0.72;
     const abajo = m.actualBoundingBoxDescent ?? 0;
     const base = centroY + (arriba - abajo) / 2;
+
+    ctx.fillStyle = dorado ? oro(base - arriba, base + abajo * 0.4) : "#fff";
 
     let x = centroX - ancho / 2;
     [...texto].forEach((ch, i) => {
@@ -249,21 +290,30 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS });
     } catch { /* sin logo */ }
 
     // Textos
-    ctx.fillStyle = "#fff";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
     const centroX = D.CAJA.x + D.CAJA.ancho / 2;
 
     for (const l of D.LINEAS) {
       let t = (estado.textos[l.id] ?? "").trim();
       if (!t) continue;
       if (l.mayusculas) t = t.toUpperCase();
-      dibujarLinea(t, l.peso, l.tracking, centroX, l.centroY, D.CAJA.ancho, l.cuerpoMax);
+      dibujarLinea(t, l.peso, l.tracking, centroX, l.centroY, D.CAJA.ancho, l.cuerpoMax, l.dorado);
     }
 
     if (estado.regla) {
-      ctx.fillStyle = "#fff";
-      ctx.fillRect(D.REGLA.x, D.REGLA.y, D.REGLA.ancho, D.REGLA.grosor);
+      const R = D.REGLA;
+      ctx.fillStyle = R.dorado ? oro(R.y, R.y + R.grosor) : "#fff";
+      ctx.fillRect(R.x, R.y, R.ancho, R.grosor);
+    }
+
+    if (estado.destellos) {
+      const t = estado.fondo === "video" ? performance.now() / 1000 : 1.15;
+      const L1 = D.LINEAS[0];
+      for (const d of D.DESTELLOS) {
+        const x = D.CAJA.x + d.px * D.CAJA.ancho;
+        const y = d.py >= 1 ? D.REGLA.y + D.REGLA.grosor / 2 : L1.centroY + d.py * 60;
+        const onda = 0.5 + 0.5 * Math.sin(t * 1.25 + d.fase);
+        destello(x, y, d.radio * (0.72 + 0.28 * onda), 0.3 + 0.7 * onda);
+      }
     }
 
     for (const k of ["sello", "hotel"]) {
@@ -322,6 +372,11 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS });
 
   document.querySelector("[data-regla]").addEventListener("change", (ev) => {
     estado.regla = ev.target.checked;
+    pintar();
+  });
+
+  document.querySelector("[data-destellos]").addEventListener("change", (ev) => {
+    estado.destellos = ev.target.checked;
     pintar();
   });
 
