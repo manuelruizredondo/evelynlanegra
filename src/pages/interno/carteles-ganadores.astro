@@ -82,6 +82,11 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODI
   .pt__lienzo{border:1px solid var(--li-linea);border-radius:13px;overflow:hidden;background:#000;
     max-width:620px;margin-inline:auto}
   .pt__lienzo canvas{display:block;width:100%;height:auto;touch-action:none}
+  /* El póster se queda a la vista mientras se recorre el formulario.
+     El alto se limita al del hueco visible, y como el ancho sale del alto
+     (lienzo de 1080x1440), nunca se recorta ni se deforma. */
+  .pt__lienzo{position:sticky;top:calc(var(--header-h) + 16px)}
+  .pt__lienzo--alto{max-width:min(620px, calc((100vh - var(--header-h) - 46px) * 0.75))}
   /* Resultados de la búsqueda: nombre arriba, categoría debajo y apagada */
   .pt__item{display:block;width:100%;text-align:left;background:none;border:0;cursor:pointer;
     padding:8px 11px;font:inherit;font-size:.82rem;font-weight:600;color:var(--li-tinta);
@@ -101,7 +106,8 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODI
   .pt__lienzo canvas{touch-action:none}
   .pt__puesto:first-of-type{border-top:0;padding-top:0}
   .pt__num{font-size:.7rem;font-weight:800;color:var(--li-acc);letter-spacing:.06em}
-  @media (max-width:900px){.pt{grid-template-columns:1fr}.pt__panel{position:static}}
+  @media (max-width:900px){.pt{grid-template-columns:1fr}
+    .pt__panel,.pt__lienzo{position:static}.pt__lienzo--alto{max-width:620px}}
 </style>
 
 <script define:vars={{ datos }}>
@@ -323,7 +329,8 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODI
       const caja = cont.querySelector(`[data-res="${i}"]`);
       if (q.length < 2) return (caja.innerHTML = "");
       caja.innerHTML = fichas.filter((p) => sinTildes(p["Nombre / equipo"] + " " + p["País"] + " " + cat(p)).includes(q))
-        .slice(0, 6).map((p) => `<button type="button" class="pt__item" data-i="${i}" data-f="${p.__i}">${p["Nombre / equipo"]}<small>${cat(p)}</small></button>`).join("");
+        .slice(0, 6).map((p) => `<button type="button" class="pt__item" data-i="${i}" data-f="${p.__i}">${p["Nombre / equipo"]}
+          <small>${cat(p)}${p["País"] ? " · " + p["País"] : ""}${p["Estado foto"] === "Pendiente" ? " · sin foto" : ""}</small></button>`).join("");
       return;
     }
     const n = ev.target.closest("[data-nom]"); if (n) { estado.puestos[+n.dataset.nom].nombre = n.value; return pintar(); }

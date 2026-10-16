@@ -141,10 +141,14 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS, DESTELLOS });
 
   .pt__lienzo{border:1px solid var(--li-linea);border-radius:13px;overflow:hidden;background:#000}
   .pt__lienzo canvas{display:block;width:100%;height:auto}
+  /* El póster se queda a la vista mientras se recorre el formulario.
+     Lienzo de 1920x1080: el ancho sale de multiplicar el alto visible por 16/9. */
+  .pt__lienzo{position:sticky;top:calc(var(--header-h) + 16px);
+    max-width:min(100%, calc((100vh - var(--header-h) - 46px) * 1.7778));margin-inline:auto}
 
   @media (max-width:900px){
     .pt{grid-template-columns:1fr}
-    .pt__panel{position:static}
+    .pt__panel,.pt__lienzo{position:static;max-width:none}
   }
 </style>
 

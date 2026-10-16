@@ -141,10 +141,16 @@ const datos = JSON.stringify({ ...CARTEL, HOJA, FASES, BANDERAS, ES_EN });
   .pt__lienzo{border:1px solid var(--li-linea);border-radius:13px;overflow:hidden;background:#000}
   .pt__lienzo canvas{display:block;width:100%;height:auto}
   .pt__lienzo--alto{max-width:620px;margin-inline:auto}
+  /* El póster se queda a la vista mientras se recorre el formulario.
+     El alto se limita al del hueco visible, y como el ancho sale del alto
+     (lienzo de 1080x1440), nunca se recorta ni se deforma. */
+  .pt__lienzo{position:sticky;top:calc(var(--header-h) + 16px)}
+  .pt__lienzo--alto{max-width:min(620px, calc((100vh - var(--header-h) - 46px) * 0.75))}
 
   @media (max-width:900px){
     .pt{grid-template-columns:1fr}
-    .pt__panel{position:static}
+    .pt__panel,.pt__lienzo{position:static}
+    .pt__lienzo--alto{max-width:620px}
   }
 </style>
 
