@@ -159,9 +159,10 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: CARTEL.plantilla, POD
       // El número va primero: la foto y el aro le pasan por encima y lo recortan
       const num = await cargar(`${P.numeros}${d.n}.png`).catch(() => null);
       if (num) {
-        const alto = d.radio * 1.52;
+        const alto = d.radio * 1.18;
         const w = num.width * (alto / num.height);
-        ctx.drawImage(num, d.cx - w / 2, d.cy - d.radio - alto * 0.64, w, alto);
+        // Apoyado sobre el borde: solo la base entra en el círculo
+        ctx.drawImage(num, d.cx - w / 2, d.cy - d.radio - alto * 0.80, w, alto);
       }
 
       if (e.foto) {
