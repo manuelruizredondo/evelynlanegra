@@ -126,6 +126,27 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODI
     lista: "",
   };
 
+  // Centro de masa horizontal de una imagen, en fracción de su ancho.
+  // Sirve para centrar los globos por lo que se ve y no por el recorte.
+  const centros = {};
+  const centroOptico = (im) => {
+    if (centros[im.src] != null) return centros[im.src];
+    const ancho = 160, alto = Math.max(1, Math.round(im.height * ancho / im.width));
+    const m = document.createElement("canvas");
+    m.width = ancho; m.height = alto;
+    const mc = m.getContext("2d", { willReadFrequently: true });
+    mc.drawImage(im, 0, 0, ancho, alto);
+    const px = mc.getImageData(0, 0, ancho, alto).data;
+    let suma = 0, total = 0;
+    for (let y = 0; y < alto; y++) {
+      for (let x = 0; x < ancho; x++) {
+        const a = px[(y * ancho + x) * 4 + 3];
+        if (a) { suma += (x + 0.5) * a; total += a; }
+      }
+    }
+    return (centros[im.src] = total ? suma / total / ancho : 0.5);
+  };
+
   const oro = (y0, y1) => {
     const g = ctx.createLinearGradient(0, y0, 0, y1);
     g.addColorStop(0, "#FFF0CC"); g.addColorStop(0.26, "#E0AC46");
@@ -165,8 +186,10 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODI
       if (num) {
         const alto = d.radio * 1.18;
         const w = num.width * (alto / num.height);
-        // Apoyado sobre el borde: solo la base entra en el círculo
-        ctx.drawImage(num, d.cx - w / 2, d.cy - d.radio - alto * 0.86, w, alto);
+        // Apoyado sobre el borde: solo la base entra en el círculo.
+        // El globo no está centrado dentro de su propio recorte, así que lo
+        // cuadro por donde está la tinta y no por el borde de la imagen.
+        ctx.drawImage(num, d.cx - centroOptico(num) * w, d.cy - d.radio - alto * 0.86, w, alto);
       }
 
       if (e.foto) {
