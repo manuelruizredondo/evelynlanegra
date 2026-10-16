@@ -1,0 +1,308 @@
+---
+import Base from "../../layouts/Base.astro";
+import InternoNav from "../../components/InternoNav.astro";
+import { CARTEL, CATEGORIAS } from "../../data/carteles";
+const datos = JSON.stringify(CARTEL);
+---
+<Base title="Carteles de competidores · uso interno" description="Generador de carteles." noindex={true}>
+  <InternoNav actual="/interno/carteles/" />
+
+  <section class="li">
+    <div class="li__ancho">
+      <p class="li__kicker">Uso interno</p>
+      <h1 class="li__h1">Carteles de competidores</h1>
+
+      <div class="pt">
+        <div class="pt__panel">
+          <div class="pt__grupo">
+            <p class="pt__t">Datos</p>
+            <label class="pt__campo">
+              <span>Categoría</span>
+              <input type="text" list="categorias" data-categoria value="ELIMINATORIA SOLISTA FEMENINO SALSA" />
+              <datalist id="categorias">{CATEGORIAS.map((c) => <option value={c} />)}</datalist>
+            </label>
+            <label class="pt__campo">
+              <span>Nombre</span>
+              <input type="text" data-nombre value="ALICE SIROSI" autocomplete="off" />
+            </label>
+            <label class="pt__campo">
+              <span>País</span>
+              <input type="text" data-pais value="ITALIA" autocomplete="off" />
+            </label>
+          </div>
+
+          <div class="pt__grupo">
+            <p class="pt__t">Foto</p>
+            <label class="pt__campo">
+              <span>Imagen del competidor</span>
+              <input type="file" accept="image/*" data-foto />
+            </label>
+            <label class="pt__campo">
+              <span>Encuadre <em data-zoom-val>100 %</em></span>
+              <input type="range" data-zoom min="100" max="260" step="2" value="100" />
+            </label>
+            <div class="pt__row">
+              <label class="pt__campo"><span>Mover ↔</span><input type="range" data-dx min="-50" max="50" value="0" /></label>
+              <label class="pt__campo"><span>Mover ↕</span><input type="range" data-dy min="-50" max="50" value="0" /></label>
+            </div>
+          </div>
+
+          <div class="pt__grupo">
+            <p class="pt__t">Banderas</p>
+            <label class="pt__campo">
+              <span>Una o dos</span>
+              <input type="file" accept="image/*" multiple data-banderas />
+            </label>
+            <p class="pt__pista">Si subes dos, se colocan juntas y centradas.</p>
+          </div>
+
+          <div class="pt__acciones">
+            <button class="li__btn" type="button" data-descargar>Descargar PNG</button>
+            <span class="pt__medida">1080 × 1440</span>
+          </div>
+          <p class="pt__pista" data-aviso hidden></p>
+        </div>
+
+        <div class="pt__lienzo pt__lienzo--alto">
+          <canvas data-canvas width="1080" height="1440"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&display=swap" />
+
+<style is:global>
+  .li{
+    --li-tinta:#15151a; --li-suave:#6d6d76; --li-linea:#e4e4e8;
+    --li-fondo:#fff; --li-alt:#f6f6f8; --li-acc:#ce0306;
+    background:var(--li-fondo);color:var(--li-tinta);
+    padding:calc(var(--header-h) + 8px) 0 70px;min-height:100vh;
+  }
+  html,body{background:#fff !important}
+  .li__ancho{padding-inline:clamp(16px,3vw,44px);max-width:1500px;margin-inline:auto}
+  .li__kicker{margin:0 0 6px;color:var(--li-acc);font-size:.7rem;font-weight:700;
+    text-transform:uppercase;letter-spacing:.1em}
+  .li__h1{color:var(--li-tinta);font-size:clamp(1.7rem,3.5vw,2.4rem);margin:0 0 26px}
+  .li__btn{background:var(--li-acc);color:#fff;border:0;border-radius:9px;padding:12px 22px;
+    font:inherit;font-weight:700;font-size:.85rem;cursor:pointer}
+  .li__btn:hover{filter:brightness(1.1)}
+
+  .nav-toggle span{background:#15151a !important}
+  .nav-toggle:hover span{background:#ce0306 !important}
+  .lang__btn{color:#15151a !important}
+  .site-header.is-scrolled{background:rgba(255,255,255,.9) !important;border-bottom:1px solid #e4e4e8}
+
+  .pt{display:grid;grid-template-columns:minmax(260px,330px) 1fr;gap:clamp(22px,2.5vw,38px);align-items:start}
+  .pt__panel{display:grid;gap:20px;position:sticky;top:calc(var(--header-h) + 16px)}
+  .pt__grupo{border:1px solid var(--li-linea);border-radius:13px;padding:18px;display:grid;gap:12px}
+  .pt__t{margin:0;font-size:.66rem;font-weight:700;text-transform:uppercase;
+    letter-spacing:.09em;color:var(--li-suave)}
+  .pt__campo{display:grid;gap:5px;font-size:.68rem;font-weight:700;color:var(--li-suave);
+    text-transform:uppercase;letter-spacing:.06em}
+  .pt__campo em{font-style:normal;color:var(--li-tinta);text-transform:none;letter-spacing:0}
+  .pt__campo input[type=text]{font:inherit;font-weight:600;text-transform:none;letter-spacing:0;
+    padding:10px 12px;border:1px solid var(--li-linea);border-radius:8px;background:#fff;
+    color:var(--li-tinta);width:100%}
+  .pt__campo input[type=text]:focus{outline:none;border-color:var(--li-acc)}
+  .pt__campo input[type=range]{accent-color:var(--li-acc);width:100%}
+  .pt__campo input[type=file]{font:inherit;font-weight:400;text-transform:none;letter-spacing:0;font-size:.76rem}
+  .pt__row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .pt__pista{margin:0;color:var(--li-suave);font-size:.74rem;line-height:1.45}
+  .pt__acciones{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .pt__medida{color:var(--li-suave);font-size:.75rem}
+  .pt__lienzo{border:1px solid var(--li-linea);border-radius:13px;overflow:hidden;background:#000}
+  .pt__lienzo canvas{display:block;width:100%;height:auto}
+  .pt__lienzo--alto{max-width:620px;margin-inline:auto}
+
+  @media (max-width:900px){
+    .pt{grid-template-columns:1fr}
+    .pt__panel{position:static}
+  }
+</style>
+
+<script define:vars={{ datos }}>
+  const C = JSON.parse(datos);
+  const canvas = document.querySelector("[data-canvas]");
+  const ctx = canvas.getContext("2d");
+  const aviso = document.querySelector("[data-aviso]");
+
+  const img = {};
+  const cargar = (src) => new Promise((ok, mal) => {
+    if (img[src]) return ok(img[src]);
+    const im = new Image();
+    im.crossOrigin = "anonymous";
+    im.onload = () => { img[src] = im; ok(im); };
+    im.onerror = () => mal(new Error("No se pudo cargar " + src));
+    im.src = src;
+  });
+
+  const estado = {
+    categoria: "ELIMINATORIA SOLISTA FEMENINO SALSA",
+    nombre: "ALICE SIROSI",
+    pais: "ITALIA",
+    foto: null, zoom: 1, dx: 0, dy: 0,
+    banderas: [],
+  };
+
+  // Dibuja una línea centrada, con tracking manual y encogida si no cabe
+  const linea = (texto, cuerpo, tracking, cx, cy, anchoMax, familia) => {
+    if (!texto) return;
+    const med = (t) => {
+      ctx.font = `${t}px ${familia}`;
+      return [...texto].reduce((s, ch) => s + ctx.measureText(ch).width, 0) + tracking * t * (texto.length - 1);
+    };
+    let t = cuerpo;
+    if (med(t) > anchoMax) t = cuerpo * (anchoMax / med(cuerpo));
+    ctx.font = `${t}px ${familia}`;
+    const ancho = med(t);
+    const m = ctx.measureText(texto);
+    const base = cy + ((m.actualBoundingBoxAscent ?? t * 0.72) - (m.actualBoundingBoxDescent ?? 0)) / 2;
+    ctx.textAlign = "left";
+    ctx.textBaseline = "alphabetic";
+    let x = cx - ancho / 2;
+    for (const ch of texto) {
+      ctx.fillText(ch, x, base);
+      x += ctx.measureText(ch).width + tracking * t;
+    }
+  };
+
+  // Rectángulo de esquinas redondas
+  const chapa = (x, y, w, h, r) => {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+    ctx.fill();
+  };
+
+  const pintar = async () => {
+    const base = await cargar(C.plantilla);
+    ctx.clearRect(0, 0, C.w, C.h);
+    ctx.drawImage(base, 0, 0, C.w, C.h);
+
+    // Foto recortada en círculo
+    if (estado.foto) {
+      const f = C.foto;
+      ctx.save();
+      ctx.beginPath(); ctx.arc(f.cx, f.cy, f.radio, 0, Math.PI * 2); ctx.clip();
+      const im = estado.foto;
+      const lado = f.radio * 2 * estado.zoom;
+      const esc = Math.max(lado / im.width, lado / im.height);
+      const w = im.width * esc, h = im.height * esc;
+      ctx.drawImage(im, f.cx - w / 2 + estado.dx, f.cy - h / 2 + estado.dy, w, h);
+      ctx.restore();
+    }
+
+    // Aro dorado, por encima de la foto
+    try {
+      const aro = await cargar(C.aro.src);
+      ctx.drawImage(aro, C.aro.x, C.aro.y, C.aro.ancho, C.aro.alto);
+    } catch { /* sin aro */ }
+
+    // Banderas: una o dos, centradas
+    if (estado.banderas.length) {
+      const b = C.banderas;
+      const n = Math.min(2, estado.banderas.length);
+      const total = n * b.lado + (n - 1) * b.hueco;
+      let x = b.centroX - total / 2;
+      for (let i = 0; i < n; i++) {
+        const im = estado.banderas[i];
+        const esc = Math.min(b.lado / im.width, b.lado / im.height);
+        const w = im.width * esc, h = im.height * esc;
+        ctx.drawImage(im, x + (b.lado - w) / 2, b.centroY - h / 2, w, h);
+        x += b.lado + b.hueco;
+      }
+    }
+
+    // Chapa de categoría, ensanchada al texto
+    const cat = (estado.categoria || "").toUpperCase();
+    if (cat) {
+      const ch = C.chapa;
+      ctx.font = `${ch.cuerpo}px "Bebas Neue", sans-serif`;
+      const anchoTexto = [...cat].reduce((s, c) => s + ctx.measureText(c).width, 0)
+        + ch.tracking * ch.cuerpo * (cat.length - 1);
+      const w = anchoTexto + ch.margen * 2;
+      ctx.fillStyle = ch.color;
+      chapa(ch.centroX - w / 2, ch.y, w, ch.alto, ch.alto / 2);
+      ctx.fillStyle = "#fff";
+      linea(cat, ch.cuerpo, ch.tracking, ch.centroX, ch.y + ch.alto / 2 + 1, w - 10, '"Bebas Neue", sans-serif');
+    }
+
+    // Nombre y país
+    ctx.fillStyle = "#fff";
+    linea((estado.nombre || "").toUpperCase(), C.nombre.cuerpo, C.nombre.tracking,
+          C.nombre.centroX, C.nombre.centroY, C.nombre.anchoMax, 'Anton, sans-serif');
+    linea((estado.pais || "").toUpperCase(), C.pais.cuerpo, C.pais.tracking,
+          C.pais.centroX, C.pais.centroY, C.pais.anchoMax, 'Anton, sans-serif');
+  };
+
+  /* ── Controles ── */
+  const conectar = (sel, campo, extra) => {
+    const el = document.querySelector(sel);
+    el.addEventListener("input", () => { estado[campo] = el.value; extra?.(el); pintar(); });
+  };
+  conectar("[data-categoria]", "categoria");
+  conectar("[data-nombre]", "nombre");
+  conectar("[data-pais]", "pais");
+
+  const leerImagen = (file) => new Promise((ok, mal) => {
+    const im = new Image();
+    im.onload = () => ok(im);
+    im.onerror = mal;
+    im.src = URL.createObjectURL(file);
+  });
+
+  document.querySelector("[data-foto]").addEventListener("change", async (ev) => {
+    const f = ev.target.files?.[0];
+    if (!f) return;
+    estado.foto = await leerImagen(f);
+    pintar();
+  });
+
+  document.querySelector("[data-banderas]").addEventListener("change", async (ev) => {
+    const fs = [...(ev.target.files ?? [])].slice(0, 2);
+    estado.banderas = await Promise.all(fs.map(leerImagen));
+    pintar();
+  });
+
+  const zoom = document.querySelector("[data-zoom]");
+  zoom.addEventListener("input", () => {
+    estado.zoom = +zoom.value / 100;
+    document.querySelector("[data-zoom-val]").textContent = `${zoom.value} %`;
+    pintar();
+  });
+  document.querySelector("[data-dx]").addEventListener("input", (e) => { estado.dx = +e.target.value * 4; pintar(); });
+  document.querySelector("[data-dy]").addEventListener("input", (e) => { estado.dy = +e.target.value * 4; pintar(); });
+
+  document.querySelector("[data-descargar]").addEventListener("click", () => {
+    const n = `${estado.nombre}-${estado.pais}`.toLowerCase()
+      .normalize("NFD").replace(/[̀-ͯ]/g, "")
+      .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "cartel";
+    try {
+      canvas.toBlob((b) => {
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(b);
+        a.download = `${n}-1080x1440.png`;
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+      }, "image/png");
+    } catch {
+      aviso.textContent = "La foto viene de otro dominio y el navegador bloquea la descarga.";
+      aviso.hidden = false;
+    }
+  });
+
+  Promise.all([
+    document.fonts.load('108px Anton'),
+    document.fonts.load('27px "Bebas Neue"'),
+    cargar(C.plantilla).catch(() => {}),
+    cargar(C.aro.src).catch(() => {}),
+  ]).then(pintar).catch(pintar);
+</script>
