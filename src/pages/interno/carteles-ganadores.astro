@@ -3,7 +3,7 @@ import Base from "../../layouts/Base.astro";
 import InternoNav from "../../components/InternoNav.astro";
 import SubNavCarteles from "../../components/SubNavCarteles.astro";
 import { CARTEL, PODIO, HOJA, FASES } from "../../data/carteles";
-const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: CARTEL.plantilla, PODIO, HOJA, FASES });
+const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODIO, HOJA, FASES });
 ---
 <Base title="Carteles de ganadores · uso interno" description="Generador de carteles de podio." noindex={true}>
   <InternoNav actual="/interno/carteles/" />
@@ -146,9 +146,6 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: CARTEL.plantilla, POD
     const base = await cargar(C.plantilla);
     ctx.clearRect(0, 0, P.w, P.h);
     ctx.drawImage(base, 0, 0, P.w, P.h);
-    // Se tapa la chapa de categoría de la plantilla: aquí el título va suelto
-    ctx.drawImage(base, 0, 196, P.w, 70, 0, 262, P.w, 70);
-
     texto((estado.titulo || "").toUpperCase(), P.titulo.cuerpo, P.w / 2, P.titulo.centroY, P.titulo.anchoMax, "blanco");
 
     const aro = await cargar(C.aro.src).catch(() => null);
