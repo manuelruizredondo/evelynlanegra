@@ -156,6 +156,14 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: CARTEL.plantilla, POD
     for (let i = 0; i < P.puestos.length; i++) {
       const d = P.puestos[i], e = estado.puestos[i];
 
+      // El número va primero: la foto y el aro le pasan por encima y lo recortan
+      const num = await cargar(`${P.numeros}${d.n}.png`).catch(() => null);
+      if (num) {
+        const alto = d.radio * 1.52;
+        const w = num.width * (alto / num.height);
+        ctx.drawImage(num, d.cx - w / 2, d.cy - d.radio - alto * 0.64, w, alto);
+      }
+
       if (e.foto) {
         ctx.save();
         ctx.beginPath(); ctx.arc(d.cx, d.cy, d.radio, 0, Math.PI * 2); ctx.clip();
@@ -167,7 +175,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: CARTEL.plantilla, POD
       } else {
         ctx.save();
         ctx.beginPath(); ctx.arc(d.cx, d.cy, d.radio, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(255,255,255,.07)"; ctx.fill();
+        ctx.fillStyle = "rgba(10,32,44,.92)"; ctx.fill();
         ctx.restore();
       }
 
@@ -177,15 +185,6 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: CARTEL.plantilla, POD
       }
 
       // Número de puesto, en oro y por encima del círculo
-      // Número de globo dorado, apoyado sobre el borde del círculo
-      const num = await cargar(`${P.numeros}${d.n}.png`).catch(() => null);
-      if (num) {
-        const alto = d.radio * 1.05;
-        const w = num.width * (alto / num.height);
-        ctx.drawImage(num, d.cx - w / 2, d.cy - d.radio - alto * 0.78, w, alto);
-      } else {
-        texto(String(d.n), d.radio * 0.70, d.cx, d.cy - d.radio - d.radio * 0.17, 400, "oro");
-      }
 
       texto((e.nombre || "").toUpperCase(), d.cuerpoNombre, d.cx,
             d.cy + d.radio + d.cuerpoNombre * 0.95, d.radio * 2.5, "blanco");
