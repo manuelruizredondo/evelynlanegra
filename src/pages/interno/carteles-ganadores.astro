@@ -93,6 +93,12 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODI
   [data-res]:not(:empty){border:1px solid var(--li-linea);border-radius:9px;overflow:hidden;
     max-height:210px;overflow-y:auto}
   .pt__puesto{border-top:1px solid var(--li-linea);padding-top:11px;display:grid;gap:8px}
+  .pt__campo input[type=range]{accent-color:var(--li-acc);width:100%}
+  .pt__reset{justify-self:start;background:var(--li-alt);border:1px solid var(--li-linea);
+    border-radius:8px;padding:7px 12px;font:inherit;font-size:.74rem;font-weight:600;
+    color:var(--li-tinta);cursor:pointer}
+  .pt__reset:hover{border-color:var(--li-tinta)}
+  .pt__lienzo canvas{touch-action:none}
   .pt__puesto:first-of-type{border-top:0;padding-top:0}
   .pt__num{font-size:.7rem;font-weight:800;color:var(--li-acc);letter-spacing:.06em}
   @media (max-width:900px){.pt{grid-template-columns:1fr}.pt__panel{position:static}}
@@ -227,7 +233,10 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODI
 
   /* ── Panel de los tres puestos ── */
   const cont = document.querySelector("[data-puestos]");
-  cont.innerHTML = `<p class="pt__t">Podio</p>` + P.puestos.map((p, i) => `
+  cont.innerHTML = `<p class="pt__t">Podio</p>
+    <p class="pt__pista">Arrastra cualquiera de las tres fotos sobre el cartel para moverla
+      y usa la rueda del ratón encima para acercarla. El deslizador sirve para afinar.</p>`
+    + P.puestos.map((p, i) => `
     <div class="pt__puesto">
       <p class="pt__num">PUESTO ${p.n}</p>
       <label class="pt__campo"><span>Buscar</span><input type="search" data-b="${i}" placeholder="nombre…" /></label>
@@ -235,6 +244,9 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODI
       <label class="pt__campo"><span>Nombre</span><input type="text" data-nom="${i}" /></label>
       <label class="pt__campo"><span>País</span><input type="text" data-pais="${i}" /></label>
       <label class="pt__campo"><span>Foto</span><input type="file" accept="image/*" data-foto="${i}" /></label>
+      <label class="pt__campo"><span>Encuadre <em data-zoomv="${i}">100 %</em></span>
+        <input type="range" data-zoom="${i}" min="100" max="300" step="2" value="100" /></label>
+      <button type="button" class="pt__reset" data-recentrar="${i}">Volver a centrar</button>
     </div>`).join("");
 
   let fichas = [];
@@ -312,7 +324,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODI
     cont.querySelector(`[data-res="${i}"]`).innerHTML = "";
     e.banderas = (await Promise.all(banderasDe(p["País"]).map((b) => cargar(b).catch(() => null)))).filter(Boolean);
     const url = urlFoto(p);
-    if (url) e.foto = await cargar(url).catch(() => null);
+    if (url) { e.foto = await cargar(url).catch(() => null); recentrar(i); }
     pintar();
   });
 
@@ -321,9 +333,93 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODI
     if (!f || !f.files?.[0]) return;
     const im = new Image(); im.src = URL.createObjectURL(f.files[0]);
     await new Promise((ok) => (im.onload = ok));
-    estado.puestos[+f.dataset.foto].foto = im;
+    const i = +f.dataset.foto;
+    estado.puestos[i].foto = im;
+    recentrar(i);
     pintar();
   });
+
+  /* ── Mover y escalar cada foto dentro de su círculo ── */
+  const sincronizar = (i) => {
+    const z = Math.round(estado.puestos[i].zoom * 100);
+    const r = cont.querySelector(`[data-zoom="${i}"]`);
+    if (r) r.value = z;
+    const v = cont.querySelector(`[data-zoomv="${i}"]`);
+    if (v) v.textContent = `${z} %`;
+  };
+  const recentrar = (i) => {
+    const e = estado.puestos[i];
+    e.zoom = 1; e.dx = 0; e.dy = 0;
+    sincronizar(i);
+  };
+
+  cont.addEventListener("input", (ev) => {
+    const r = ev.target.closest("[data-zoom]");
+    if (!r) return;
+    const i = +r.dataset.zoom;
+    estado.puestos[i].zoom = +r.value / 100;
+    sincronizar(i);
+    pintar();
+  });
+
+  cont.addEventListener("click", (ev) => {
+    const b = ev.target.closest("[data-recentrar]");
+    if (!b) return;
+    recentrar(+b.dataset.recentrar);
+    pintar();
+  });
+
+  const aLienzo = (ev) => {
+    const r = canvas.getBoundingClientRect();
+    return { x: (ev.clientX - r.left) * (P.w / r.width), y: (ev.clientY - r.top) * (P.h / r.height) };
+  };
+  // Qué círculo hay bajo el puntero. De delante atrás: el del ganador pisa a los otros.
+  const puestoEn = (p) => {
+    for (const i of [0, 1, 2]) {
+      const d = P.puestos[i];
+      if (estado.puestos[i].foto && Math.hypot(p.x - d.cx, p.y - d.cy) <= d.radio) return i;
+    }
+    return -1;
+  };
+
+  let arrastrando = -1, previo = null;
+
+  canvas.addEventListener("pointermove", (ev) => {
+    const p = aLienzo(ev);
+    if (arrastrando < 0) { canvas.style.cursor = puestoEn(p) >= 0 ? "grab" : "default"; return; }
+    const e = estado.puestos[arrastrando];
+    e.dx += p.x - previo.x;
+    e.dy += p.y - previo.y;
+    previo = p;
+    pintar();
+  });
+
+  canvas.addEventListener("pointerdown", (ev) => {
+    const p = aLienzo(ev), i = puestoEn(p);
+    if (i < 0) return;
+    arrastrando = i; previo = p;
+    canvas.setPointerCapture(ev.pointerId);
+    canvas.style.cursor = "grabbing";
+  });
+
+  const soltar = (ev) => {
+    if (arrastrando < 0) return;
+    arrastrando = -1;
+    canvas.releasePointerCapture?.(ev.pointerId);
+    canvas.style.cursor = "grab";
+  };
+  canvas.addEventListener("pointerup", soltar);
+  canvas.addEventListener("pointercancel", soltar);
+
+  canvas.addEventListener("wheel", (ev) => {
+    const p = aLienzo(ev), i = puestoEn(p);
+    if (i < 0) return;
+    ev.preventDefault();
+    const e = estado.puestos[i];
+    e.zoom = Math.min(3, Math.max(1, e.zoom * (1 - ev.deltaY * 0.0015)));
+    sincronizar(i);
+    pintar();
+  }, { passive: false });
 
   document.querySelector("[data-titulo]").addEventListener("input", (e) => { estado.titulo = e.target.value; pintar(); });
   document.querySelector("[data-lista]").addEventListener("input", (e) => { estado.lista = e.target.value; pintar(); });
