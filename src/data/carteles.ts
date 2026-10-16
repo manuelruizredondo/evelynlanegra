@@ -81,7 +81,7 @@ export const TOP10 = {
   plantilla: "/img/ganadores/plantilla-podio.jpg",
   antetitulo: "CLASIFICACIÓN",
   // Reborde de 1 px en oro muy oscuro, para que despegue del fondo
-  ante: { centroY: 318, cuerpo: 44, borde: { color: "#3E1F05", grosor: 1 } },
+  ante: { centroY: 288, cuerpo: 58, borde: { color: "#3E1F05", grosor: 1 } },
   titulo: { centroY: 214, cuerpo: 52, anchoMax: 940 },
   filas: {
     cuantas: 10,

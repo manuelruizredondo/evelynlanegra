@@ -98,6 +98,24 @@ export function crearPodio(C) {
     letras.forEach((ch, i) => { ctx.fillText(ch, px, base); px += avances[i] * c + esp * c; });
   };
 
+  // Relleno para quien no tenga foto en el servidor: un busto, recortado por
+  // el mismo círculo que la foto. Va dibujado y no en un archivo, así escala
+  // igual de bien en el círculo grande del ganador que en una fila del top 10.
+  const silueta = (ctx, cx, cy, r) => {
+    ctx.save();
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(10,32,44,.92)"; ctx.fill();
+    ctx.clip();
+    ctx.fillStyle = "rgba(233,201,124,.34)";
+    ctx.beginPath(); ctx.arc(cx, cy - r * 0.26, r * 0.30, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath();
+    ctx.arc(cx, cy + r * 0.95, r * 0.72, Math.PI, 2 * Math.PI);
+    ctx.lineTo(cx + r * 0.72, cy + r * 1.6);
+    ctx.lineTo(cx - r * 0.72, cy + r * 1.6);
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
+  };
+
   const banderasEn = (ctx, banderas, cx, y, lado) => {
     if (!banderas?.length) return;
     const total = banderas.length * lado + (banderas.length - 1) * lado * 0.14;
@@ -128,18 +146,23 @@ export function crearPodio(C) {
 
       const rFoto = radioFoto(d.radio * 2.2);
 
-      ctx.save();
-      ctx.beginPath(); ctx.arc(d.cx, d.cy, rFoto, 0, Math.PI * 2);
       if (e.foto) {
-        ctx.clip();
+        ctx.save();
+        ctx.beginPath(); ctx.arc(d.cx, d.cy, rFoto, 0, Math.PI * 2); ctx.clip();
         const lado = rFoto * 2 * (e.zoom ?? 1);
         const esc = Math.max(lado / e.foto.width, lado / e.foto.height);
         const w = e.foto.width * esc, h = e.foto.height * esc;
         ctx.drawImage(e.foto, d.cx - w / 2 + (e.dx ?? 0), d.cy - h / 2 + (e.dy ?? 0), w, h);
+        ctx.restore();
+      } else if (e.nombre) {
+        // Hay alguien, pero su foto no está en el servidor
+        silueta(ctx, d.cx, d.cy, rFoto);
       } else {
+        ctx.save();
+        ctx.beginPath(); ctx.arc(d.cx, d.cy, rFoto, 0, Math.PI * 2);
         ctx.fillStyle = "rgba(10,32,44,.92)"; ctx.fill();
+        ctx.restore();
       }
-      ctx.restore();
 
       if (aro) {
         const lado = d.radio * 2.2;
@@ -218,8 +241,8 @@ export function crearPodio(C) {
       }
 
       // La foto, a la derecha y con la altura de la fila
+      const f = F.foto;
       if (e.foto) {
-        const f = F.foto;
         ctx.save();
         ctx.beginPath(); ctx.arc(f.cx, y, f.radio, 0, Math.PI * 2); ctx.clip();
         const lado = f.radio * 2;
@@ -227,11 +250,14 @@ export function crearPodio(C) {
         const w = e.foto.width * esc, h = e.foto.height * esc;
         ctx.drawImage(e.foto, f.cx - w / 2, y - h / 2, w, h);
         ctx.restore();
-        ctx.beginPath(); ctx.arc(f.cx, y, f.radio - 1, 0, Math.PI * 2);
-        ctx.lineWidth = 2.5;
-        ctx.strokeStyle = oro(ctx, y - f.radio, y + f.radio);
-        ctx.stroke();
+      } else {
+        silueta(ctx, f.cx, y, f.radio);
       }
+      // El aro va igual haya foto o silueta, para que la fila no cambie
+      ctx.beginPath(); ctx.arc(f.cx, y, f.radio - 1, 0, Math.PI * 2);
+      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = oro(ctx, y - f.radio, y + f.radio);
+      ctx.stroke();
     });
   };
 
