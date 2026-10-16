@@ -101,18 +101,35 @@ export function crearPodio(C) {
   // Relleno para quien no tenga foto en el servidor: un busto, recortado por
   // el mismo círculo que la foto. Va dibujado y no en un archivo, así escala
   // igual de bien en el círculo grande del ganador que en una fila del top 10.
-  const silueta = (ctx, cx, cy, r) => {
+  const FONDO_HUECO = "rgba(10,32,44,.92)";
+
+  const silueta = (ctx, cx, cy, r, cuantos = 1) => {
+    // Un busto: cabeza y hombros, medidos sobre el radio que se le pase
+    const busto = (dx, dy, escala, color) => {
+      const x = cx + dx * r, y = cy + dy * r, rr = r * escala;
+      ctx.fillStyle = color;
+      ctx.beginPath(); ctx.arc(x, y - rr * 0.26, rr * 0.30, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath();
+      ctx.arc(x, y + rr * 0.95, rr * 0.72, Math.PI, 2 * Math.PI);
+      ctx.lineTo(x + rr * 0.72, y + rr * 1.6);
+      ctx.lineTo(x - rr * 0.72, y + rr * 1.6);
+      ctx.closePath(); ctx.fill();
+    };
+
     ctx.save();
     ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(10,32,44,.92)"; ctx.fill();
+    ctx.fillStyle = FONDO_HUECO; ctx.fill();
     ctx.clip();
-    ctx.fillStyle = "rgba(233,201,124,.34)";
-    ctx.beginPath(); ctx.arc(cx, cy - r * 0.26, r * 0.30, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath();
-    ctx.arc(cx, cy + r * 0.95, r * 0.72, Math.PI, 2 * Math.PI);
-    ctx.lineTo(cx + r * 0.72, cy + r * 1.6);
-    ctx.lineTo(cx - r * 0.72, cy + r * 1.6);
-    ctx.closePath(); ctx.fill();
+
+    if (cuantos > 1) {
+      // Detrás y corrida a la derecha; la de delante lleva un recorte oscuro
+      // alrededor para que se vea que una tapa a la otra.
+      busto(0.36, -0.12, 0.84, "rgba(233,201,124,.21)");
+      busto(-0.18, 0.06, 1.12, FONDO_HUECO);
+      busto(-0.18, 0.06, 1.00, "rgba(233,201,124,.38)");
+    } else {
+      busto(0, 0, 1, "rgba(233,201,124,.34)");
+    }
     ctx.restore();
   };
 
@@ -156,7 +173,7 @@ export function crearPodio(C) {
         ctx.restore();
       } else if (e.nombre) {
         // Hay alguien, pero su foto no está en el servidor
-        silueta(ctx, d.cx, d.cy, rFoto);
+        silueta(ctx, d.cx, d.cy, rFoto, e.duo ? 2 : 1);
       } else {
         ctx.save();
         ctx.beginPath(); ctx.arc(d.cx, d.cy, rFoto, 0, Math.PI * 2);
@@ -251,7 +268,7 @@ export function crearPodio(C) {
         ctx.drawImage(e.foto, f.cx - w / 2, y - h / 2, w, h);
         ctx.restore();
       } else {
-        silueta(ctx, f.cx, y, f.radio);
+        silueta(ctx, f.cx, y, f.radio, e.duo ? 2 : 1);
       }
       // El aro va igual haya foto o silueta, para que la fila no cambie
       ctx.beginPath(); ctx.arc(f.cx, y, f.radio - 1, 0, Math.PI * 2);
@@ -319,6 +336,10 @@ export function crearPodio(C) {
     .filter(Boolean).join(" ").toUpperCase();
   const paisDe = (p) => (p["País"] || "").replace(/\s*\/\s*/g, "-").toUpperCase();
 
+  // Para la silueta de relleno: solista va solo, lo demás (dúos, parejas,
+  // equipos) se dibuja con dos figuras.
+  const esDuo = (p) => !/solista/i.test(p?.["Categoría"] || "");
+
   const numPuesto = (p) => {
     const n = parseInt(String(p["Puesto"] ?? "").replace(/[^0-9]/g, ""), 10);
     return Number.isFinite(n) && n >= 1 ? n : null;
@@ -352,6 +373,6 @@ export function crearPodio(C) {
 
   return {
     P, T, cargar, radioFoto, pintarPodio, pintarTop10, leerCSV, sinAcentos, sinTildes,
-    banderasDeFicha, banderasDe, urlFoto, cat, paisDe, numPuesto, pruebas, nombreArchivo, precargar,
+    banderasDeFicha, banderasDe, urlFoto, cat, paisDe, esDuo, numPuesto, pruebas, nombreArchivo, precargar,
   };
 }

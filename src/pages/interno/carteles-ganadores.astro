@@ -182,13 +182,16 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
     const b = ev.target.closest("[data-f]");
     if (!b) return;
     const i = +b.dataset.i, p = fichas[+b.dataset.f], e = estado.puestos[i];
-    e.nombre = p["Nombre / equipo"]; e.pais = pais(p);
+    e.nombre = p["Nombre / equipo"]; e.pais = pais(p); e.duo = M.esDuo(p);
     cont.querySelector(`[data-nom="${i}"]`).value = e.nombre;
     cont.querySelector(`[data-pais="${i}"]`).value = e.pais;
     cont.querySelector(`[data-res="${i}"]`).innerHTML = "";
     e.banderas = (await Promise.all(banderasDeFicha(p).map((b) => cargar(b).catch(() => null)))).filter(Boolean);
+    // Primero se vacía: si el nuevo no tiene foto, no puede quedarse la del anterior
+    e.foto = null;
+    recentrar(i);
     const url = urlFoto(p);
-    if (url) { e.foto = await cargar(url).catch(() => null); recentrar(i); }
+    if (url) e.foto = await cargar(url).catch(() => null);
     pintar();
   });
 
