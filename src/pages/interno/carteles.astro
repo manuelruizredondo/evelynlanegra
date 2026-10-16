@@ -221,9 +221,11 @@ const datos = JSON.stringify({ ...CARTEL, HOJA, FASES, BANDERAS, ES_EN });
     if (estado.foto) {
       const f = C.foto;
       ctx.save();
-      ctx.beginPath(); ctx.arc(f.cx, f.cy, f.radio, 0, Math.PI * 2); ctx.clip();
+      // Acaba bajo la línea dorada del aro, para que quede de marco
+      const rFoto = C.aro.radioInterior;
+      ctx.beginPath(); ctx.arc(f.cx, f.cy, rFoto, 0, Math.PI * 2); ctx.clip();
       const im = estado.foto;
-      const lado = f.radio * 2 * estado.zoom;
+      const lado = rFoto * 2 * estado.zoom;
       const esc = Math.max(lado / im.width, lado / im.height);
       const w = im.width * esc, h = im.height * esc;
       ctx.drawImage(im, f.cx - w / 2 + estado.dx, f.cy - h / 2 + estado.dy, w, h);
@@ -454,7 +456,7 @@ const datos = JSON.stringify({ ...CARTEL, HOJA, FASES, BANDERAS, ES_EN });
     const r = canvas.getBoundingClientRect();
     return { x: (ev.clientX - r.left) * (C.w / r.width), y: (ev.clientY - r.top) * (C.h / r.height) };
   };
-  const sobreLaFoto = (p) => Math.hypot(p.x - C.foto.cx, p.y - C.foto.cy) <= C.foto.radio;
+  const sobreLaFoto = (p) => Math.hypot(p.x - C.foto.cx, p.y - C.foto.cy) <= C.aro.radioInterior;
 
   let arrastrando = false, previo = null;
 

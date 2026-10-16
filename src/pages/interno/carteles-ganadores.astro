@@ -153,6 +153,9 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODI
     return (centros[im.src] = total ? suma / total / ancho : 0.5);
   };
 
+  // Radio al que hay que recortar la foto para un aro dibujado a este ancho.
+  const radioFoto = (anchoAro) => C.aro.radioInterior * anchoAro / C.aro.ancho;
+
   const oro = (y0, y1) => {
     const g = ctx.createLinearGradient(0, y0, 0, y1);
     g.addColorStop(0, "#FFF0CC"); g.addColorStop(0.26, "#E0AC46");
@@ -198,17 +201,21 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODI
         ctx.drawImage(num, d.cx - centroOptico(num) * w, d.cy - d.radio - alto * 0.86, w, alto);
       }
 
+      // La foto acaba bajo la línea dorada del aro, no en el radio nominal:
+      // así queda un marco y no asoma nada por fuera.
+      const rFoto = radioFoto(d.radio * 2.2);
+
       if (e.foto) {
         ctx.save();
-        ctx.beginPath(); ctx.arc(d.cx, d.cy, d.radio, 0, Math.PI * 2); ctx.clip();
-        const lado = d.radio * 2 * e.zoom;
+        ctx.beginPath(); ctx.arc(d.cx, d.cy, rFoto, 0, Math.PI * 2); ctx.clip();
+        const lado = rFoto * 2 * e.zoom;
         const esc = Math.max(lado / e.foto.width, lado / e.foto.height);
         const w = e.foto.width * esc, h = e.foto.height * esc;
         ctx.drawImage(e.foto, d.cx - w / 2 + e.dx, d.cy - h / 2 + e.dy, w, h);
         ctx.restore();
       } else {
         ctx.save();
-        ctx.beginPath(); ctx.arc(d.cx, d.cy, d.radio, 0, Math.PI * 2);
+        ctx.beginPath(); ctx.arc(d.cx, d.cy, rFoto, 0, Math.PI * 2);
         ctx.fillStyle = "rgba(10,32,44,.92)"; ctx.fill();
         ctx.restore();
       }
@@ -423,7 +430,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: PODIO.plantilla, PODI
   const puestoEn = (p) => {
     for (const i of [0, 1, 2]) {
       const d = P.puestos[i];
-      if (estado.puestos[i].foto && Math.hypot(p.x - d.cx, p.y - d.cy) <= d.radio) return i;
+      if (estado.puestos[i].foto && Math.hypot(p.x - d.cx, p.y - d.cy) <= radioFoto(d.radio * 2.2)) return i;
     }
     return -1;
   };

@@ -2,7 +2,11 @@
 export const CARTEL = {
   w: 1080, h: 1440,
   plantilla: "/img/ganadores/plantilla-base.jpg",
-  aro: { src: "/img/ganadores/aro-foto.png", x: 176, y: 270, ancho: 729, alto: 716 },
+  // «radioInterior» es el radio, en píxeles de este archivo, donde tiene que
+  // acabar la foto: la línea dorada de dentro ocupa de 323,5 a 327,5 en
+  // horizontal y arranca en 327 en vertical, así que a 327 el borde de la foto
+  // queda tapado por el oro y no asoma por ningún lado.
+  aro: { src: "/img/ganadores/aro-foto.png", x: 176, y: 270, ancho: 729, alto: 716, radioInterior: 327 },
   // La foto va recortada en círculo, por dentro del aro
   foto: { cx: 541, cy: 628, radio: 330 },
   // Chapa de categoría: dorada, se ensancha según el texto
