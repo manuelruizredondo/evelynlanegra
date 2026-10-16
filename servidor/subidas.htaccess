@@ -1,16 +1,20 @@
-# Va dentro de la carpeta «subidas», renombrado a .htaccess
+# Va dentro de «subidas», renombrado a .htaccess
 #
-# No usa php_flag: esa directiva solo existe cuando PHP corre como módulo de
-# Apache, y en IONOS va por FastCGI, donde provoca un error 500.
+# 1) Permite que evelynlanegra.com dibuje estas fotos en un lienzo y pueda
+#    descargar el cartel. Sin esto el navegador bloquea la exportación.
+# 2) Impide que algo subido aquí se ejecute.
 #
-# En su lugar se niega el acceso a todo lo ejecutable y se le quita el manejador
-# de PHP, así que un script colado aquí no llegaría a ejecutarse.
+# Todo va dentro de <IfModule>: si el módulo no estuviera, Apache lo ignora
+# en vez de devolver un error 500.
 
-Options -Indexes
+<IfModule mod_headers.c>
+  <FilesMatch "\.(jpe?g|png|webp|gif|avif|mp4|webm|mov)$">
+    Header set Access-Control-Allow-Origin "https://evelynlanegra.com"
+    Header set Cross-Origin-Resource-Policy "cross-origin"
+  </FilesMatch>
+</IfModule>
 
-<FilesMatch "\.(php|phps|phar|phtml|php[0-9]|pl|py|cgi|sh|htaccess|ini)$">
-  Require all denied
-</FilesMatch>
-
-RemoveHandler .php .phtml .phar .php5 .php7 .php8 .cgi .pl .py
-RemoveType .php .phtml .phar .php5 .php7 .php8
+<IfModule mod_mime.c>
+  RemoveHandler .php .phtml .phar .php5 .php7 .php8
+  RemoveType .php .phtml .phar .php5 .php7 .php8
+</IfModule>
