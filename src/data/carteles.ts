@@ -29,3 +29,18 @@ export const CATEGORIAS = [
   "SEMIFINAL PAREJAS SALSA",
   "FINAL PAREJAS BACHATA",
 ];
+
+// Hoja de participantes. Se lee en vivo, así que basta con editarla en Drive.
+export const HOJA = {
+  url: "https://docs.google.com/spreadsheets/d/1vnJX7NtPSsUND_By7sWPiNUD3XpHbNtX/export?format=csv&gid=653804071",
+  // De dónde cuelgan las fotos subidas por FTP
+  fotos: "https://media.lanegrasalsa.com/media/evelyn/subidas/",
+};
+
+// La hoja escribe «Preeliminatoria»; en el cartel va con guion
+export const FASES = {
+  "Preeliminatoria": "PRE-ELIMINATORIA",
+  "Eliminatoria": "ELIMINATORIA",
+  "Semifinal": "SEMIFINAL",
+  "Final": "FINAL",
+};

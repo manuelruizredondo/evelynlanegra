@@ -1,8 +1,8 @@
 ---
 import Base from "../../layouts/Base.astro";
 import InternoNav from "../../components/InternoNav.astro";
-import { CARTEL, CATEGORIAS } from "../../data/carteles";
-const datos = JSON.stringify(CARTEL);
+import { CARTEL, CATEGORIAS, HOJA, FASES } from "../../data/carteles";
+const datos = JSON.stringify({ ...CARTEL, HOJA, FASES });
 ---
 <Base title="Carteles de competidores · uso interno" description="Generador de carteles." noindex={true}>
   <InternoNav actual="/interno/carteles/" />
@@ -14,6 +14,16 @@ const datos = JSON.stringify(CARTEL);
 
       <div class="pt">
         <div class="pt__panel">
+          <div class="pt__grupo">
+            <p class="pt__t">Participante</p>
+            <label class="pt__campo">
+              <span>Buscar en la hoja</span>
+              <input type="search" data-buscar placeholder="nombre o país…" autocomplete="off" />
+            </label>
+            <div class="pt__lista" data-resultados hidden></div>
+            <p class="pt__pista" data-estado>Cargando la hoja…</p>
+          </div>
+
           <div class="pt__grupo">
             <p class="pt__t">Datos</p>
             <label class="pt__campo">
@@ -110,6 +120,13 @@ const datos = JSON.stringify(CARTEL);
   .pt__campo input[type=range]{accent-color:var(--li-acc);width:100%}
   .pt__campo input[type=file]{font:inherit;font-weight:400;text-transform:none;letter-spacing:0;font-size:.76rem}
   .pt__row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .pt__lista{max-height:230px;overflow:auto;border:1px solid var(--li-linea);border-radius:9px}
+  .pt__item{display:block;width:100%;text-align:left;background:none;border:0;cursor:pointer;
+    padding:9px 12px;font:inherit;font-size:.8rem;color:var(--li-tinta);
+    border-bottom:1px solid var(--li-linea)}
+  .pt__item:last-child{border-bottom:0}
+  .pt__item:hover{background:var(--li-alt)}
+  .pt__item small{display:block;color:var(--li-suave);font-size:.7rem;margin-top:2px}
   .pt__reset{justify-self:start;background:var(--li-alt);border:1px solid var(--li-linea);
     border-radius:8px;padding:8px 14px;font:inherit;font-size:.76rem;font-weight:600;
     color:var(--li-tinta);cursor:pointer}
@@ -246,6 +263,98 @@ const datos = JSON.stringify(CARTEL);
     linea((estado.pais || "").toUpperCase(), C.pais.cuerpo, C.pais.tracking,
           C.pais.centroX, C.pais.centroY, C.pais.anchoMax, 'Anton, sans-serif');
   };
+
+  /* ── Hoja de participantes ── */
+  const estadoTxt = document.querySelector("[data-estado]");
+  const resultados = document.querySelector("[data-resultados]");
+  let fichas = [];
+
+  // CSV sencillo, con comillas y saltos dentro de celda
+  const leerCSV = (txt) => {
+    const filas = []; let fila = [], campo = "", comillas = false;
+    for (let i = 0; i < txt.length; i++) {
+      const c = txt[i];
+      if (comillas) {
+        if (c === '"' && txt[i + 1] === '"') { campo += '"'; i++; }
+        else if (c === '"') comillas = false;
+        else campo += c;
+      } else if (c === '"') comillas = true;
+      else if (c === ",") { fila.push(campo); campo = ""; }
+      else if (c === "\n") { fila.push(campo); filas.push(fila); fila = []; campo = ""; }
+      else if (c !== "\r") campo += c;
+    }
+    if (campo || fila.length) { fila.push(campo); filas.push(fila); }
+    const cab = filas.shift().map((h) => h.trim());
+    return filas.filter((f) => f.some((v) => v.trim()))
+      .map((f) => Object.fromEntries(cab.map((h, i) => [h, (f[i] ?? "").trim()])));
+  };
+
+  // «Final» + «Dúo masculino» + «Salsa» → FINAL DÚO MASCULINO SALSA
+  const textoCategoria = (p) =>
+    [C.FASES[p["Fase"]] ?? p["Fase"], p["Categoría"], p["Disciplina"]]
+      .filter(Boolean).join(" ").toUpperCase();
+
+  // «Rumanía / Turquía» → RUMANÍA-TURQUÍA, como en los carteles
+  const textoPais = (p) => (p["País"] || "").replace(/\s*\/\s*/g, "-").toUpperCase();
+
+  const pintarResultados = (lista) => {
+    if (!lista.length) { resultados.hidden = true; return; }
+    resultados.hidden = false;
+    resultados.innerHTML = lista.slice(0, 40).map((p, i) =>
+      `<button type="button" class="pt__item" data-i="${p.__i}">
+         ${p["Nombre / equipo"]}
+         <small>${textoCategoria(p)}${p["País"] ? " · " + p["País"] : ""}${p["Estado foto"] === "Pendiente" ? " · sin foto" : ""}</small>
+       </button>`).join("");
+  };
+
+  const elegir = async (p) => {
+    estado.categoria = textoCategoria(p);
+    estado.nombre = p["Nombre / equipo"] || "";
+    estado.pais = textoPais(p);
+    document.querySelector("[data-categoria]").value = estado.categoria;
+    document.querySelector("[data-nombre]").value = estado.nombre;
+    document.querySelector("[data-pais]").value = estado.pais;
+    resultados.hidden = true;
+
+    estado.zoom = 1; estado.dx = 0; estado.dy = 0;
+    zoom.value = 100;
+    document.querySelector("[data-zoom-val]").textContent = "100 %";
+
+    if (p["Foto"]) {
+      try {
+        estado.foto = await cargar(C.HOJA.fotos + encodeURIComponent(p["Foto"]));
+        estadoTxt.textContent = "";
+      } catch {
+        estado.foto = null;
+        estadoTxt.textContent = `No encontré «${p["Foto"]}» en el servidor de fotos. Súbela o elige el archivo a mano.`;
+      }
+    } else {
+      estado.foto = null;
+      estadoTxt.textContent = "Esta ficha no tiene foto asignada.";
+    }
+    pintar();
+  };
+
+  resultados.addEventListener("click", (ev) => {
+    const b = ev.target.closest("[data-i]");
+    if (b) elegir(fichas[+b.dataset.i]);
+  });
+
+  const buscador = document.querySelector("[data-buscar]");
+  buscador.addEventListener("input", () => {
+    const q = buscador.value.trim().toLowerCase();
+    if (q.length < 2) return pintarResultados([]);
+    pintarResultados(fichas.filter((p) =>
+      (p["Nombre / equipo"] + " " + p["País"] + " " + textoCategoria(p)).toLowerCase().includes(q)));
+  });
+
+  fetch(C.HOJA.url)
+    .then((r) => r.ok ? r.text() : Promise.reject(new Error("HTTP " + r.status)))
+    .then((txt) => {
+      fichas = leerCSV(txt).map((p, i) => ({ ...p, __i: i }));
+      estadoTxt.textContent = `${fichas.length} participantes en la hoja.`;
+    })
+    .catch((e) => { estadoTxt.textContent = "No se pudo leer la hoja: " + e.message; });
 
   /* ── Controles ── */
   const conectar = (sel, campo, extra) => {
