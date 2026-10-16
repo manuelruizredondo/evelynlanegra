@@ -32,9 +32,12 @@ export const CATEGORIAS = [
 
 // Hoja de participantes. Se lee en vivo, así que basta con editarla en Drive.
 export const HOJA = {
-  url: "https://docs.google.com/spreadsheets/d/1vnJX7NtPSsUND_By7sWPiNUD3XpHbNtX/export?format=csv&gid=653804071",
-  // De dónde cuelgan las fotos subidas por FTP
-  fotos: "https://media.lanegrasalsa.com/media/evelyn/subidas/",
+  // Sin «gid»: con él Google responde 400 en este archivo, que es un xlsx subido.
+  // La primera hoja es la de participantes.
+  url: "https://docs.google.com/spreadsheets/d/1vnJX7NtPSsUND_By7sWPiNUD3XpHbNtX/export?format=csv",
+  // Las fotos cuelgan de aquí, con la misma estructura de carpetas que la
+  // columna «PDF fuente» de la hoja
+  fotos: "https://media.lanegrasalsa.com/media/competidores2026/",
 };
 
 // La hoja escribe «Preeliminatoria»; en el cartel va con guion

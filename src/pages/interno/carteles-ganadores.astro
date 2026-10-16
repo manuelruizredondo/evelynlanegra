@@ -244,16 +244,27 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: CARTEL.plantilla, POD
     return filas.filter((r) => r.some((v) => v.trim()))
       .map((r) => Object.fromEntries(cab.map((h, i) => [h, (r[i] ?? "").trim()])));
   };
+  // Sin tildes y en minúsculas: buscar «belen» tiene que encontrar «Belén»
+  const sinTildes = (s) => (s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  // La hoja no guarda la ruta de la foto, pero sí la del PDF del que salió:
+  // se reaprovecha su carpeta.
+  const urlFoto = (p) => {
+    const foto = (p["Foto"] || "").trim();
+    if (!foto) return null;
+    const pdf = (p["PDF fuente"] || "").trim();
+    const carpeta = pdf.includes("/") ? pdf.slice(0, pdf.lastIndexOf("/") + 1) : "";
+    return C.HOJA.fotos + (carpeta + foto).split("/").map(encodeURIComponent).join("/");
+  };
   const cat = (p) => [C.FASES[p["Fase"]] ?? p["Fase"], p["Categoría"], p["Disciplina"]].filter(Boolean).join(" ").toUpperCase();
   const pais = (p) => (p["País"] || "").replace(/\s*\/\s*/g, "-").toUpperCase();
 
   cont.addEventListener("input", (ev) => {
     const b = ev.target.closest("[data-b]");
     if (b) {
-      const i = +b.dataset.b, q = b.value.trim().toLowerCase();
+      const i = +b.dataset.b, q = sinTildes(b.value.trim());
       const caja = cont.querySelector(`[data-res="${i}"]`);
       if (q.length < 2) return (caja.innerHTML = "");
-      caja.innerHTML = fichas.filter((p) => (p["Nombre / equipo"] + " " + p["País"]).toLowerCase().includes(q))
+      caja.innerHTML = fichas.filter((p) => sinTildes(p["Nombre / equipo"] + " " + p["País"] + " " + cat(p)).includes(q))
         .slice(0, 6).map((p) => `<button type="button" class="pt__item" data-i="${i}" data-f="${p.__i}">${p["Nombre / equipo"]}<small>${cat(p)}</small></button>`).join("");
       return;
     }
@@ -269,7 +280,8 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: CARTEL.plantilla, POD
     cont.querySelector(`[data-nom="${i}"]`).value = e.nombre;
     cont.querySelector(`[data-pais="${i}"]`).value = e.pais;
     cont.querySelector(`[data-res="${i}"]`).innerHTML = "";
-    if (p["Foto"]) e.foto = await cargar(C.HOJA.fotos + encodeURIComponent(p["Foto"])).catch(() => null);
+    const url = urlFoto(p);
+    if (url) e.foto = await cargar(url).catch(() => null);
     pintar();
   });
 

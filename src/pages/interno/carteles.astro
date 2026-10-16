@@ -292,6 +292,17 @@ const datos = JSON.stringify({ ...CARTEL, HOJA, FASES });
   };
 
   // «Final» + «Dúo masculino» + «Salsa» → FINAL DÚO MASCULINO SALSA
+  // Sin tildes y en minúsculas: buscar «belen» tiene que encontrar «Belén»
+  const sinTildes = (s) => (s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  // La hoja no guarda la ruta de la foto, pero sí la del PDF del que salió:
+  // se reaprovecha su carpeta.
+  const urlFoto = (p) => {
+    const foto = (p["Foto"] || "").trim();
+    if (!foto) return null;
+    const pdf = (p["PDF fuente"] || "").trim();
+    const carpeta = pdf.includes("/") ? pdf.slice(0, pdf.lastIndexOf("/") + 1) : "";
+    return C.HOJA.fotos + (carpeta + foto).split("/").map(encodeURIComponent).join("/");
+  };
   const textoCategoria = (p) =>
     [C.FASES[p["Fase"]] ?? p["Fase"], p["Categoría"], p["Disciplina"]]
       .filter(Boolean).join(" ").toUpperCase();
@@ -322,9 +333,10 @@ const datos = JSON.stringify({ ...CARTEL, HOJA, FASES });
     zoom.value = 100;
     document.querySelector("[data-zoom-val]").textContent = "100 %";
 
-    if (p["Foto"]) {
+    const url = urlFoto(p);
+    if (url) {
       try {
-        estado.foto = await cargar(C.HOJA.fotos + encodeURIComponent(p["Foto"]));
+        estado.foto = await cargar(url);
         estadoTxt.textContent = "";
       } catch {
         estado.foto = null;
@@ -344,10 +356,10 @@ const datos = JSON.stringify({ ...CARTEL, HOJA, FASES });
 
   const buscador = document.querySelector("[data-buscar]");
   buscador.addEventListener("input", () => {
-    const q = buscador.value.trim().toLowerCase();
+    const q = sinTildes(buscador.value.trim());
     if (q.length < 2) return pintarResultados([]);
     pintarResultados(fichas.filter((p) =>
-      (p["Nombre / equipo"] + " " + p["País"] + " " + textoCategoria(p)).toLowerCase().includes(q)));
+      sinTildes(p["Nombre / equipo"] + " " + p["País"] + " " + textoCategoria(p)).includes(q)));
   });
 
   fetch(C.HOJA.url)
