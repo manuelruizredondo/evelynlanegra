@@ -48,6 +48,7 @@ export const FASES = {
 // Cartel de podio: un círculo grande para el ganador y dos menores al lado
 export const PODIO = {
   w: 1080, h: 1440,
+  numeros: "/img/ganadores/numeros/",
   // Por debajo de la barra de fechas de la plantilla, que acaba en y=178
   titulo: { centroY: 240, cuerpo: 48, anchoMax: 900 },
   puestos: [

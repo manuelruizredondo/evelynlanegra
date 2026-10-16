@@ -167,8 +167,15 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: CARTEL.plantilla, POD
       }
 
       // Número de puesto, en oro y por encima del círculo
-      // El número, justo encima del círculo y sin invadir el título
-      texto(String(d.n), d.radio * 0.70, d.cx, d.cy - d.radio - d.radio * 0.17, 400, "oro");
+      // Número de globo dorado, apoyado sobre el borde del círculo
+      const num = await cargar(`${P.numeros}${d.n}.png`).catch(() => null);
+      if (num) {
+        const alto = d.radio * 1.05;
+        const w = num.width * (alto / num.height);
+        ctx.drawImage(num, d.cx - w / 2, d.cy - d.radio - alto * 0.78, w, alto);
+      } else {
+        texto(String(d.n), d.radio * 0.70, d.cx, d.cy - d.radio - d.radio * 0.17, 400, "oro");
+      }
 
       texto((e.nombre || "").toUpperCase(), d.cuerpoNombre, d.cx,
             d.cy + d.radio + d.cuerpoNombre * 0.95, d.radio * 2.5, "blanco");
@@ -283,6 +290,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, plantilla: CARTEL.plantilla, POD
     estadoTxt.textContent = `${fichas.length} participantes en la hoja.`;
   }).catch((e) => (estadoTxt.textContent = "No se pudo leer la hoja: " + e.message));
 
-  Promise.all([document.fonts.load("54px Anton"), cargar(C.plantilla).catch(() => {}), cargar(C.aro.src).catch(() => {})])
+  Promise.all([document.fonts.load("54px Anton"), cargar(C.plantilla).catch(() => {}), cargar(C.aro.src).catch(() => {}),
+    ...[1,2,3].map((n) => cargar(`${P.numeros}${n}.png`).catch(() => {}))])
     .then(pintar).catch(pintar);
 </script>
