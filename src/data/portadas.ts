@@ -44,3 +44,30 @@ export const FIJOS = {
   sello: { src: "/img/portadas/sello-15-aniversario.png", x: 870, y: 846, ancho: 189, alto: 180 },
   hotel: { src: "/img/portadas/logo-diamante-beach.png", x: 1637, y: 889, ancho: 183, alto: 137 },
 };
+
+// Finales y semifinales del programa de los días 23, 24 y 25, en el orden de
+// la jornada. Sale de aquí y no de la hoja de participantes: la hoja sólo
+// sabe de inscritos y no cuadra con lo que de verdad se compite.
+export const PROGRAMA = [
+  // Viernes 23
+  { dia: "Viernes 23", fase: "SEMIFINAL", categoria: "Solistas Chicas", disciplina: "Bachata" },
+  { dia: "Viernes 23", fase: "SEMIFINAL", categoria: "Solistas Chicas", disciplina: "Salsa" },
+  { dia: "Viernes 23", fase: "GRAN FINAL", categoria: "Solistas Chicos", disciplina: "Bachata" },
+  // «19:00 Final solistas chicas», sin especialidad en el programa: va como
+  // bachata porque su semifinal es la de las 13:00. Confirmar.
+  { dia: "Viernes 23", fase: "GRAN FINAL", categoria: "Solistas Chicas", disciplina: "Bachata", dudoso: true },
+  { dia: "Viernes 23", fase: "GRAN FINAL", categoria: "Dúos Chicas", disciplina: "Salsa" },
+  { dia: "Viernes 23", fase: "GRAN FINAL", categoria: "Dúos Chicos", disciplina: "Salsa" },
+  { dia: "Viernes 23", fase: "GRAN FINAL", categoria: "Solistas Chicas", disciplina: "Salsa" },
+  // Sábado 24
+  { dia: "Sábado 24", fase: "SEMIFINAL", categoria: "Solistas Chicos", disciplina: "Salsa" },
+  { dia: "Sábado 24", fase: "SEMIFINAL", categoria: "Dúos Mixtos", disciplina: "Bachata" },
+  { dia: "Sábado 24", fase: "SEMIFINAL", categoria: "Parejas", disciplina: "Salsa" },
+  { dia: "Sábado 24", fase: "GRAN FINAL", categoria: "Solistas Chicos", disciplina: "Salsa" },
+  { dia: "Sábado 24", fase: "GRAN FINAL", categoria: "Equipos", disciplina: "Salsa" },
+  // Domingo 25
+  { dia: "Domingo 25", fase: "GRAN FINAL", categoria: "Parejas", disciplina: "Bachata" },
+  { dia: "Domingo 25", fase: "GRAN FINAL", categoria: "Dúos Mixtos", disciplina: "Bachata" },
+  { dia: "Domingo 25", fase: "GRAN FINAL", categoria: "Parejas", disciplina: "Salsa" },
+  { dia: "Domingo 25", fase: "GRAN FINAL", categoria: "Equipos", disciplina: "Bachata" },
+];
