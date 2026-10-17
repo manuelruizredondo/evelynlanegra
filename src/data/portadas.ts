@@ -53,7 +53,8 @@ export const FIJOS = {
   // Centrado en el lienzo; el tamaño se regula desde la propia página.
   // El tope lo marca «GRAN FINAL», cuya tinta empieza en y=368.
   logoCaja: { centroX: 960, centroY: 209, lado: 280, min: 160, max: 320 },
-  sello: { src: "/img/portadas/sello-15-aniversario.png", x: 870, y: 846, ancho: 189, alto: 180 },
+  // El sello nuevo, y a la izquierda: en el centro competía con el texto
+  sello: { src: "/img/portadas/sello-15-v2.png", x: 150, y: 840, ancho: 219, alto: 190 },
   hotel: { src: "/img/portadas/logo-diamante-beach.png", x: 1637, y: 889, ancho: 183, alto: 137 },
 };
 
