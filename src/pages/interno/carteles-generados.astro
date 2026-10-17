@@ -64,6 +64,8 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
 
   .ge__barra{display:flex;align-items:center;gap:13px;flex-wrap:wrap;margin:0 0 26px}
   .ge__estado{color:var(--li-suave);font-size:.82rem}
+  .ge__enlace{border:0;background:none;padding:0;font:inherit;font-size:inherit;
+    font-weight:700;color:var(--li-acc);cursor:pointer;text-decoration:underline}
 
   .ge__rejilla{display:grid;gap:22px;
     grid-template-columns:repeat(auto-fill,minmax(236px,1fr))}
@@ -324,9 +326,18 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
       montadas++;
     }
 
-    estadoTxt.textContent = parar
-      ? `Parado. ${hechos.length} carteles de ${montadas} ${montadas === 1 ? "prueba" : "pruebas"}.`
-      : `${hechos.length} carteles de ${pruebas.length} ${pruebas.length === 1 ? "prueba" : "pruebas"}.`;
+    estadoTxt.innerHTML = "";
+    estadoTxt.append(parar
+      ? `Parado, ${hechos.length} carteles de ${montadas} ${montadas === 1 ? "prueba" : "pruebas"}. `
+      : `${hechos.length} carteles de ${pruebas.length} ${pruebas.length === 1 ? "prueba" : "pruebas"}. `);
+    if (hechos.length) {
+      const ir = document.createElement("button");
+      ir.type = "button"; ir.className = "ge__enlace";
+      ir.textContent = `Ver los ${hechos.length} ↓`;
+      ir.addEventListener("click", () =>
+        salida.scrollIntoView({ behavior: "smooth", block: "start" }));
+      estadoTxt.append(ir);
+    }
     delete btnGenerar.dataset.trabajando;
     btnGenerar.textContent = "Generar carteles";
     parar = false;

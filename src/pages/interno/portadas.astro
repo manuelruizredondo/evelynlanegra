@@ -79,10 +79,6 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
               Bájalo si quieres el mar más azul.</p>
           </div>
 
-          <div class="pt__acciones">
-            <button class="li__btn" type="button" data-descargar>Descargar PNG</button>
-            <span class="pt__medida" data-medida>{LIENZO.w} × {LIENZO.h}</span>
-          </div>
 
           <div class="pt__grupo">
             <p class="pt__t">Del programa</p>
@@ -99,6 +95,11 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
               ocupa cerca de 230 MB en memoria: descárgalas y vacía la lista antes de hacer otra tanda.</p>
           </div>
           <p class="pt__pista" data-aviso hidden></p>
+
+          <div class="pt__acciones">
+            <button class="li__btn" type="button" data-descargar>Descargar PNG</button>
+            <span class="pt__medida" data-medida>{LIENZO.w} × {LIENZO.h}</span>
+          </div>
         </div>
 
         <div class="pt__lienzo">
@@ -203,11 +204,20 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
   .pt__fondo input{accent-color:var(--li-acc);margin:0}
   .pt__check{display:flex;align-items:center;gap:9px;font-size:.85rem;cursor:pointer}
   .pt__check input{accent-color:var(--li-acc)}
-  .pt__acciones{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  /* La barra de acciones se queda pegada al fondo de la columna: el panel
+     mide una pantalla y media larga y el botón principal quedaba sepultado
+     en mitad del formulario. */
+  .pt__acciones{display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    position:sticky;bottom:0;z-index:2;margin:0 -4px;padding:12px 4px;
+    background:linear-gradient(to top, var(--li-fondo) 72%, rgba(255,255,255,0));
+    border-radius:10px}
+  @media (max-width:900px){.pt__acciones{position:static;background:none;padding:0}}
   .pt__medida{color:var(--li-suave);font-size:.75rem}
   .pt__reset{background:var(--li-alt);border:1px solid var(--li-linea);border-radius:9px;
     padding:9px 14px;font:inherit;font-size:.76rem;font-weight:600;color:var(--li-tinta);cursor:pointer}
   .pt__reset:hover{border-color:var(--li-tinta)}
+  .pt__enlace{border:0;background:none;padding:0;font:inherit;font-size:inherit;
+    font-weight:700;color:var(--li-acc);cursor:pointer;text-decoration:underline}
 
   .gen{margin:44px 0 0;border-top:1px solid var(--li-linea);padding-top:24px}
   .gen[hidden]{display:none}
@@ -1107,9 +1117,17 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
         vid.pause();
         await revisarBucle();
       }
-      avisoFinales.textContent = parar
-        ? `Parado. ${hechas} de ${lista.length} portadas montadas, abajo en «Generadas».`
-        : `${lista.length} portadas montadas. Están abajo, en «Generadas».`;
+      // Un enlace para bajar de un salto: la lista queda a dos pantallas
+      avisoFinales.innerHTML = "";
+      avisoFinales.append(parar
+        ? `Parado, ${hechas} de ${lista.length}. `
+        : `${lista.length} portadas montadas. `);
+      const ir = document.createElement("button");
+      ir.type = "button"; ir.className = "pt__enlace";
+      ir.textContent = `Ver las ${parar ? hechas : lista.length} ↓`;
+      ir.addEventListener("click", () =>
+        panelGen.scrollIntoView({ behavior: "smooth", block: "start" }));
+      avisoFinales.append(ir);
     } catch (e) {
       avisoFinales.textContent = "No se pudo: " + e.message;
     } finally {

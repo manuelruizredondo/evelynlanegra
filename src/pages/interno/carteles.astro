@@ -68,6 +68,7 @@ const datos = JSON.stringify({ ...CARTEL, HOJA, FASES, BANDERAS, ES_EN });
             <p class="pt__pista">Si subes dos, se colocan juntas y centradas.</p>
           </div>
 
+
           <div class="pt__acciones">
             <button class="li__btn" type="button" data-descargar>Descargar PNG</button>
             <span class="pt__medida">1080 × 1440</span>
@@ -136,7 +137,14 @@ const datos = JSON.stringify({ ...CARTEL, HOJA, FASES, BANDERAS, ES_EN });
   .pt__reset:hover{border-color:var(--li-tinta)}
   .pt__lienzo canvas{touch-action:none}
   .pt__pista{margin:0;color:var(--li-suave);font-size:.74rem;line-height:1.45}
-  .pt__acciones{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  /* La barra de acciones se queda pegada al fondo de la columna: el panel
+     mide una pantalla y media larga y el botón principal quedaba sepultado
+     en mitad del formulario. */
+  .pt__acciones{display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    position:sticky;bottom:0;z-index:2;margin:0 -4px;padding:12px 4px;
+    background:linear-gradient(to top, var(--li-fondo) 72%, rgba(255,255,255,0));
+    border-radius:10px}
+  @media (max-width:900px){.pt__acciones{position:static;background:none;padding:0}}
   .pt__medida{color:var(--li-suave);font-size:.75rem}
   .pt__lienzo{border:1px solid var(--li-linea);border-radius:13px;overflow:hidden;background:#000}
   .pt__lienzo canvas{display:block;width:100%;height:auto}

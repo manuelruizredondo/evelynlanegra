@@ -34,6 +34,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
             <p class="pt__pista">Una línea por puesto, con el país tras una coma.</p>
           </div>
 
+
           <div class="pt__acciones">
             <button class="li__btn" type="button" data-descargar>Descargar PNG</button>
             <span class="pt__medida">1080 × 1440</span>
@@ -77,7 +78,14 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
   .pt__campo input:focus,.pt__grupo textarea:focus{outline:none;border-color:var(--li-acc)}
   .pt__campo input[type=file]{font-size:.74rem;font-weight:400;text-transform:none;letter-spacing:0}
   .pt__pista{margin:0;color:var(--li-suave);font-size:.73rem;line-height:1.45}
-  .pt__acciones{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  /* La barra de acciones se queda pegada al fondo de la columna: el panel
+     mide una pantalla y media larga y el botón principal quedaba sepultado
+     en mitad del formulario. */
+  .pt__acciones{display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    position:sticky;bottom:0;z-index:2;margin:0 -4px;padding:12px 4px;
+    background:linear-gradient(to top, var(--li-fondo) 72%, rgba(255,255,255,0));
+    border-radius:10px}
+  @media (max-width:900px){.pt__acciones{position:static;background:none;padding:0}}
   .pt__medida{color:var(--li-suave);font-size:.75rem}
   .pt__lienzo{border:1px solid var(--li-linea);border-radius:13px;overflow:hidden;background:#000;
     max-width:620px;margin-inline:auto}
@@ -109,7 +117,15 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
   .pt__reset:hover{border-color:var(--li-tinta)}
   .pt__lienzo canvas{touch-action:none}
   .pt__puesto:first-of-type{border-top:0;padding-top:0}
-  .pt__num{font-size:.7rem;font-weight:800;color:var(--li-acc);letter-spacing:.06em}
+  .pt__num{font-size:.7rem;font-weight:800;color:var(--li-acc);letter-spacing:.06em;
+    cursor:pointer;list-style:none;display:flex;align-items:baseline;gap:8px}
+  .pt__num::-webkit-details-marker{display:none}
+  /* Flecha propia, que gira al abrir */
+  .pt__num::before{content:"▸";font-size:.8rem;transition:transform .15s}
+  .pt__puesto[open] > .pt__num::before{transform:rotate(90deg)}
+  .pt__num em{font-style:normal;font-weight:600;color:var(--li-suave);
+    text-transform:none;letter-spacing:0;font-size:.72rem;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   @media (max-width:900px){.pt{grid-template-columns:1fr}
     .pt__panel,.pt__lienzo{position:static}.pt__lienzo--alto{max-width:620px}}
 </style>
@@ -141,8 +157,8 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
     <p class="pt__pista">Arrastra cualquiera de las tres fotos sobre el cartel para moverla
       y usa la rueda del ratón encima para acercarla. El deslizador sirve para afinar.</p>`
     + P.puestos.map((p, i) => `
-    <div class="pt__puesto">
-      <p class="pt__num">PUESTO ${p.n}</p>
+    <details class="pt__puesto" open>
+      <summary class="pt__num">PUESTO ${p.n}<em data-resumen="${i}"></em></summary>
       <label class="pt__campo"><span>Buscar</span><input type="search" data-b="${i}" placeholder="nombre…" /></label>
       <div data-res="${i}"></div>
       <label class="pt__campo"><span>Nombre</span><input type="text" data-nom="${i}" /></label>
@@ -151,7 +167,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
       <label class="pt__campo"><span>Encuadre <em data-zoomv="${i}">100 %</em></span>
         <input type="range" data-zoom="${i}" min="100" max="300" step="2" value="100" /></label>
       <button type="button" class="pt__reset" data-recentrar="${i}">Volver a centrar</button>
-    </div>`).join("");
+    </details>`).join("");
 
   let fichas = [];
   const banderasDe = (p) => M.banderasDe(p, fichas);
@@ -167,7 +183,8 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
           <small>${cat(p)}${p["País"] ? " · " + p["País"] : ""}${p["Estado foto"] === "Pendiente" ? " · sin foto" : ""}</small></button>`).join("");
       return;
     }
-    const n = ev.target.closest("[data-nom]"); if (n) { estado.puestos[+n.dataset.nom].nombre = n.value; return pintar(); }
+    const n = ev.target.closest("[data-nom]");
+    if (n) { estado.puestos[+n.dataset.nom].nombre = n.value; resumir(+n.dataset.nom); return pintar(); }
     const pa = ev.target.closest("[data-pais]");
     if (pa) {
       const e = estado.puestos[+pa.dataset.pais];
@@ -186,6 +203,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
     cont.querySelector(`[data-nom="${i}"]`).value = e.nombre;
     cont.querySelector(`[data-pais="${i}"]`).value = e.pais;
     cont.querySelector(`[data-res="${i}"]`).innerHTML = "";
+    resumir(i);
     e.banderas = (await Promise.all(banderasDeFicha(p).map((b) => cargar(b).catch(() => null)))).filter(Boolean);
     // Primero se vacía: si el nuevo no tiene foto, no puede quedarse la del anterior
     e.foto = null;
@@ -205,6 +223,14 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
     recentrar(i);
     pintar();
   });
+
+  // Con el puesto plegado, el nombre se ve en la propia cabecera
+  const resumir = (i) => {
+    const em = cont.querySelector(`[data-resumen="${i}"]`);
+    if (!em) return;
+    const e = estado.puestos[i];
+    em.textContent = e.nombre ? `· ${e.nombre}` : "";
+  };
 
   /* ── Mover y escalar cada foto dentro de su círculo ── */
   const sincronizar = (i) => {
