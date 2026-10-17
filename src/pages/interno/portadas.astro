@@ -75,6 +75,17 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS, DESTELLOS });
           <canvas data-canvas width={LIENZO.w} height={LIENZO.h}></canvas>
         </div>
       </div>
+
+      <section class="gen" data-generados hidden>
+        <div class="gen__barra">
+          <h2 class="gen__t">Generadas</h2>
+          <span class="gen__cuenta" data-cuenta></span>
+          <button type="button" class="pt__reset" data-bajar-todo>Descargar todas</button>
+          <button type="button" class="pt__reset" data-vaciar>Vaciar</button>
+        </div>
+        <p class="pt__pista">Se guardan mientras no cierres esta pestaña.</p>
+        <div class="gen__rejilla" data-rejilla></div>
+      </section>
     </div>
   </section>
 </Base>
@@ -138,6 +149,27 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS, DESTELLOS });
   .pt__check input{accent-color:var(--li-acc)}
   .pt__acciones{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
   .pt__medida{color:var(--li-suave);font-size:.75rem}
+  .pt__reset{background:var(--li-alt);border:1px solid var(--li-linea);border-radius:9px;
+    padding:9px 14px;font:inherit;font-size:.76rem;font-weight:600;color:var(--li-tinta);cursor:pointer}
+  .pt__reset:hover{border-color:var(--li-tinta)}
+
+  .gen{margin:44px 0 0;border-top:1px solid var(--li-linea);padding-top:24px}
+  .gen[hidden]{display:none}
+  .gen__barra{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 4px}
+  .gen__t{margin:0;font-size:1rem;font-weight:800;color:var(--li-tinta)}
+  .gen__cuenta{color:var(--li-suave);font-size:.8rem;margin-right:auto}
+  .gen__rejilla{display:grid;gap:18px;margin-top:16px;
+    grid-template-columns:repeat(auto-fill,minmax(248px,1fr))}
+  .gen__ficha{border:1px solid var(--li-linea);border-radius:13px;overflow:hidden;background:#fff}
+  .gen__mini{display:block;width:100%;height:auto;background:#000}
+  .gen__pie{padding:10px 12px 12px;display:grid;gap:8px}
+  .gen__n{margin:0;font-size:.76rem;font-weight:700;line-height:1.3;word-break:break-word}
+  .gen__d{margin:0;color:var(--li-suave);font-size:.71rem}
+  .gen__acc{display:flex;gap:7px}
+  .gen__a{flex:1;text-align:center;text-decoration:none;background:var(--li-alt);
+    border:1px solid var(--li-linea);border-radius:8px;padding:7px 9px;
+    font-size:.74rem;font-weight:600;color:var(--li-tinta);cursor:pointer}
+  .gen__a:hover{border-color:var(--li-tinta);text-decoration:none}
 
   .pt__lienzo{border:1px solid var(--li-linea);border-radius:13px;overflow:hidden;background:#000}
   .pt__lienzo canvas{display:block;width:100%;height:auto}
@@ -420,9 +452,11 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS, DESTELLOS });
     pintar();
   });
 
-  const nombreArchivo = () => (estado.textos.linea2 || "portada").toLowerCase()
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "portada";
+  // Las tres líneas, para que dos portadas distintas no acaben con el mismo
+  // nombre y se pisen al descargarlas en bloque
+  const nombreArchivo = () => (D.LINEAS.map((l) => estado.textos[l.id]).filter(Boolean).join(" ") || "portada")
+    .toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 80) || "portada";
 
   const bajar = (blob, nombre) => {
     const a = document.createElement("a");
@@ -431,6 +465,95 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS, DESTELLOS });
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 4000);
   };
+
+  /* ── Listado de lo que se va generando ──
+     Los blobs viven en memoria, así que la lista dura lo que la pestaña. */
+  const panelGen = document.querySelector("[data-generados]");
+  const rejillaGen = document.querySelector("[data-rejilla]");
+  const cuentaGen = document.querySelector("[data-cuenta]");
+  const generadas = [];
+
+  const bonito = (b) => b > 1048576 ? (b / 1048576).toFixed(1) + " MB"
+                                    : Math.max(1, Math.round(b / 1024)) + " KB";
+
+  const refrescarCuenta = () => {
+    const n = generadas.length;
+    const bytes = generadas.reduce((t, g) => t + g.blob.size, 0);
+    cuentaGen.textContent = n ? `${n} ${n === 1 ? "portada" : "portadas"} · ${bonito(bytes)}` : "";
+    panelGen.hidden = n === 0;
+  };
+
+  // Miniatura del lienzo tal y como está ahora, para reconocerla de un vistazo
+  const miniatura = () => {
+    const m = document.createElement("canvas");
+    m.width = 496; m.height = Math.round(496 * canvas.height / canvas.width);
+    m.getContext("2d").drawImage(canvas, 0, 0, m.width, m.height);
+    return m;
+  };
+
+  // Si ya hay una con ese nombre en la lista, se numera: ...-2.png, -3.png
+  const nombreLibre = (nombre) => {
+    if (!generadas.some((g) => g.nombre === nombre)) return nombre;
+    const punto = nombre.lastIndexOf(".");
+    const raiz = punto < 0 ? nombre : nombre.slice(0, punto);
+    const ext = punto < 0 ? "" : nombre.slice(punto);
+    let n = 2;
+    while (generadas.some((g) => g.nombre === `${raiz}-${n}${ext}`)) n++;
+    return `${raiz}-${n}${ext}`;
+  };
+
+  const registrar = (blob, nombrePedido) => {
+    const nombre = nombreLibre(nombrePedido);
+    const url = URL.createObjectURL(blob);
+    const ficha = { blob, nombre, url };
+    generadas.unshift(ficha);
+
+    const caja = document.createElement("div");
+    caja.className = "gen__ficha";
+    const mini = miniatura();
+    mini.className = "gen__mini";
+    caja.append(mini);
+
+    const pie = document.createElement("div");
+    pie.className = "gen__pie";
+    pie.innerHTML = `<p class="gen__n"></p><p class="gen__d"></p>
+      <div class="gen__acc">
+        <a class="gen__a" download href="${url}">Descargar</a>
+        <button type="button" class="gen__a" data-quitar>Quitar</button>
+      </div>`;
+    pie.querySelector(".gen__n").textContent = nombre;
+    pie.querySelector(".gen__d").textContent =
+      `${bonito(blob.size)} · ${new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}`;
+    pie.querySelector("[download]").setAttribute("download", nombre);
+    pie.querySelector("[data-quitar]").addEventListener("click", () => {
+      URL.revokeObjectURL(url);
+      generadas.splice(generadas.indexOf(ficha), 1);
+      caja.remove();
+      refrescarCuenta();
+    });
+
+    caja.append(pie);
+    rejillaGen.prepend(caja);
+    refrescarCuenta();
+  };
+
+  document.querySelector("[data-bajar-todo]").addEventListener("click", async (ev) => {
+    const b = ev.currentTarget;
+    b.disabled = true;
+    for (const g of [...generadas].reverse()) {
+      const a = document.createElement("a");
+      a.href = g.url; a.download = g.nombre; a.click();
+      await new Promise((r) => setTimeout(r, 450));
+    }
+    b.disabled = false;
+  });
+
+  document.querySelector("[data-vaciar]").addEventListener("click", () => {
+    generadas.forEach((g) => URL.revokeObjectURL(g.url));
+    generadas.length = 0;
+    rejillaGen.innerHTML = "";
+    refrescarCuenta();
+  });
 
   // Se prefiere MP4 si el navegador sabe grabarlo; si no, WebM
   const formatoGrabacion = () => {
@@ -473,7 +596,10 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS, DESTELLOS });
       await terminado;
 
       const ext = tipo.startsWith("video/mp4") ? "mp4" : "webm";
-      bajar(new Blob(trozos, { type: tipo }), `${nombreArchivo()}-1920x1080.${ext}`);
+      const video = new Blob(trozos, { type: tipo });
+      const comoSeLlama = `${nombreArchivo()}-1920x1080.${ext}`;
+      bajar(video, comoSeLlama);
+      registrar(video, comoSeLlama);
       decir(ext === "webm" ? "Guardado en WebM: es lo que graba este navegador. Safari lo da en MP4." : "");
     } catch (e) {
       decir("No se pudo grabar: " + e.message);
@@ -485,7 +611,11 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS, DESTELLOS });
 
   btn.addEventListener("click", () => {
     if (estado.fondo === "video") return grabarVideo();
-    canvas.toBlob((blob) => bajar(blob, `${nombreArchivo()}-1920x1080.png`), "image/png");
+    canvas.toBlob((blob) => {
+      const comoSeLlama = `${nombreArchivo()}-1920x1080.png`;
+      bajar(blob, comoSeLlama);
+      registrar(blob, comoSeLlama);
+    }, "image/png");
   });
 
   // Inter tiene que estar cargada antes de medir, o el ajuste saldría mal
