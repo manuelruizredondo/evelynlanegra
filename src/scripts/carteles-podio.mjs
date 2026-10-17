@@ -3,6 +3,8 @@
    que los genera en bloque (/interno/carteles-generados/), para que un retoque
    en el cartel salga igual en los dos sitios. */
 
+import { leerCSV } from "./hoja.mjs";
+
 export function crearPodio(C) {
   const P = C.PODIO, T = C.TOP10;
 
@@ -279,22 +281,6 @@ export function crearPodio(C) {
   };
 
   /* ── Lectura de la hoja ── */
-  const leerCSV = (txt) => {
-    const filas = []; let f = [], c = "", q = false;
-    for (let i = 0; i < txt.length; i++) {
-      const ch = txt[i];
-      if (q) { if (ch === '"' && txt[i + 1] === '"') { c += '"'; i++; } else if (ch === '"') q = false; else c += ch; }
-      else if (ch === '"') q = true;
-      else if (ch === ",") { f.push(c); c = ""; }
-      else if (ch === "\n") { f.push(c); filas.push(f); f = []; c = ""; }
-      else if (ch !== "\r") c += ch;
-    }
-    if (c || f.length) { f.push(c); filas.push(f); }
-    const cab = filas.shift().map((h) => h.trim());
-    return filas.filter((r) => r.some((v) => v.trim()))
-      .map((r) => Object.fromEntries(cab.map((h, i) => [h, (r[i] ?? "").trim()])));
-  };
-
   const sinAcentos = (s) => (s || "").normalize("NFD").replace(/[̀-ͯ]/g, "")
     .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
   const sinTildes = (s) => (s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();

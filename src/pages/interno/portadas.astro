@@ -2,7 +2,8 @@
 import Base from "../../layouts/Base.astro";
 import InternoNav from "../../components/InternoNav.astro";
 import { LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTELLOS } from "../../data/portadas";
-const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS, DESTELLOS });
+import { HOJA } from "../../data/carteles";
+const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTELLOS, HOJA });
 ---
 <Base title="Creador de portadas · uso interno" description="Generador de portadas del campeonato." noindex={true}>
   <InternoNav actual="/interno/portadas/" />
@@ -67,6 +68,12 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS, DESTELLOS });
           <div class="pt__acciones">
             <button class="li__btn" type="button" data-descargar>Descargar PNG</button>
             <span class="pt__medida" data-medida>{LIENZO.w} × {LIENZO.h}</span>
+          </div>
+
+          <div class="pt__grupo">
+            <p class="pt__t">Desde la hoja</p>
+            <button type="button" class="pt__reset" data-finales>Portadas de todas las finales</button>
+            <p class="pt__pista" data-finales-estado>Una por cada categoría con final, con su logotipo.</p>
           </div>
           <p class="pt__pista" data-aviso hidden></p>
         </div>
@@ -184,8 +191,12 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS, DESTELLOS });
   }
 </style>
 
-<script define:vars={{ datos }}>
-  const D = JSON.parse(datos);
+<script type="application/json" data-config set:html={datos}></script>
+
+<script>
+  import { cargarHoja } from "../../scripts/hoja.mjs";
+
+  const D = JSON.parse(document.querySelector("[data-config]").textContent);
   const canvas = document.querySelector("[data-canvas]");
   const ctx = canvas.getContext("2d");
 
@@ -616,6 +627,76 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, FIJOS, DESTELLOS });
       bajar(blob, comoSeLlama);
       registrar(blob, comoSeLlama);
     }, "image/png");
+  });
+
+  /* ── Portadas de todas las finales, leídas de la hoja ── */
+  const btnFinales = document.querySelector("[data-finales]");
+  const avisoFinales = document.querySelector("[data-finales-estado]");
+
+  const logoDe = (disciplina) => {
+    const id = (disciplina || "").toLowerCase().includes("salsa") ? "salsa" : "bachata";
+    return (D.LOGOS.find((l) => l.id === id) ?? D.LOGOS[0]).src;
+  };
+
+  // Deja el formulario como quedó la última portada, para que lo que se ve en
+  // pantalla sea de verdad lo último generado.
+  const reflejar = () => {
+    document.querySelectorAll("[data-linea]").forEach((inp) => {
+      inp.value = estado.textos[inp.dataset.linea] ?? "";
+    });
+    document.querySelectorAll('input[name="logo"]').forEach((rad) => {
+      rad.checked = rad.value === estado.logo;
+    });
+  };
+
+  const comoPNG = () => new Promise((listo) => canvas.toBlob(listo, "image/png"));
+
+  btnFinales.addEventListener("click", async () => {
+    btnFinales.disabled = true;
+    const original = btnFinales.textContent;
+    try {
+      avisoFinales.textContent = "Leyendo la hoja…";
+      const fichas = await cargarHoja(D.HOJA.url);
+
+      // Una portada por categoría con final, sin repetir
+      const vistas = new Map();
+      for (const p of fichas) {
+        if (p["Fase"] !== "Final") continue;
+        const k = `${p["Disciplina"]}\u0001${p["Categoría"]}`;
+        if (!vistas.has(k)) vistas.set(k, { disciplina: p["Disciplina"], categoria: p["Categoría"] });
+      }
+      // Salsa primero, y dentro por categoría
+      const finales = [...vistas.values()].sort((a, b) =>
+        (a.disciplina.toLowerCase().includes("salsa") ? 0 : 1) - (b.disciplina.toLowerCase().includes("salsa") ? 0 : 1)
+        || a.disciplina.localeCompare(b.disciplina, "es")
+        || a.categoria.localeCompare(b.categoria, "es"));
+
+      if (!finales.length) {
+        avisoFinales.textContent = "La hoja no tiene ninguna fila con fase «Final».";
+        return;
+      }
+
+      for (let i = 0; i < finales.length; i++) {
+        const f = finales[i];
+        btnFinales.textContent = `Montando ${i + 1} de ${finales.length}…`;
+        avisoFinales.textContent = `${f.categoria} · ${f.disciplina}`;
+        estado.textos.linea1 = "GRAN FINAL";
+        estado.textos.linea2 = f.categoria.toUpperCase();
+        estado.textos.linea3 = f.disciplina.toUpperCase();
+        estado.logo = logoDe(f.disciplina);
+        reflejar();
+        await pintar();
+        registrar(await comoPNG(), `${nombreArchivo()}-${D.LIENZO.w}x${D.LIENZO.h}.png`);
+      }
+
+      avisoFinales.textContent =
+        `${finales.length} portadas montadas. Están abajo, en «Generadas».`;
+    } catch (e) {
+      avisoFinales.textContent = "No se pudo: " + e.message;
+    } finally {
+      btnFinales.disabled = false;
+      btnFinales.textContent = original;
+    }
   });
 
   // Inter tiene que estar cargada antes de medir, o el ajuste saldría mal
