@@ -65,6 +65,7 @@ export const PROGRAMA = [
   // Viernes 23
   { dia: "Viernes 23", fase: "SEMIFINAL", categoria: "Solistas Chicas", disciplina: "Bachata" },
   { dia: "Viernes 23", fase: "SEMIFINAL", categoria: "Solistas Chicas", disciplina: "Salsa" },
+  { dia: "Viernes 23", fase: "SEMIFINAL", categoria: "Solistas Chicos", disciplina: "Bachata" },
   { dia: "Viernes 23", fase: "GRAN FINAL", categoria: "Solistas Chicos", disciplina: "Bachata" },
   // «19:00 Final solistas chicas», sin especialidad en el programa: va como
   // bachata porque su semifinal es la de las 13:00. Confirmar.
