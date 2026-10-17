@@ -10,15 +10,17 @@ export const CAJA = { x: 614, ancho: 690 };
 export const LINEAS = [
   { id: "linea1", etiqueta: "Primera línea", valor: "GRAN FINAL",
     peso: 400, tracking: 0.10, centroY: 413, cuerpoMax: 130, mayusculas: true, dorado: true },
+  // Las dos de abajo no se centran en una Y fija: cuelgan de lo que tienen
+  // encima —la línea separadora y luego la segunda— dejando siempre el mismo
+  // hueco de tinta a tinta. Si se centraran, una palabra larga encogería el
+  // cuerpo, encogería la tinta y los huecos se abrirían.
   { id: "linea2", etiqueta: "Segunda línea", valor: "SOLISTA",
-    peso: 400, tracking: 0.05, centroY: 598, cuerpoMax: 165, mayusculas: true },
-  // Llena el ancho como las otras dos. Como una palabra corta como «SALSA»
-  // necesita cuerpo 208 para llegar a los 690 px, se ancla por el borde de
-  // arriba y crece hacia abajo: así no se come la línea de encima y la tinta
-  // siempre empieza a la misma altura, mida lo que mida. Abajo tiene hasta el
-  // sello del aniversario, que empieza en y=846.
+    peso: 400, tracking: 0.05, hueco: 46, cuerpoMax: 165, mayusculas: true },
+  // Llena el ancho como las otras dos: una palabra corta como «SALSA» necesita
+  // cuerpo 208 para llegar a los 690 px. Abajo tiene sitio hasta el sello del
+  // aniversario, que empieza en y=846.
   { id: "linea3", etiqueta: "Tercera línea", valor: "BACHATA",
-    peso: 800, tracking: -0.025, altoY: 672, cuerpoMax: 210, mayusculas: true },
+    peso: 800, tracking: -0.025, hueco: 20, cuerpoMax: 210, mayusculas: true },
 ];
 
 export const REGLA = { x: 616, y: 484, ancho: 691, grosor: 9, dorado: true };

@@ -86,8 +86,17 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
 
           <div class="pt__grupo">
             <p class="pt__t">Del programa</p>
+            <label class="pt__campo">
+              <span>Formato</span>
+              <select data-formato-lote>
+                <option value="png">Imagen PNG</option>
+                <option value="video">Vídeo</option>
+              </select>
+            </label>
             <button type="button" class="pt__reset" data-finales>Portadas de finales y semifinales</button>
             <p class="pt__pista" data-finales-estado>{PROGRAMA.length} portadas, en el orden de la jornada y con el escudo que toca.</p>
+            <p class="pt__pista">En vídeo tarda unos cinco minutos, porque graba cada una entera, y
+              ocupa cerca de 230 MB en memoria: descárgalas y vacía la lista antes de hacer otra tanda.</p>
           </div>
           <p class="pt__pista" data-aviso hidden></p>
         </div>
@@ -335,7 +344,7 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
     ctx.restore();
   };
 
-  const dibujarLinea = (texto, peso, tracking, centroX, l, anchoDestino, dorado) => {
+  const dibujarLinea = (texto, peso, tracking, centroX, l, anchoDestino, dorado, arribaFija) => {
     const { cuerpo, av, ancho } = medidaLinea(texto, peso, tracking, anchoDestino, l.cuerpoMax);
     ctx.font = `${peso} ${cuerpo}px Inter, sans-serif`;
     ctx.textAlign = "left";
@@ -346,9 +355,9 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
     const m = ctx.measureText(texto);
     const arriba = m.actualBoundingBoxAscent ?? cuerpo * 0.72;
     const abajo = m.actualBoundingBoxDescent ?? 0;
-    // Con «altoY» la línea cuelga de su borde de arriba y crece hacia abajo;
-    // con «centroY» se centra, como las dos primeras.
-    const base = l.altoY != null ? l.altoY + arriba : l.centroY + (arriba - abajo) / 2;
+    // Si se le pasa dónde empieza la tinta, la línea cuelga de ahí y crece
+    // hacia abajo; si no, se centra en su «centroY».
+    const base = arribaFija != null ? arribaFija + arriba : l.centroY + (arriba - abajo) / 2;
 
     const trazar = () => {
       let x = centroX - ancho / 2;
@@ -425,11 +434,16 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
     const centroX = D.CAJA.x + D.CAJA.ancho / 2;
     let remateLinea1 = null;
 
+    // Las líneas encadenadas arrancan bajo la raya, se dibuje o no
+    let borde = D.REGLA.y + D.REGLA.grosor;
+
     for (const l of D.LINEAS) {
       let t = (estado.textos[l.id] ?? "").trim();
       if (!t) continue;
       if (l.mayusculas) t = t.toUpperCase();
-      const caja = dibujarLinea(t, l.peso, l.tracking, centroX, l, D.CAJA.ancho, l.dorado);
+      const caja = dibujarLinea(t, l.peso, l.tracking, centroX, l, D.CAJA.ancho, l.dorado,
+                                l.hueco != null ? borde + l.hueco : null);
+      if (l.hueco != null) borde = caja.abajo;
       if (l === D.LINEAS[0]) remateLinea1 = caja;
     }
 
@@ -646,44 +660,48 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
     return null;
   };
 
-  const grabarVideo = async () => {
+  // Graba una pasada completa del fondo y devuelve el vídeo. Lo usan tanto el
+  // botón de descargar como la generación en bloque.
+  const grabar = async (alProgresar) => {
     const tipo = formatoGrabacion();
-    if (!tipo) return decir("Este navegador no sabe grabar vídeo. Prueba con Chrome o Safari.");
+    if (!tipo) throw new Error("Este navegador no sabe grabar vídeo. Prueba con Chrome o Safari.");
 
+    vid.pause(); vid.currentTime = 0;
+    if (estado.particulas) { chispas.currentTime = 0; try { await chispas.play(); } catch { /* bloqueado */ } }
+    await new Promise((ok) => { vid.onseeked = ok; setTimeout(ok, 600); });
+
+    const stream = canvas.captureStream(30);
+    const rec = new MediaRecorder(stream, { mimeType: tipo, videoBitsPerSecond: 8000000 });
+    const trozos = [];
+    rec.ondataavailable = (e) => { if (e.data.size) trozos.push(e.data); };
+    const terminado = new Promise((ok) => (rec.onstop = ok));
+
+    arrancarBucle();
+    await vid.play();
+    rec.start();
+
+    const dura = (vid.duration || 15) * 1000;
+    const t0 = performance.now();
+    const reloj = setInterval(
+      () => alProgresar?.(Math.min(99, Math.round((performance.now() - t0) / dura * 100))), 300);
+
+    await new Promise((ok) => setTimeout(ok, dura));
+    rec.stop();
+    clearInterval(reloj);
+    await terminado;
+
+    const ext = tipo.startsWith("video/mp4") ? "mp4" : "webm";
+    return { blob: new Blob(trozos, { type: tipo }), ext };
+  };
+
+  const grabarVideo = async () => {
     btn.disabled = true;
     const original = "Descargar vídeo";
     try {
-      vid.pause(); vid.currentTime = 0;
-      if (estado.particulas) { chispas.currentTime = 0; try { await chispas.play(); } catch { /* bloqueado */ } }
-
-      await new Promise((ok) => { vid.onseeked = ok; setTimeout(ok, 600); });
-
-      const stream = canvas.captureStream(30);
-      const rec = new MediaRecorder(stream, { mimeType: tipo, videoBitsPerSecond: 8000000 });
-      const trozos = [];
-      rec.ondataavailable = (e) => { if (e.data.size) trozos.push(e.data); };
-      const terminado = new Promise((ok) => (rec.onstop = ok));
-
-      arrancarBucle();
-      await vid.play();
-      rec.start();
-
-      const dura = (vid.duration || 15) * 1000;
-      const t0 = performance.now();
-      const reloj = setInterval(() => {
-        btn.textContent = `Grabando… ${Math.min(99, Math.round((performance.now() - t0) / dura * 100))}%`;
-      }, 300);
-
-      await new Promise((ok) => setTimeout(ok, dura));
-      rec.stop();
-      clearInterval(reloj);
-      await terminado;
-
-      const ext = tipo.startsWith("video/mp4") ? "mp4" : "webm";
-      const video = new Blob(trozos, { type: tipo });
+      const { blob, ext } = await grabar((pc) => { btn.textContent = `Grabando… ${pc}%`; });
       const comoSeLlama = `${nombreArchivo()}-1920x1080.${ext}`;
-      bajar(video, comoSeLlama);
-      registrar(video, comoSeLlama);
+      bajar(blob, comoSeLlama);
+      registrar(blob, comoSeLlama);
       decir(ext === "webm" ? "Guardado en WebM: es lo que graba este navegador. Safari lo da en MP4." : "");
     } catch (e) {
       decir("No se pudo grabar: " + e.message);
@@ -729,9 +747,19 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
     const original = btnFinales.textContent;
     try {
       const lista = D.PROGRAMA;
+      const enVideo = document.querySelector("[data-formato-lote]").value === "video";
+      const fondoAntes = estado.fondo;
+
+      // Para grabar hace falta el fondo en movimiento
+      if (enVideo) {
+        estado.fondo = "video";
+        document.querySelectorAll('input[name="fondo"]').forEach((rad) => (rad.checked = rad.value === "video"));
+        try { await vid.play(); } catch { /* bloqueado */ }
+        await revisarBucle();
+      }
+
       for (let i = 0; i < lista.length; i++) {
         const f = lista[i];
-        btnFinales.textContent = `Montando ${i + 1} de ${lista.length}…`;
         avisoFinales.textContent = `${f.dia} · ${f.fase} ${f.categoria} ${f.disciplina}`;
         estado.textos.linea1 = f.fase;
         estado.textos.linea2 = f.categoria.toUpperCase();
@@ -739,7 +767,22 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
         estado.logo = logoDe(f.disciplina);
         reflejar();
         await pintar();
-        registrar(await comoPNG(), `${nombreArchivo()}-${D.LIENZO.w}x${D.LIENZO.h}.png`);
+
+        if (enVideo) {
+          const { blob, ext } = await grabar(
+            (pc) => { btnFinales.textContent = `Grabando ${i + 1} de ${lista.length}… ${pc}%`; });
+          registrar(blob, `${nombreArchivo()}-${D.LIENZO.w}x${D.LIENZO.h}.${ext}`);
+        } else {
+          btnFinales.textContent = `Montando ${i + 1} de ${lista.length}…`;
+          registrar(await comoPNG(), `${nombreArchivo()}-${D.LIENZO.w}x${D.LIENZO.h}.png`);
+        }
+      }
+
+      if (enVideo && fondoAntes !== "video") {
+        estado.fondo = fondoAntes;
+        document.querySelectorAll('input[name="fondo"]').forEach((rad) => (rad.checked = rad.value === fondoAntes));
+        vid.pause();
+        await revisarBucle();
       }
       avisoFinales.textContent = `${lista.length} portadas montadas. Están abajo, en «Generadas».`;
     } catch (e) {
