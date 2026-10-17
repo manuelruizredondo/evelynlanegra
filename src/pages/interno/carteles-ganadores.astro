@@ -30,8 +30,13 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
 
           <div class="pt__grupo">
             <p class="pt__t">Del 4 al 10</p>
-            <textarea data-lista rows="7" placeholder="Un participante por línea:&#10;Nombre, País"></textarea>
-            <p class="pt__pista">Una línea por puesto, con el país tras una coma.</p>
+            <label class="pt__campo">
+              <span>Buscar</span>
+              <input type="search" data-b-lista placeholder="nombre…" />
+            </label>
+            <div data-res-lista></div>
+            <ol class="pt__orden" data-orden></ol>
+            <p class="pt__pista" data-pista-lista></p>
           </div>
 
 
@@ -117,6 +122,19 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
   .pt__reset:hover{border-color:var(--li-tinta)}
   .pt__lienzo canvas{touch-action:none}
   .pt__puesto:first-of-type{border-top:0;padding-top:0}
+  .pt__orden{list-style:none;margin:0;padding:0;display:grid;gap:5px}
+  .pt__orden:empty{display:none}
+  .pt__fila{display:flex;align-items:center;gap:8px;padding:7px 9px;
+    border:1px solid var(--li-linea);border-radius:9px;background:var(--li-alt)}
+  .pt__pos{font-size:.74rem;font-weight:800;color:var(--li-acc);min-width:1.2em}
+  .pt__quien{flex:1;min-width:0;font-size:.76rem;font-weight:600;line-height:1.25;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pt__quien small{display:block;font-weight:400;color:var(--li-suave);font-size:.69rem}
+  .pt__mini{border:1px solid var(--li-linea);background:#fff;border-radius:7px;
+    width:24px;height:24px;line-height:1;font-size:.8rem;color:var(--li-tinta);cursor:pointer;padding:0}
+  .pt__mini:hover{border-color:var(--li-tinta)}
+  .pt__mini[disabled]{opacity:.35;cursor:default}
+
   .pt__num{font-size:.7rem;font-weight:800;color:var(--li-acc);letter-spacing:.06em;
     cursor:pointer;list-style:none;display:flex;align-items:baseline;gap:8px}
   .pt__num::-webkit-details-marker{display:none}
@@ -315,7 +333,85 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
   }, { passive: false });
 
   document.querySelector("[data-titulo]").addEventListener("input", (e) => { estado.titulo = e.target.value; pintar(); });
-  document.querySelector("[data-lista]").addEventListener("input", (e) => { estado.lista = e.target.value; pintar(); });
+  /* ── Del 4 al 10: se eligen buscando, como los puestos del podio ── */
+  const L = P.lista;
+  const TOPE = L.hasta - L.desde + 1;
+  const cajaLista = document.querySelector("[data-b-lista]");
+  const resLista = document.querySelector("[data-res-lista]");
+  const orden = document.querySelector("[data-orden]");
+  const pistaLista = document.querySelector("[data-pista-lista]");
+  let restantes = [];
+
+  // El cartel sigue leyendo una línea por puesto; aquí sólo se arma esa cadena
+  const sincronizarLista = () => {
+    estado.lista = restantes.map((x) => [x.nombre, x.pais].filter(Boolean).join(", ")).join("\n");
+  };
+
+  const pintarOrden = () => {
+    orden.innerHTML = "";
+    restantes.forEach((x, i) => {
+      const li = document.createElement("li");
+      li.className = "pt__fila";
+      li.innerHTML = `<span class="pt__pos">${L.desde + i}</span>
+        <span class="pt__quien"></span>
+        <button type="button" class="pt__mini" data-sube="${i}" title="Subir" ${i === 0 ? "disabled" : ""}>↑</button>
+        <button type="button" class="pt__mini" data-baja="${i}" title="Bajar" ${i === restantes.length - 1 ? "disabled" : ""}>↓</button>
+        <button type="button" class="pt__mini" data-fuera="${i}" title="Quitar">×</button>`;
+      const quien = li.querySelector(".pt__quien");
+      quien.textContent = x.nombre;
+      if (x.pais) {
+        const s = document.createElement("small");
+        s.textContent = x.pais;
+        quien.append(s);
+      }
+      orden.append(li);
+    });
+    pistaLista.textContent = restantes.length
+      ? `${restantes.length} de ${TOPE}. Las flechas cambian el orden.`
+      : `Busca y pulsa para ir llenando del ${L.desde} al ${L.hasta}.`;
+    cajaLista.disabled = restantes.length >= TOPE;
+    sincronizarLista();
+  };
+
+  const yaEsta = (p) => restantes.some((x) => x.id === p["ID participante"])
+    || estado.puestos.some((e) => e.nombre === p["Nombre / equipo"]);
+
+  cajaLista.addEventListener("input", () => {
+    const q = sinTildes(cajaLista.value.trim());
+    if (q.length < 2) return (resLista.innerHTML = "");
+    resLista.innerHTML = fichas
+      .filter((p) => sinTildes(p["Nombre / equipo"] + " " + p["País"] + " " + cat(p)).includes(q))
+      .filter((p) => !yaEsta(p))
+      .slice(0, 6)
+      .map((p) => `<button type="button" class="pt__item" data-fl="${p.__i}">${p["Nombre / equipo"]}
+        <small>${cat(p)}${p["País"] ? " · " + p["País"] : ""}</small></button>`).join("");
+  });
+
+  resLista.addEventListener("click", (ev) => {
+    const b = ev.target.closest("[data-fl]");
+    if (!b || restantes.length >= TOPE) return;
+    const p = fichas[+b.dataset.fl];
+    restantes.push({ id: p["ID participante"], nombre: p["Nombre / equipo"], pais: pais(p) });
+    cajaLista.value = ""; resLista.innerHTML = "";
+    pintarOrden();
+    pintar();
+  });
+
+  orden.addEventListener("click", (ev) => {
+    const b = ev.target.closest("[data-sube],[data-baja],[data-fuera]");
+    if (!b) return;
+    const d = b.dataset;
+    if (d.fuera != null) restantes.splice(+d.fuera, 1);
+    else {
+      const i = +(d.sube ?? d.baja), j = d.sube != null ? i - 1 : i + 1;
+      if (j < 0 || j >= restantes.length) return;
+      [restantes[i], restantes[j]] = [restantes[j], restantes[i]];
+    }
+    pintarOrden();
+    pintar();
+  });
+
+  pintarOrden();
 
   document.querySelector("[data-descargar]").addEventListener("click", () => {
     canvas.toBlob((b) => {
