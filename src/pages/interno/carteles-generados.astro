@@ -17,6 +17,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
 
       <div class="ge__barra">
         <button class="li__btn" type="button" data-generar disabled>Generar carteles</button>
+        <button type="button" class="pt__reset" data-ensayo>Probar con puestos de ejemplo</button>
         <button type="button" class="pt__reset" data-bajar-todo hidden>Descargar todos</button>
         <button type="button" class="pt__reset" data-subir-todo hidden>Guardar en el servidor</button>
         <span class="ge__estado" data-estado>Leyendo la hoja…</span>
@@ -126,6 +127,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
 
   let fichas = [];
   let hechos = [];
+  let ensayo = false;
 
   const btnSubir = document.querySelector("[data-subir-todo]");
 
@@ -342,7 +344,47 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
     btnGenerar.textContent = "Generar carteles";
     parar = false;
     btnTodo.hidden = hechos.length === 0;
-    btnSubir.hidden = hechos.length === 0;
+    // En ensayo no se guarda: los carteles son de mentira y no deben acabar
+    // mezclados con los buenos en el servidor
+    btnSubir.hidden = hechos.length === 0 || ensayo;
+    if (ensayo && hechos.length) {
+      estadoTxt.append(" Son de ensayo: no se pueden guardar en el servidor.");
+    }
+  });
+
+  /* ── Ensayo: puestos inventados, sólo en memoria ──
+     Para ver cómo quedan los carteles antes de que se compita. No escribe
+     nada en la hoja ni en el servidor: en cuanto se recarga la página, se va. */
+  const btnEnsayo = document.querySelector("[data-ensayo]");
+
+  btnEnsayo.addEventListener("click", () => {
+    if (!fichas.length) return;
+    // Las tres pruebas con más gente, para que el ensayo sea corto pero real
+    const porPrueba = new Map();
+    for (const p of fichas) {
+      const k = [p["Disciplina"], p["Categoría"], p["Fase"]].join("\u0001");
+      if (!porPrueba.has(k)) porPrueba.set(k, []);
+      porPrueba.get(k).push(p);
+    }
+    const elegidas = [...porPrueba.values()]
+      .filter((v) => v.length >= 3)
+      .sort((a, b) => b.length - a.length)
+      .slice(0, 3);
+
+    if (!elegidas.length) {
+      estadoTxt.textContent = "No hay ninguna prueba con tres participantes o más.";
+      return;
+    }
+    for (const v of elegidas) v.slice(0, 10).forEach((p, i) => { p["Puesto"] = String(i + 1); });
+
+    ensayo = true;
+    btnGenerar.disabled = false;
+    btnEnsayo.disabled = true;
+    salida.innerHTML = "";
+    hechos = [];
+    btnTodo.hidden = true; btnSubir.hidden = true;
+    estadoTxt.textContent = `Ensayo: puestos inventados en ${elegidas.length} pruebas, ` +
+      "sólo aquí. Ni la hoja ni el servidor se enteran. Recarga para deshacerlo.";
   });
 
   btnSubir.addEventListener("click", async () => {
