@@ -14,14 +14,24 @@ declare(strict_types=1);
 $SECRETO = @include __DIR__ . '/secreto.php';
 
 const ORIGEN = 'https://evelynlanegra.com';   // quién puede llamar
-const CARPETA = __DIR__ . '/subidas';
+
+// Álbumes permitidos. Lista cerrada a propósito: el navegador elige entre
+// estos y no puede inventarse una ruta.
+const ALBUMES = ['subidas', 'portadas'];
+
+function album(): string {
+  $a = (string)($_POST['album'] ?? 'subidas');
+  return in_array($a, ALBUMES, true) ? $a : 'subidas';
+}
+
+function carpeta(): string { return __DIR__ . '/' . album(); }
 
 // La dirección pública se deduce sola: da igual en qué carpeta se suba
 function urlBase(): string {
   $esquema = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
   $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
   $dir = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '/');
-  return $esquema . '://' . $host . $dir . '/subidas';
+  return $esquema . '://' . $host . $dir . '/' . album();
 }
 
 const MAX_BYTES = 314572800; // 300 MB
@@ -29,6 +39,8 @@ const TIPOS = [
   'jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png',
   'webp' => 'image/webp', 'gif' => 'image/gif', 'avif' => 'image/avif',
   'mp4' => 'video/mp4', 'webm' => 'video/webm', 'mov' => 'video/quicktime',
+  // Los ajustes con los que se montó cada portada, para poder rehacerla
+  'json' => 'application/json',
 ];
 
 header('Access-Control-Allow-Origin: ' . ORIGEN);
@@ -54,7 +66,7 @@ if (!ctype_digit($exp) || (int)$exp < time()) salir(401, ['error' => 'El permiso
 if (!is_string($SECRETO) || strlen($SECRETO) < 20) salir(500, ['error' => 'Falta secreto.php en el servidor.']);
 if (!hash_equals(hash_hmac('sha256', $exp, $SECRETO), $sig)) salir(401, ['error' => 'Permiso no válido.']);
 
-if (!is_dir(CARPETA) && !mkdir(CARPETA, 0755, true)) salir(500, ['error' => 'No se pudo crear la carpeta de subidas.']);
+if (!is_dir(carpeta()) && !mkdir(carpeta(), 0755, true)) salir(500, ['error' => 'No se pudo crear la carpeta de subidas.']);
 
 /* ── Deja el nombre en algo seguro: sin rutas, sin tildes, sin dobles extensiones ── */
 function nombreSeguro(string $original, string $ext): string {
@@ -75,13 +87,14 @@ function ficha(string $ruta): array {
     'url'    => urlBase() . '/' . rawurlencode($nombre),
     'bytes'  => filesize($ruta) ?: 0,
     'fecha'  => date('c', filemtime($ruta) ?: time()),
-    'tipo'   => str_starts_with(TIPOS[$ext] ?? '', 'video') ? 'video' : 'imagen',
+    'tipo'   => $ext === 'json' ? 'ajustes'
+              : (str_starts_with(TIPOS[$ext] ?? '', 'video') ? 'video' : 'imagen'),
   ];
 }
 
 function listado(): array {
   $salida = [];
-  foreach (glob(CARPETA . '/*') ?: [] as $ruta) {
+  foreach (glob(carpeta() . '/*') ?: [] as $ruta) {
     if (!is_file($ruta)) continue;
     $ext = strtolower(pathinfo($ruta, PATHINFO_EXTENSION));
     if (!isset(TIPOS[$ext])) continue;
@@ -99,7 +112,7 @@ if ($accion === 'borrar') {
   $nombre = basename((string)($_POST['nombre'] ?? ''));
   $ext = strtolower(pathinfo($nombre, PATHINFO_EXTENSION));
   if ($nombre === '' || !isset(TIPOS[$ext])) salir(400, ['error' => 'Nombre no válido.']);
-  $ruta = CARPETA . '/' . $nombre;
+  $ruta = carpeta() . '/' . $nombre;
   if (!is_file($ruta)) salir(404, ['error' => 'Ese archivo ya no está.']);
   if (!unlink($ruta)) salir(500, ['error' => 'No se pudo borrar.']);
   salir(200, ['ok' => true, 'archivos' => listado()]);
@@ -110,7 +123,7 @@ if ($accion === 'renombrar') {
   $ext = strtolower(pathinfo($nombre, PATHINFO_EXTENSION));
   if ($nombre === '' || !isset(TIPOS[$ext])) salir(400, ['error' => 'Nombre no válido.']);
 
-  $origen = CARPETA . '/' . $nombre;
+  $origen = carpeta() . '/' . $nombre;
   if (!is_file($origen)) salir(404, ['error' => 'Ese archivo ya no está.']);
 
   // La extensión no se toca: se conserva la del archivo original, de modo que
@@ -118,7 +131,7 @@ if ($accion === 'renombrar') {
   $nuevo = nombreSeguro((string)($_POST['nuevo'] ?? ''), $ext);
   if ($nuevo === '.' . $ext || $nuevo === 'archivo.' . $ext) salir(400, ['error' => 'Escribe un nombre.']);
 
-  $destino = CARPETA . '/' . $nuevo;
+  $destino = carpeta() . '/' . $nuevo;
   if ($destino !== $origen && file_exists($destino)) salir(409, ['error' => 'Ya hay un archivo con ese nombre.']);
   if ($destino !== $origen && !rename($origen, $destino)) salir(500, ['error' => 'No se pudo renombrar.']);
 
@@ -138,19 +151,26 @@ if ($accion === 'subir') {
   if ($f['size'] > MAX_BYTES) salir(413, ['error' => 'Máximo 300 MB por archivo.']);
 
   $ext = strtolower(pathinfo((string)$f['name'], PATHINFO_EXTENSION));
-  if (!isset(TIPOS[$ext])) salir(415, ['error' => 'Solo se admiten fotos y vídeos.']);
+  if (!isset(TIPOS[$ext])) salir(415, ['error' => 'Solo se admiten fotos, vídeos y ajustes.']);
 
-  // El contenido real tiene que coincidir con la extensión: un .php renombrado no pasa
-  $real = (new finfo(FILEINFO_MIME_TYPE))->file($f['tmp_name']) ?: '';
-  $familia = explode('/', TIPOS[$ext])[0];
-  if (!str_starts_with($real, $familia . '/')) salir(415, ['error' => 'El contenido no es una foto ni un vídeo.']);
+  // El contenido real tiene que coincidir con la extensión: un .php renombrado no pasa.
+  // En el JSON no vale fiarse de finfo, que según el sistema lo da como texto
+  // plano: se comprueba que de verdad sea JSON.
+  if ($ext === 'json') {
+    $crudo = file_get_contents($f['tmp_name']);
+    if ($crudo === false || json_decode($crudo) === null) salir(415, ['error' => 'El .json no es JSON válido.']);
+  } else {
+    $real = (new finfo(FILEINFO_MIME_TYPE))->file($f['tmp_name']) ?: '';
+    $familia = explode('/', TIPOS[$ext])[0];
+    if (!str_starts_with($real, $familia . '/')) salir(415, ['error' => 'El contenido no es una foto ni un vídeo.']);
+  }
 
   $nombre = nombreSeguro((string)$f['name'], $ext);
-  $destino = CARPETA . '/' . $nombre;
+  $destino = carpeta() . '/' . $nombre;
   for ($i = 2; file_exists($destino); $i++) {
     $nombre = nombreSeguro((string)$f['name'], $ext);
     $nombre = substr($nombre, 0, -strlen($ext) - 1) . '-' . $i . '.' . $ext;
-    $destino = CARPETA . '/' . $nombre;
+    $destino = carpeta() . '/' . $nombre;
   }
 
   if (!move_uploaded_file($f['tmp_name'], $destino)) salir(500, ['error' => 'No se pudo guardar el archivo.']);

@@ -29,8 +29,11 @@ export const REGLA = { x: 616, y: 484, ancho: 691, grosor: 9, dorado: true };
 // para que no parpadeen todos a la vez.
 export const DESTELLOS = [
   // En la punta del asta de la última letra —el palito de la L—, que es el
-  // borde de arriba por la izquierda de su tinta, no la esquina de la caja
-  { anclaje: "finTexto", dx: 0, dy: -2, radio: 17, fase: 0.0 },
+  // borde de arriba por la izquierda de su tinta, no la esquina de la caja.
+  // Va más pequeña que las de la regla y respira despacio: se enciende y se
+  // apaga del todo, pero sin dar un golpe de luz.
+  { anclaje: "finTexto", dx: 0, dy: -2, radio: 11, fase: 0.0,
+    velocidad: 0.55, alfaMin: 0.06, radioMin: 0.45 },
   { anclaje: "regla", px: 0.012, radio: 15, fase: 2.1 },
   { anclaje: "regla", px: 0.78,  radio: 11, fase: 1.1 },
 ];

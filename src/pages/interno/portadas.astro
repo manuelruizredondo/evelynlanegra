@@ -111,10 +111,23 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
           <h2 class="gen__t">Generadas</h2>
           <span class="gen__cuenta" data-cuenta></span>
           <button type="button" class="pt__reset" data-bajar-todo>Descargar todas</button>
+          <button type="button" class="pt__reset" data-subir-todo>Subir todas al servidor</button>
           <button type="button" class="pt__reset" data-vaciar>Vaciar</button>
         </div>
-        <p class="pt__pista">Se guardan mientras no cierres esta pestaña.</p>
+        <p class="pt__pista">Se guardan mientras no cierres esta pestaña. Para que duren,
+          súbelas al servidor.</p>
         <div class="gen__rejilla" data-rejilla></div>
+      </section>
+
+      <section class="gen" data-servidor>
+        <div class="gen__barra">
+          <h2 class="gen__t">En el servidor</h2>
+          <span class="gen__cuenta" data-cuenta-srv></span>
+          <button type="button" class="pt__reset" data-refrescar>Actualizar</button>
+        </div>
+        <p class="pt__pista">Guardadas en el álbum «portadas». Cada una lleva al lado sus
+          ajustes, así que se puede rehacer tal cual.</p>
+        <div class="gen__rejilla" data-rejilla-srv></div>
       </section>
     </div>
   </section>
@@ -241,6 +254,7 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
     fondo: "imagen",
     logoTam: D.FIJOS.logoCaja.lado,
     destellos: true,
+    congelado: false,
     particulas: D.PARTICULAS[0]?.id ?? "",
     fuerza: 1,
   };
@@ -305,7 +319,9 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
       try { await chispas.play(); } catch { /* bloqueado */ }
       seguirFotogramas();
     } else chispas.pause();
-    if (estado.fondo === "video" || estado.particulas) arrancarBucle();
+    // Los destellos también laten, así que piden repintado aunque el fondo
+    // esté quieto y no haya partículas
+    if (estado.fondo === "video" || estado.particulas || estado.destellos) arrancarBucle();
     else { pararBucle(); pintar(); }
   };
 
@@ -484,7 +500,10 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
     }
 
     if (estado.destellos) {
-      const t = estado.fondo === "video" ? performance.now() / 1000 : 1.15;
+      // En pantalla laten siempre, para que se vea el parpadeo. Al exportar
+      // una imagen se congela el reloj, así el PNG sale igual cada vez y no
+      // depende de en qué momento del latido se le dé al botón.
+      const t = estado.congelado ? 1.15 : performance.now() / 1000;
       for (const d of D.DESTELLOS) {
         let x, y;
         if (d.anclaje === "finTexto") {
@@ -495,8 +514,12 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
           x = D.CAJA.x + d.px * D.CAJA.ancho;
           y = D.REGLA.y + D.REGLA.grosor / 2;
         }
-        const onda = 0.5 + 0.5 * Math.sin(t * 1.25 + d.fase);
-        destello(x, y, d.radio * (0.72 + 0.28 * onda), 0.3 + 0.7 * onda);
+        // Onda suave de 0 a 1. Cada destello puede llevar su ritmo y hasta
+        // dónde baja; sin nada puesto, late como siempre.
+        const onda = 0.5 + 0.5 * Math.sin(t * (d.velocidad ?? 1.25) + d.fase);
+        const aMin = d.alfaMin ?? 0.3;
+        const rMin = d.radioMin ?? 0.72;
+        destello(x, y, d.radio * (rMin + (1 - rMin) * onda), aMin + (1 - aMin) * onda);
       }
     }
 
@@ -558,7 +581,7 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
 
   document.querySelector("[data-destellos]").addEventListener("change", (ev) => {
     estado.destellos = ev.target.checked;
-    pintar();
+    revisarBucle();
   });
 
   document.querySelector("[data-particulas]").addEventListener("change", (ev) => {
@@ -622,10 +645,17 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
     return `${raiz}-${n}${ext}`;
   };
 
+  // Los ajustes con los que se montó, para poder rehacerla luego
+  const ajustesAhora = () => ({
+    textos: { ...estado.textos }, logo: estado.logo, logoTam: estado.logoTam,
+    fondo: estado.fondo, regla: estado.regla, destellos: estado.destellos,
+    particulas: estado.particulas, fuerza: estado.fuerza,
+  });
+
   const registrar = (blob, nombrePedido) => {
     const nombre = nombreLibre(nombrePedido);
     const url = URL.createObjectURL(blob);
-    const ficha = { blob, nombre, url };
+    const ficha = { blob, nombre, url, ajustes: ajustesAhora() };
     generadas.unshift(ficha);
 
     const caja = document.createElement("div");
@@ -639,12 +669,25 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
     pie.innerHTML = `<p class="gen__n"></p><p class="gen__d"></p>
       <div class="gen__acc">
         <a class="gen__a" download href="${url}">Descargar</a>
+        <button type="button" class="gen__a" data-subir>Subir</button>
         <button type="button" class="gen__a" data-quitar>Quitar</button>
       </div>`;
     pie.querySelector(".gen__n").textContent = nombre;
     pie.querySelector(".gen__d").textContent =
       `${bonito(blob.size)} · ${new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}`;
     pie.querySelector("[download]").setAttribute("download", nombre);
+    pie.querySelector("[data-subir]").addEventListener("click", async (ev) => {
+      const b = ev.currentTarget;
+      b.disabled = true; b.textContent = "Subiendo…";
+      try {
+        await guardarEnServidor(ficha);
+        b.textContent = "Guardada";
+        await listarServidor();
+      } catch (e) {
+        b.disabled = false; b.textContent = "Subir";
+        decir("No se pudo subir: " + e.message);
+      }
+    });
     pie.querySelector("[data-quitar]").addEventListener("click", () => {
       URL.revokeObjectURL(url);
       generadas.splice(generadas.indexOf(ficha), 1);
@@ -667,6 +710,159 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
     }
     b.disabled = false;
   });
+
+  /* ── Servidor de medios: las portadas van al álbum «portadas» ── */
+  const ALBUM = "portadas";
+  let permiso = null;
+
+  const permisoVigente = async () => {
+    const ahora = Math.floor(Date.now() / 1000);
+    if (!permiso || Number(permiso.exp) - ahora < 60) {
+      const r = await fetch("/.netlify/functions/media-permiso", {
+        method: "POST", headers: { "content-type": "application/json" },
+        body: "{}", credentials: "same-origin",
+      });
+      const data = await r.json().catch(() => null);
+      if (!data) throw new Error(r.status === 404
+        ? "Las funciones de Netlify no están disponibles aquí."
+        : `El servidor respondió ${r.status} sin datos.`);
+      if (!r.ok) throw new Error(data.error || "Error inesperado");
+      permiso = data;
+    }
+    return permiso;
+  };
+
+  const alServidor = async (accion, extra = {}) => {
+    const p = await permisoVigente();
+    const fd = new FormData();
+    fd.append("accion", accion);
+    fd.append("album", ALBUM);
+    fd.append("exp", p.exp);
+    fd.append("sig", p.sig);
+    for (const [k, v] of Object.entries(extra)) fd.append(k, v);
+    const r = await fetch(p.endpoint, { method: "POST", body: fd });
+    const data = await r.json().catch(() => null);
+    if (!data) throw new Error(`${p.endpoint} respondió ${r.status} sin datos.`);
+    if (!r.ok) throw new Error(data.error || `El servidor respondió ${r.status}`);
+    return data;
+  };
+
+  // Sube la portada y, al lado, un .json con los ajustes para poder rehacerla
+  const guardarEnServidor = async (ficha) => {
+    const subida = await alServidor("subir", {
+      archivo: new File([ficha.blob], ficha.nombre, { type: ficha.blob.type }),
+    });
+    const guardado = subida.archivo?.nombre ?? ficha.nombre;
+    const raiz = guardado.replace(/\.[^.]+$/, "");
+    const ajustes = JSON.stringify({ ...ficha.ajustes, archivo: guardado }, null, 1);
+    await alServidor("subir", {
+      archivo: new File([ajustes], `${raiz}.json`, { type: "application/json" }),
+    });
+    return guardado;
+  };
+
+  const rejillaSrv = document.querySelector("[data-rejilla-srv]");
+  const cuentaSrv = document.querySelector("[data-cuenta-srv]");
+  let enServidor = [];
+
+  const listarServidor = async () => {
+    try {
+      const data = await alServidor("listar");
+      enServidor = data.archivos ?? [];
+    } catch (e) {
+      cuentaSrv.textContent = e.message;
+      return;
+    }
+    const ajustes = new Map(enServidor.filter((a) => a.tipo === "ajustes")
+      .map((a) => [a.nombre.replace(/\.json$/, ""), a]));
+    const piezas = enServidor.filter((a) => a.tipo !== "ajustes");
+
+    cuentaSrv.textContent = piezas.length
+      ? `${piezas.length} ${piezas.length === 1 ? "portada guardada" : "portadas guardadas"}`
+      : "Todavía no hay ninguna.";
+
+    rejillaSrv.innerHTML = "";
+    for (const a of piezas) {
+      const raiz = a.nombre.replace(/\.[^.]+$/, "");
+      const caja = document.createElement("div");
+      caja.className = "gen__ficha";
+      caja.innerHTML = `
+        ${a.tipo === "video"
+          ? `<video class="gen__mini" src="${a.url}" muted loop playsinline></video>`
+          : `<img class="gen__mini" src="${a.url}" alt="" loading="lazy" />`}
+        <div class="gen__pie">
+          <p class="gen__n"></p>
+          <p class="gen__d"></p>
+          <div class="gen__acc">
+            <a class="gen__a" href="${a.url}" target="_blank" rel="noopener">Ver</a>
+            <a class="gen__a" href="${a.url}" download>Descargar</a>
+          </div>
+        </div>`;
+      caja.querySelector(".gen__n").textContent = a.nombre;
+      caja.querySelector(".gen__d").textContent =
+        `${bonito(a.bytes)} · ${new Date(a.fecha).toLocaleDateString("es-ES", { day: "numeric", month: "short" })}`;
+
+      const conAjustes = ajustes.get(raiz);
+      if (conAjustes) {
+        const b = document.createElement("button");
+        b.type = "button"; b.className = "gen__a"; b.textContent = "Rehacer";
+        b.addEventListener("click", async () => {
+          b.disabled = true;
+          try {
+            const r = await fetch(conAjustes.url, { cache: "no-store" });
+            aplicarAjustes(await r.json());
+            decir(`Cargados los ajustes de ${a.nombre}.`);
+          } catch (e) {
+            decir("No se pudieron leer los ajustes: " + e.message);
+          } finally { b.disabled = false; }
+        });
+        caja.querySelector(".gen__acc").append(b);
+      }
+      rejillaSrv.append(caja);
+    }
+  };
+
+  // Devuelve el creador al estado con el que se montó aquella portada
+  const aplicarAjustes = (a) => {
+    if (!a || typeof a !== "object") return;
+    Object.assign(estado.textos, a.textos ?? {});
+    if (a.logo) estado.logo = a.logo;
+    if (a.logoTam) estado.logoTam = a.logoTam;
+    if (a.fondo) estado.fondo = a.fondo;
+    if (typeof a.regla === "boolean") estado.regla = a.regla;
+    if (typeof a.destellos === "boolean") estado.destellos = a.destellos;
+    if (typeof a.particulas === "string") estado.particulas = a.particulas;
+    if (typeof a.fuerza === "number") estado.fuerza = a.fuerza;
+
+    reflejar();
+    document.querySelector("[data-regla]").checked = estado.regla;
+    document.querySelector("[data-destellos]").checked = estado.destellos;
+    document.querySelector("[data-particulas]").value = estado.particulas;
+    const rf = document.querySelector("[data-fuerza]");
+    rf.value = Math.round(estado.fuerza * 100);
+    document.querySelector("[data-fuerza-val]").textContent = `${rf.value} %`;
+    document.querySelectorAll('input[name="fondo"]').forEach((rad) => (rad.checked = rad.value === estado.fondo));
+    revisarBucle();
+  };
+
+  document.querySelector("[data-subir-todo]").addEventListener("click", async (ev) => {
+    const b = ev.currentTarget;
+    b.disabled = true;
+    const original = b.textContent;
+    try {
+      const pendientes = [...generadas].reverse();
+      for (let i = 0; i < pendientes.length; i++) {
+        b.textContent = `Subiendo ${i + 1} de ${pendientes.length}…`;
+        await guardarEnServidor(pendientes[i]);
+      }
+      await listarServidor();
+      decir(`${pendientes.length} portadas guardadas en el servidor.`);
+    } catch (e) {
+      decir("No se pudo subir: " + e.message);
+    } finally { b.disabled = false; b.textContent = original; }
+  });
+
+  document.querySelector("[data-refrescar]").addEventListener("click", listarServidor);
 
   document.querySelector("[data-vaciar]").addEventListener("click", () => {
     generadas.forEach((g) => URL.revokeObjectURL(g.url));
@@ -758,11 +954,11 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
 
   btn.addEventListener("click", () => {
     if (estado.fondo === "video") return grabarVideo();
-    canvas.toBlob((blob) => {
+    comoPNG().then((blob) => {
       const comoSeLlama = `${nombreArchivo()}-1920x1080.png`;
       bajar(blob, comoSeLlama);
       registrar(blob, comoSeLlama);
-    }, "image/png");
+    });
   });
 
   /* ── Portadas de todas las finales, leídas de la hoja ── */
@@ -785,7 +981,13 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
     });
   };
 
-  const comoPNG = () => new Promise((listo) => canvas.toBlob(listo, "image/png"));
+  // Congela el latido, pinta ese fotograma y devuelve el PNG
+  const comoPNG = async () => {
+    estado.congelado = true;
+    await pintar();
+    try { return await new Promise((listo) => canvas.toBlob(listo, "image/png")); }
+    finally { estado.congelado = false; }
+  };
 
   let montando = false;
 
@@ -860,5 +1062,5 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
     cargar(estado.logo).catch(() => {}),
     cargar(D.FIJOS.sello.src).catch(() => {}),
     cargar(D.FIJOS.hotel.src).catch(() => {}),
-  ]).then(pintar).catch(pintar).then(revisarBucle);
+  ]).then(pintar).catch(pintar).then(revisarBucle).then(listarServidor);
 </script>
