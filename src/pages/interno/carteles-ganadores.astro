@@ -18,6 +18,14 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
       <div class="pt">
         <div class="pt__panel">
           <div class="pt__grupo">
+            <p class="pt__t">Cartel</p>
+            <div class="pt__tipos" data-tipos>
+              <button type="button" class="pt__tipo pt__tipo--on" data-cartel="podio">Podio 1·2·3</button>
+              <button type="button" class="pt__tipo" data-cartel="top10">Top 10</button>
+            </div>
+          </div>
+
+          <div class="pt__grupo">
             <p class="pt__t">Título</p>
             <label class="pt__campo">
               <span>Categoría</span>
@@ -122,6 +130,12 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
   .pt__reset:hover{border-color:var(--li-tinta)}
   .pt__lienzo canvas{touch-action:none}
   .pt__puesto:first-of-type{border-top:0;padding-top:0}
+  .pt__tipos{display:inline-flex;gap:3px;padding:3px;border-radius:999px;
+    background:var(--li-alt);border:1px solid var(--li-linea)}
+  .pt__tipo{border:0;background:none;border-radius:999px;padding:7px 15px;
+    font:inherit;font-size:.78rem;font-weight:700;color:var(--li-suave);cursor:pointer}
+  .pt__tipo--on{background:#fff;color:var(--li-tinta);box-shadow:0 1px 3px rgba(0,0,0,.09)}
+
   .pt__orden{list-style:none;margin:0;padding:0;display:grid;gap:5px}
   .pt__orden:empty{display:none}
   .pt__fila{display:flex;align-items:center;gap:8px;padding:7px 9px;
@@ -167,7 +181,31 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
     lista: "",
   };
 
-  const pintar = () => M.pintarPodio(ctx, estado);
+  estado.cartel = "podio";
+
+  // El top 10 junta el podio y la lista de abajo en una sola tabla
+  const losDiez = () => [
+    ...estado.puestos.map((e, i) => ({
+      puesto: i + 1, nombre: e.nombre, pais: e.pais, foto: e.foto, duo: e.duo,
+    })).filter((x) => x.nombre),
+    ...restantes.map((x, i) => ({
+      puesto: estado.puestos.length + 1 + i,
+      nombre: x.nombre, pais: x.pais, foto: x.foto, duo: x.duo,
+    })),
+  ];
+
+  const pintar = () => estado.cartel === "top10"
+    ? M.pintarTop10(ctx, { titulo: estado.titulo, puestos: losDiez() })
+    : M.pintarPodio(ctx, estado);
+
+  document.querySelector("[data-tipos]").addEventListener("click", (ev) => {
+    const b = ev.target.closest("[data-cartel]");
+    if (!b) return;
+    estado.cartel = b.dataset.cartel;
+    document.querySelectorAll("[data-cartel]").forEach((x) =>
+      x.classList.toggle("pt__tipo--on", x === b));
+    pintar();
+  });
 
   /* ── Panel de los tres puestos ── */
   const cont = document.querySelector("[data-puestos]");
@@ -286,6 +324,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
   };
   // Qué círculo hay bajo el puntero. De delante atrás: el del ganador pisa a los otros.
   const puestoEn = (p) => {
+    if (estado.cartel !== "podio") return -1;
     for (const i of [0, 1, 2]) {
       const d = P.puestos[i];
       if (estado.puestos[i].foto && Math.hypot(p.x - d.cx, p.y - d.cy) <= radioFoto(d.radio * 2.2)) return i;
@@ -391,10 +430,15 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
     const b = ev.target.closest("[data-fl]");
     if (!b || restantes.length >= TOPE) return;
     const p = fichas[+b.dataset.fl];
-    restantes.push({ id: p["ID participante"], nombre: p["Nombre / equipo"], pais: pais(p) });
+    const ficha = { id: p["ID participante"], nombre: p["Nombre / equipo"], pais: pais(p),
+                    duo: M.esDuo(p), foto: null };
+    restantes.push(ficha);
     cajaLista.value = ""; resLista.innerHTML = "";
     pintarOrden();
     pintar();
+    // La foto hace falta para el cartel del top 10; llega cuando llegue
+    const u = urlFoto(p);
+    if (u) cargar(u).then((im) => { ficha.foto = im; pintar(); }).catch(() => {});
   });
 
   orden.addEventListener("click", (ev) => {
@@ -417,7 +461,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
     canvas.toBlob((b) => {
       const a = document.createElement("a");
       a.href = URL.createObjectURL(b);
-      a.download = `${M.nombreArchivo(estado.titulo)}-podio.png`;
+      a.download = `${M.nombreArchivo(estado.titulo)}-${estado.cartel}.png`;
       a.click();
       setTimeout(() => URL.revokeObjectURL(a.href), 4000);
     }, "image/png");
