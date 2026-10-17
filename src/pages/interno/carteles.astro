@@ -348,6 +348,19 @@ const datos = JSON.stringify({ ...CARTEL, HOJA, FASES, BANDERAS, ES_EN });
   const aRuta = (x) => (x || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "")
     .toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
 
+  /* Las fotos llegan con un año de caché y el nombre no cambia al volver a
+     subirlas reencuadradas, así que se revalidan: 304 si no han cambiado. */
+  const frescas = {};
+  const cargarFresca = async (url) => {
+    if (frescas[url]) return frescas[url];
+    const r = await fetch(url, { cache: "no-cache" });
+    if (!r.ok) throw new Error(String(r.status));
+    const im = new Image();
+    im.src = URL.createObjectURL(await r.blob());
+    await im.decode();
+    return (frescas[url] = im);
+  };
+
   const urlsFoto = (p) => {
     const foto = (p["Foto"] || "").trim();
     if (!foto) return [];
@@ -396,7 +409,7 @@ const datos = JSON.stringify({ ...CARTEL, HOJA, FASES, BANDERAS, ES_EN });
     if (candidatas.length) {
       estado.foto = null;
       for (const u of candidatas) {
-        const im = await cargar(u).catch(() => null);
+        const im = await cargarFresca(u).catch(() => null);
         if (im) { estado.foto = im; break; }
       }
       estadoTxt.textContent = estado.foto ? ""
