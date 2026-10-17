@@ -164,10 +164,16 @@ export function crearPodio(C) {
   };
 
   /* El aro del archivo son tres anillos dorados: sobre sus 729 px de ancho
-     caen en los radios 325,5 · 346,5 · 361,5, con 4 px de grueso. Para el
-     rectángulo se calcan esas mismas distancias, a escala, con las esquinas
-     redondeadas, para que los dos marcos se parezcan. */
-  const ANILLOS = [325.5, 346.5, 361.5].map((x) => (x - 327) / 327);
+     caen en los radios 325,5 · 346,5 · 361,5, con 4 px de grueso. Y no son
+     concéntricos ni perfectos: están trazados a mano, cada uno un poco
+     torcido. El rectángulo calca las tres distancias y también ese desajuste,
+     girando cada filo un par de grados y moviéndolo un pelín, para que no
+     parezca hecho con escuadra. */
+  const ANILLOS = [
+    { sep: (325.5 - 327) / 327, giro: -1.7, dx: 0.004, dy: -0.006 },
+    { sep: (346.5 - 327) / 327, giro: 1.2, dx: -0.005, dy: 0.004 },
+    { sep: (361.5 - 327) / 327, giro: -0.6, dx: 0.003, dy: 0.005 },
+  ];
   const GRUESO = 4 / 327;
 
   const marcoEn = (ctx, cx, cy, enc, aro) => {
@@ -179,11 +185,15 @@ export function crearPodio(C) {
     }
     ctx.save();
     ctx.lineJoin = "round";
-    for (const sep of ANILLOS) {
-      caminoEncuadre(ctx, cx, cy, enc, enc.medioAncho * sep);
-      ctx.lineWidth = Math.max(1.5, enc.medioAncho * GRUESO);
-      ctx.strokeStyle = oro(ctx, cy - enc.medioAlto, cy + enc.medioAlto);
+    ctx.lineWidth = Math.max(1.5, enc.medioAncho * GRUESO);
+    for (const a of ANILLOS) {
+      ctx.save();
+      ctx.translate(cx + enc.medioAncho * a.dx, cy + enc.medioAncho * a.dy);
+      ctx.rotate(a.giro * Math.PI / 180);
+      caminoEncuadre(ctx, 0, 0, enc, enc.medioAncho * a.sep);
+      ctx.strokeStyle = oro(ctx, -enc.medioAlto, enc.medioAlto);
       ctx.stroke();
+      ctx.restore();
     }
     ctx.restore();
   };
