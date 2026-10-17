@@ -268,6 +268,27 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
   chispas.style.cssText = vid.style.cssText;
   document.body.appendChild(chispas);
 
+  /* Al dar la vuelta el bucle, el vídeo se queda un fotograma sin entregar
+     imagen y la capa desaparece de golpe: como aporta casi todo el brillo, se
+     ve como un fogonazo. Se copia cada fotograma bueno a un lienzo aparte y es
+     ese el que se pinta, así en el hueco se repite el último en vez de nada.
+     requestVideoFrameCallback sólo avisa cuando hay fotograma nuevo de verdad. */
+  const capa = document.createElement("canvas");
+  capa.width = D.LIENZO.w; capa.height = D.LIENZO.h;
+  const capaCtx = capa.getContext("2d");
+  let capaLista = false, capaPedida = false;
+
+  const seguirFotogramas = () => {
+    if (!chispas.requestVideoFrameCallback || capaPedida) return;
+    capaPedida = true;
+    const paso = () => {
+      capaCtx.drawImage(chispas, 0, 0, capa.width, capa.height);
+      capaLista = true;
+      chispas.requestVideoFrameCallback(paso);
+    };
+    chispas.requestVideoFrameCallback(paso);
+  };
+
   let bucle = null;
   const arrancarBucle = () => {
     if (bucle) return;
@@ -280,8 +301,9 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
   const revisarBucle = async () => {
     if (estado.particulas) {
       const quiero = fuenteDe(estado.particulas);
-      if (!chispas.src.endsWith(quiero)) chispas.src = quiero;
+      if (!chispas.src.endsWith(quiero)) { chispas.src = quiero; capaLista = false; }
       try { await chispas.play(); } catch { /* bloqueado */ }
+      seguirFotogramas();
     } else chispas.pause();
     if (estado.fondo === "video" || estado.particulas) arrancarBucle();
     else { pararBucle(); pintar(); }
@@ -412,11 +434,13 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
 
     // Partículas por encima del fondo y por debajo del logo y los textos, para
     // que no les quiten legibilidad. «screen» hace transparente el negro.
-    if (estado.particulas && chispas.readyState >= 2) {
+    if (estado.particulas && (capaLista || chispas.readyState >= 2)) {
       ctx.save();
       ctx.globalCompositeOperation = "screen";
       ctx.globalAlpha = estado.fuerza;
-      ctx.drawImage(chispas, 0, 0, D.LIENZO.w, D.LIENZO.h);
+      // El lienzo intermedio si lo hay; si el navegador no sabe avisar de los
+      // fotogramas, se tira directamente del vídeo.
+      ctx.drawImage(capaLista ? capa : chispas, 0, 0, D.LIENZO.w, D.LIENZO.h);
       ctx.restore();
     }
 
