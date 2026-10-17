@@ -26,18 +26,24 @@ export const leerGalleta = (cabecera, nombre = COOKIE) => {
   return null;
 };
 
-export const sesionValida = (req) => {
+// Devuelve el papel de la sesión («todo» o «galeria») o null si no hay.
+export const papelDe = (req) => {
   const secreto = process.env.INTERNO_SECRET ?? process.env.MEDIA_SECRET;
-  if (!secreto) return false;
+  if (!secreto) return null;
   const valor = leerGalleta(req.headers.get("cookie"));
-  if (!valor) return false;
-  const corte = valor.lastIndexOf(".");
-  if (corte < 0) return false;
-  const exp = valor.slice(0, corte), firma = valor.slice(corte + 1);
-  if (!/^\d+$/.test(exp) || Number(exp) <= Math.floor(Date.now() / 1000)) return false;
-  return iguales(firma, createHmac("sha256", secreto).update(`${ETIQUETA}:${exp}`).digest("hex"));
+  if (!valor) return null;
+  const trozos = valor.split(".");
+  if (trozos.length !== 3) return null;
+  const [exp, papel, firma] = trozos;
+  if (!/^\d+$/.test(exp) || Number(exp) <= Math.floor(Date.now() / 1000)) return null;
+  if (!/^[a-z]+$/.test(papel)) return null;
+  const esperada = createHmac("sha256", secreto).update(`${ETIQUETA}:${exp}:${papel}`).digest("hex");
+  return iguales(firma, esperada) ? papel : null;
 };
 
-// Deja pasar a quien venga con la sesión del borde o con la contraseña.
+export const sesionValida = (req) => papelDe(req) !== null;
+
+/* Sólo la sesión completa, o la contraseña a pelo, dan permisos de escritura.
+   La llave de galería es de mirar: no puede subir ni borrar nada. */
 export const autorizado = (req, claveEnviada) =>
-  sesionValida(req) || iguales(claveEnviada, process.env.LISTA_PASSWORD ?? "");
+  papelDe(req) === "todo" || iguales(claveEnviada, process.env.LISTA_PASSWORD ?? "");

@@ -1,0 +1,123 @@
+---
+import Base from "../../layouts/Base.astro";
+/* Vista de sólo mirar: lo ya publicado en el servidor, portadas y carteles.
+   No lleva la barra del área privada a propósito — quien entra aquí no tiene
+   por qué ver que existen los creadores ni los formularios. Y tampoco le
+   serviría: la puerta de /interno/ le devuelve a esta página. */
+---
+<Base title="Galería · uso interno" description="Portadas y carteles publicados." noindex={true}>
+  <section class="li">
+    <div class="li__ancho">
+      <p class="li__kicker">La Negra World Championship</p>
+      <h1 class="li__h1">Galería</h1>
+      <p class="li__intro">Portadas y carteles ya publicados. Pulsa en cualquiera para verlo
+        a tamaño completo, o descárgalo.</p>
+
+      <section class="ge__bloque">
+        <div class="ge__barra">
+          <h2 class="ge__h2">Portadas</h2>
+          <span class="ge__estado" data-cuenta-portadas>Cargando…</span>
+          <div class="ge__filtro" data-filtro-portadas>
+            <button type="button" class="ge__f ge__f--on" data-ver-tipo="">Todas</button>
+            <button type="button" class="ge__f" data-ver-tipo="imagen">Imágenes</button>
+            <button type="button" class="ge__f" data-ver-tipo="video">Vídeos</button>
+          </div>
+        </div>
+        <div class="ge__rejilla" data-rejilla-portadas></div>
+      </section>
+
+      <section class="ge__bloque">
+        <div class="ge__barra">
+          <h2 class="ge__h2">Carteles</h2>
+          <span class="ge__estado" data-cuenta-carteles>Cargando…</span>
+          <div class="ge__filtro" data-filtro-carteles>
+            <button type="button" class="ge__f ge__f--on" data-ver-tipo="">Todos</button>
+            <button type="button" class="ge__f" data-ver-tipo="imagen">Imágenes</button>
+            <button type="button" class="ge__f" data-ver-tipo="video">Vídeos</button>
+          </div>
+        </div>
+        <div class="ge__rejilla" data-rejilla-carteles></div>
+      </section>
+
+      <p class="li__pie"><a href="?salir">Salir</a></p>
+    </div>
+  </section>
+</Base>
+
+<div class="ge__visor" data-visor hidden>
+  <button type="button" class="ge__cerrar" data-cerrar aria-label="Cerrar">×</button>
+  <div class="ge__visor-caja" data-visor-caja></div>
+</div>
+
+<style is:global>
+  .li{--li-tinta:#15151a;--li-suave:#6d6d76;--li-linea:#e4e4e8;--li-fondo:#fff;--li-alt:#f6f6f8;--li-acc:#ce0306;
+    background:var(--li-fondo);color:var(--li-tinta);padding:calc(var(--header-h) + 8px) 0 70px;min-height:100vh}
+  html,body{background:#fff !important}
+  .li__ancho{max-width:var(--maxw);margin-inline:auto;padding-inline:clamp(18px,4vw,34px)}
+  .li__kicker{margin:0 0 6px;font-size:.72rem;font-weight:800;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--li-acc)}
+  .li__h1{color:var(--li-tinta);margin:0 0 10px;font-size:clamp(1.7rem,3.5vw,2.4rem);line-height:1.05}
+  .li__intro{margin:0 0 30px;color:var(--li-suave);font-size:.9rem;max-width:60ch}
+  .li__pie{margin:44px 0 0;font-size:.8rem}
+  .li__pie a{color:var(--li-suave)}
+
+  /* El menú del sitio lleva un enlace al área privada. Aquí sobra: quien entra
+     con la llave de galería no tiene por qué saber que existe, y además la
+     puerta se lo devolvería. El candado de verdad está en el borde; esto es
+     sólo no enseñar la puerta. */
+  .mobile-menu__privada{display:none !important}
+
+  .ge__bloque{margin:0 0 42px}
+  .ge__barra{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 16px}
+  .ge__h2{margin:0;font-size:1.05rem;font-weight:800;color:var(--li-tinta)}
+  .ge__estado{color:var(--li-suave);font-size:.82rem}
+  .ge__filtro{display:inline-flex;gap:3px;padding:3px;border-radius:999px;
+    background:var(--li-alt);border:1px solid var(--li-linea);margin-left:auto}
+  .ge__f{border:0;background:none;border-radius:999px;padding:5px 13px;
+    font:inherit;font-size:.74rem;font-weight:600;color:var(--li-suave);cursor:pointer}
+  .ge__f--on{background:#fff;color:var(--li-tinta);box-shadow:0 1px 3px rgba(0,0,0,.09)}
+
+  .ge__rejilla{display:grid;gap:20px;grid-template-columns:repeat(auto-fill,minmax(236px,1fr))}
+  .ge__ficha{border:1px solid var(--li-linea);border-radius:14px;overflow:hidden;background:#fff;
+    display:flex;flex-direction:column}
+  .ge__lienzo{display:block;width:100%;height:auto;background:#06202b;cursor:zoom-in}
+  .ge__pie{padding:11px 13px 13px;display:grid;gap:8px}
+  .ge__t{margin:0;font-size:.78rem;font-weight:700;line-height:1.3;word-break:break-word}
+  .ge__sub{margin:0;color:var(--li-suave);font-size:.72rem}
+  .ge__acciones{display:flex;gap:7px}
+  .ge__a{flex:1;text-align:center;text-decoration:none;background:var(--li-alt);
+    border:1px solid var(--li-linea);border-radius:8px;padding:7px 9px;
+    font:inherit;font-size:.74rem;font-weight:600;color:var(--li-tinta);cursor:pointer}
+  .ge__a:hover{border-color:var(--li-tinta);text-decoration:none}
+
+  .ge__visor{position:fixed;inset:0;z-index:4000;background:rgba(8,8,12,.88);
+    display:flex;align-items:center;justify-content:center;padding:26px}
+  .ge__visor[hidden]{display:none}
+  .ge__visor-caja{display:flex;align-items:center;justify-content:center;max-width:100%;max-height:100%}
+  .ge__visor img,.ge__visor video{max-width:min(100%,1100px);max-height:100%;
+    border-radius:10px;display:block;background:#000}
+  .ge__cerrar{position:fixed;top:18px;right:20px;border:0;border-radius:999px;width:38px;height:38px;
+    background:#fff;color:#15151a;font-size:1.1rem;font-weight:700;cursor:pointer;line-height:1}
+</style>
+
+<script>
+  import { crearGaleria } from "../../scripts/galeria.mjs";
+
+  // Un visor para las dos rejillas
+  const visor = document.querySelector("[data-visor]");
+  const visorCaja = document.querySelector("[data-visor-caja]");
+
+  for (const [album, sufijo] of [["portadas", "portadas"], ["carteles", "carteles"]]) {
+    const g = crearGaleria({
+      album,
+      soloLectura: true,
+      nodos: {
+        rejilla: document.querySelector(`[data-rejilla-${sufijo}]`),
+        cuenta: document.querySelector(`[data-cuenta-${sufijo}]`),
+        filtro: document.querySelector(`[data-filtro-${sufijo}]`),
+        visor, visorCaja,
+      },
+    });
+    g.listar();
+  }
+</script>

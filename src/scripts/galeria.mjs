@@ -6,7 +6,10 @@
 export const bonito = (b) => b > 1048576 ? (b / 1048576).toFixed(1) + " MB"
                                          : Math.max(1, Math.round(b / 1024)) + " KB";
 
-export function crearGaleria({ album, nodos, alRehacer }) {
+/* «soloLectura» cambia de dónde salen los datos: en vez de pedir un permiso
+   de subida —que vale igual para subir y para borrar— se llama a una función
+   de Netlify que pregunta por nosotros y devuelve sólo la lista. */
+export function crearGaleria({ album, nodos, alRehacer, soloLectura = false }) {
   const { rejilla, cuenta, filtro, visor, visorCaja } = nodos;
   let permiso = null;
   let enServidor = [];
@@ -47,6 +50,7 @@ export function crearGaleria({ album, nodos, alRehacer }) {
 
   /* ── Subir: la pieza y, al lado, un .json con cómo se hizo ── */
   const subir = async (blob, nombre, ajustes) => {
+    if (soloLectura) throw new Error("Esta vista es de sólo lectura.");
     const subida = await pedir("subir", { archivo: new File([blob], nombre, { type: blob.type }) });
     const guardado = subida.archivo?.nombre ?? nombre;
     if (ajustes) {
@@ -127,9 +131,22 @@ export function crearGaleria({ album, nodos, alRehacer }) {
     }
   };
 
+  const listarDeLejos = async () => {
+    const r = await fetch("/.netlify/functions/galeria", {
+      method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ album }), credentials: "same-origin",
+    });
+    const data = await r.json().catch(() => null);
+    if (!data) throw new Error(r.status === 404
+      ? "Las funciones de Netlify no están disponibles aquí."
+      : `El servidor respondió ${r.status} sin datos.`);
+    if (!r.ok) throw new Error(data.error || "Error inesperado");
+    return data;
+  };
+
   const listar = async () => {
     try {
-      const data = await pedir("listar");
+      const data = soloLectura ? await listarDeLejos() : await pedir("listar");
       enServidor = data.archivos ?? [];
     } catch (e) {
       cuenta.textContent = e.message;

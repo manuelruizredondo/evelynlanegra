@@ -11,6 +11,12 @@ const COOKIE = "interno";
 const HORAS = 12;
 const ETIQUETA = "interno";       // separador de dominio de la firma
 
+/* Dos llaves distintas, con permisos distintos:
+   «todo»    — LISTA_PASSWORD, entra en todo el área privada.
+   «galeria» — GALERIA_PASSWORD, sólo ve lo ya publicado en el servidor; ni
+               los creadores, ni los formularios, ni las fotos. */
+const SOLO_GALERIA = "/interno/galeria/";
+
 // Netlify Edge expone Netlify.env; en Deno y en Node se lee de otro sitio.
 // Así la misma función se puede ejercitar fuera del borde.
 export const entorno = (k) =>
@@ -45,18 +51,22 @@ export const leerGalleta = (cabecera, nombre) => {
 };
 
 // ¿La galleta está bien firmada y sin caducar?
-export const galletaValida = async (valor, secreto) => {
-  if (!valor) return false;
-  const corte = valor.lastIndexOf(".");
-  if (corte < 0) return false;
-  const exp = valor.slice(0, corte), firma = valor.slice(corte + 1);
-  if (!/^\d+$/.test(exp) || Number(exp) <= Math.floor(Date.now() / 1000)) return false;
-  return iguales(firma, await firmar(`${ETIQUETA}:${exp}`, secreto));
+// La galleta lleva caducidad y papel, los dos firmados: «exp.papel.firma»
+export const leerSesion = async (valor, secreto) => {
+  if (!valor) return null;
+  const trozos = valor.split(".");
+  if (trozos.length !== 3) return null;
+  const [exp, papel, firma] = trozos;
+  if (!/^\d+$/.test(exp) || Number(exp) <= Math.floor(Date.now() / 1000)) return null;
+  if (!/^[a-z]+$/.test(papel)) return null;
+  if (!iguales(firma, await firmar(`${ETIQUETA}:${exp}:${papel}`, secreto))) return null;
+  return { exp, papel };
 };
 
-export const nuevaGalleta = async (secreto) => {
+export const nuevaGalleta = async (secreto, papel) => {
   const exp = String(Math.floor(Date.now() / 1000) + HORAS * 3600);
-  return `${COOKIE}=${exp}.${await firmar(`${ETIQUETA}:${exp}`, secreto)}` +
+  const firma = await firmar(`${ETIQUETA}:${exp}:${papel}`, secreto);
+  return `${COOKIE}=${exp}.${papel}.${firma}` +
     `; Path=/; Max-Age=${HORAS * 3600}; HttpOnly; Secure; SameSite=Lax`;
 };
 
@@ -102,6 +112,7 @@ const html = (cuerpo, status, extra = {}) => new Response(cuerpo, {
 
 export default async (req, context) => {
   const clave = entorno("LISTA_PASSWORD");
+  const claveGaleria = entorno("GALERIA_PASSWORD");
   const secreto = entorno("INTERNO_SECRET") ?? entorno("MEDIA_SECRET");
 
   if (!clave || !secreto) {
@@ -117,18 +128,28 @@ export default async (req, context) => {
     });
   }
 
-  if (await galletaValida(leerGalleta(req.headers.get("cookie"), COOKIE), secreto)) {
+  const sesion = await leerSesion(leerGalleta(req.headers.get("cookie"), COOKIE), secreto);
+  if (sesion) {
+    // Quien entra con la llave de galería no sale de su página
+    if (sesion.papel === "galeria" && url.pathname !== SOLO_GALERIA) {
+      return new Response(null, { status: 303, headers: { location: SOLO_GALERIA, "cache-control": "no-store" } });
+    }
     return context.next();
   }
 
   if (req.method === "POST") {
     const form = await req.formData().catch(() => null);
-    if (iguales(form?.get("clave"), clave)) {
+    const enviada = form?.get("clave");
+    const papel = iguales(enviada, clave) ? "todo"
+      : (claveGaleria && iguales(enviada, claveGaleria)) ? "galeria" : null;
+
+    if (papel) {
       return new Response(null, {
         status: 303,
         headers: {
-          location: url.pathname + url.search,
-          "set-cookie": await nuevaGalleta(secreto),
+          // La llave de galería entra siempre por su página, venga de donde venga
+          location: papel === "galeria" ? SOLO_GALERIA : url.pathname + url.search,
+          "set-cookie": await nuevaGalleta(secreto, papel),
           "cache-control": "no-store",
         },
       });
