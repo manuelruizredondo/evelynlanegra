@@ -201,7 +201,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
       const url = M.urlFoto(p);
       const foto = url ? await M.cargar(url).catch(() => null) : null;
       return { n: d.n, nombre: p["Nombre / equipo"], pais: M.paisDe(p), foto, banderas,
-               duo: M.esDuo(p), zoom: 1, dx: 0, dy: 0 };
+               duo: M.esDuo(p), equipo: M.esEquipo(p), zoom: 1, dx: 0, dy: 0 };
     }));
 
     const diez = await Promise.all(lista.filter((x) => x.__puesto <= T.filas.cuantas).map(async (p) => {
@@ -211,6 +211,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
         nombre: p["Nombre / equipo"],
         pais: M.paisDe(p),
         duo: M.esDuo(p),
+        equipo: M.esEquipo(p),
         foto: url ? await M.cargar(url).catch(() => null) : null,
       };
     }));

@@ -186,11 +186,11 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
   // El top 10 junta el podio y la lista de abajo en una sola tabla
   const losDiez = () => [
     ...estado.puestos.map((e, i) => ({
-      puesto: i + 1, nombre: e.nombre, pais: e.pais, foto: e.foto, duo: e.duo,
+      puesto: i + 1, nombre: e.nombre, pais: e.pais, foto: e.foto, duo: e.duo, equipo: e.equipo,
     })).filter((x) => x.nombre),
     ...restantes.map((x, i) => ({
       puesto: estado.puestos.length + 1 + i,
-      nombre: x.nombre, pais: x.pais, foto: x.foto, duo: x.duo,
+      nombre: x.nombre, pais: x.pais, foto: x.foto, duo: x.duo, equipo: x.equipo,
     })),
   ];
 
@@ -255,7 +255,8 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
     const b = ev.target.closest("[data-f]");
     if (!b) return;
     const i = +b.dataset.i, p = fichas[+b.dataset.f], e = estado.puestos[i];
-    e.nombre = p["Nombre / equipo"]; e.pais = pais(p); e.duo = M.esDuo(p);
+    e.nombre = p["Nombre / equipo"]; e.pais = pais(p);
+    e.duo = M.esDuo(p); e.equipo = M.esEquipo(p);
     cont.querySelector(`[data-nom="${i}"]`).value = e.nombre;
     cont.querySelector(`[data-pais="${i}"]`).value = e.pais;
     cont.querySelector(`[data-res="${i}"]`).innerHTML = "";
@@ -431,7 +432,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
     if (!b || restantes.length >= TOPE) return;
     const p = fichas[+b.dataset.fl];
     const ficha = { id: p["ID participante"], nombre: p["Nombre / equipo"], pais: pais(p),
-                    duo: M.esDuo(p), foto: null };
+                    duo: M.esDuo(p), equipo: M.esEquipo(p), foto: null };
     restantes.push(ficha);
     cajaLista.value = ""; resLista.innerHTML = "";
     pintarOrden();

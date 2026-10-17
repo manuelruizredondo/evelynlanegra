@@ -105,7 +105,8 @@ export function crearPodio(C) {
   // igual de bien en el círculo grande del ganador que en una fila del top 10.
   const FONDO_HUECO = "rgba(10,32,44,.92)";
 
-  const silueta = (ctx, cx, cy, r, cuantos = 1) => {
+  const silueta = (ctx, cx, cy, enc, cuantos = 1) => {
+    const r = Math.min(enc.medioAncho, enc.medioAlto);
     // Un busto: cabeza y hombros, medidos sobre el radio que se le pase
     const busto = (dx, dy, escala, color) => {
       const x = cx + dx * r, y = cy + dy * r, rr = r * escala;
@@ -119,7 +120,7 @@ export function crearPodio(C) {
     };
 
     ctx.save();
-    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    caminoEncuadre(ctx, cx, cy, enc);
     ctx.fillStyle = FONDO_HUECO; ctx.fill();
     ctx.clip();
 
@@ -131,6 +132,58 @@ export function crearPodio(C) {
       busto(-0.18, 0.06, 1.00, "rgba(233,201,124,.38)");
     } else {
       busto(0, 0, 1, "rgba(233,201,124,.34)");
+    }
+    ctx.restore();
+  };
+
+  /* ── Encuadre: círculo para una persona o un dúo; rectángulo 4:3 apaisado
+     con las esquinas redondeadas para los equipos, que en redondo pierden a
+     los de los extremos. El ancho es el mismo en los dos casos, así que nada
+     se mueve de sitio; lo que cambia es el alto, y de él cuelgan el número,
+     las banderas y el nombre. ── */
+  const encuadre = (e, medio) => e?.equipo
+    ? { medioAncho: medio, medioAlto: medio * 0.75, rect: true }
+    : { medioAncho: medio, medioAlto: medio, rect: false };
+
+  const caminoEncuadre = (ctx, cx, cy, enc, fuera = 0) => {
+    const a = enc.medioAncho + fuera, b = enc.medioAlto + fuera;
+    ctx.beginPath();
+    if (!enc.rect) { ctx.arc(cx, cy, a, 0, Math.PI * 2); return; }
+    ctx.roundRect(cx - a, cy - b, a * 2, b * 2, Math.min(a, b) * 0.14);
+  };
+
+  const fotoEn = (ctx, im, cx, cy, enc, zoom = 1, dx = 0, dy = 0) => {
+    ctx.save();
+    caminoEncuadre(ctx, cx, cy, enc);
+    ctx.clip();
+    const escala = Math.max(enc.medioAncho * 2 * zoom / im.width,
+                            enc.medioAlto * 2 * zoom / im.height);
+    const w = im.width * escala, h = im.height * escala;
+    ctx.drawImage(im, cx - w / 2 + dx, cy - h / 2 + dy, w, h);
+    ctx.restore();
+  };
+
+  /* El aro del archivo son tres anillos dorados: sobre sus 729 px de ancho
+     caen en los radios 325,5 · 346,5 · 361,5, con 4 px de grueso. Para el
+     rectángulo se calcan esas mismas distancias, a escala, con las esquinas
+     redondeadas, para que los dos marcos se parezcan. */
+  const ANILLOS = [325.5, 346.5, 361.5].map((x) => (x - 327) / 327);
+  const GRUESO = 4 / 327;
+
+  const marcoEn = (ctx, cx, cy, enc, aro) => {
+    if (!enc.rect) {
+      if (!aro) return;
+      const lado = enc.medioAncho / C.aro.radioInterior * C.aro.ancho;
+      ctx.drawImage(aro, cx - lado / 2, cy - lado / 2, lado, lado * (C.aro.alto / C.aro.ancho));
+      return;
+    }
+    ctx.save();
+    ctx.lineJoin = "round";
+    for (const sep of ANILLOS) {
+      caminoEncuadre(ctx, cx, cy, enc, enc.medioAncho * sep);
+      ctx.lineWidth = Math.max(1.5, enc.medioAncho * GRUESO);
+      ctx.strokeStyle = oro(ctx, cy - enc.medioAlto, cy + enc.medioAlto);
+      ctx.stroke();
     }
     ctx.restore();
   };
@@ -161,44 +214,40 @@ export function crearPodio(C) {
       const e = estado.puestos[i];
 
       // El número va primero: la foto y el aro le pasan por encima y lo recortan
+      const encN = encuadre(e, radioFoto(d.radio * 2.2));
+      const arribaN = d.cy - encN.medioAlto;
+
       const num = await cargar(`${P.numeros}${d.n}-v3.png`).catch(() => null);
       if (num) {
         const alto = d.radio * 1.18;
         const w = num.width * (alto / num.height);
-        ctx.drawImage(num, d.cx - centroOptico(num) * w, d.cy - d.radio - alto * 0.86, w, alto);
+        ctx.drawImage(num, d.cx - centroOptico(num) * w, arribaN - alto * 0.86, w, alto);
       }
 
       const rFoto = radioFoto(d.radio * 2.2);
+      const enc = encuadre(e, rFoto);
+      const abajo = d.cy + enc.medioAlto;   // borde inferior del encuadre
 
       if (e.foto) {
-        ctx.save();
-        ctx.beginPath(); ctx.arc(d.cx, d.cy, rFoto, 0, Math.PI * 2); ctx.clip();
-        const lado = rFoto * 2 * (e.zoom ?? 1);
-        const esc = Math.max(lado / e.foto.width, lado / e.foto.height);
-        const w = e.foto.width * esc, h = e.foto.height * esc;
-        ctx.drawImage(e.foto, d.cx - w / 2 + (e.dx ?? 0), d.cy - h / 2 + (e.dy ?? 0), w, h);
-        ctx.restore();
+        fotoEn(ctx, e.foto, d.cx, d.cy, enc, e.zoom ?? 1, e.dx ?? 0, e.dy ?? 0);
       } else if (e.nombre) {
         // Hay alguien, pero su foto no está en el servidor
-        silueta(ctx, d.cx, d.cy, rFoto, e.duo ? 2 : 1);
+        silueta(ctx, d.cx, d.cy, enc, e.duo ? 2 : 1);
       } else {
         ctx.save();
-        ctx.beginPath(); ctx.arc(d.cx, d.cy, rFoto, 0, Math.PI * 2);
+        caminoEncuadre(ctx, d.cx, d.cy, enc);
         ctx.fillStyle = "rgba(10,32,44,.92)"; ctx.fill();
         ctx.restore();
       }
 
-      if (aro) {
-        const lado = d.radio * 2.2;
-        ctx.drawImage(aro, d.cx - lado / 2, d.cy - lado / 2, lado, lado * (C.aro.alto / C.aro.ancho));
-      }
+      marcoEn(ctx, d.cx, d.cy, enc, aro);
 
-      banderasEn(ctx, e.banderas, d.cx, d.cy + d.radio - d.radio * 0.42 * 0.56, d.radio * 0.42);
+      banderasEn(ctx, e.banderas, d.cx, abajo - d.radio * 0.42 * 0.56, d.radio * 0.42);
 
       texto(ctx, (e.nombre || "").toUpperCase(), d.cuerpoNombre, d.cx,
-            d.cy + d.radio + d.cuerpoNombre * 1.55, d.radio * 2.5, "blanco");
+            abajo + d.cuerpoNombre * 1.55, d.radio * 2.5, "blanco");
       texto(ctx, (e.pais || "").toUpperCase(), d.cuerpoPais, d.cx,
-            d.cy + d.radio + d.cuerpoNombre * 1.55 + d.cuerpoPais * 1.25, d.radio * 2.5, "blanco");
+            abajo + d.cuerpoNombre * 1.55 + d.cuerpoPais * 1.25, d.radio * 2.5, "blanco");
     }
 
     // Del 4 al 10, en dos columnas
@@ -266,21 +315,14 @@ export function crearPodio(C) {
 
       // La foto, a la derecha y con la altura de la fila
       const f = F.foto;
-      if (e.foto) {
-        ctx.save();
-        ctx.beginPath(); ctx.arc(f.cx, y, f.radio, 0, Math.PI * 2); ctx.clip();
-        const lado = f.radio * 2;
-        const esc = Math.max(lado / e.foto.width, lado / e.foto.height);
-        const w = e.foto.width * esc, h = e.foto.height * esc;
-        ctx.drawImage(e.foto, f.cx - w / 2, y - h / 2, w, h);
-        ctx.restore();
-      } else {
-        silueta(ctx, f.cx, y, f.radio, e.duo ? 2 : 1);
-      }
-      // El aro va igual haya foto o silueta, para que la fila no cambie
-      ctx.beginPath(); ctx.arc(f.cx, y, f.radio - 1, 0, Math.PI * 2);
+      const encF = encuadre(e, f.radio);
+      if (e.foto) fotoEn(ctx, e.foto, f.cx, y, encF);
+      else silueta(ctx, f.cx, y, encF, e.duo ? 2 : 1);
+      // El filo va igual haya foto o silueta, para que la fila no cambie
+      caminoEncuadre(ctx, f.cx, y, encF, -1);
       ctx.lineWidth = 2.5;
-      ctx.strokeStyle = oro(ctx, y - f.radio, y + f.radio);
+      ctx.lineJoin = "round";
+      ctx.strokeStyle = oro(ctx, y - encF.medioAlto, y + encF.medioAlto);
       ctx.stroke();
     });
   };
@@ -331,6 +373,9 @@ export function crearPodio(C) {
   // equipos) se dibuja con dos figuras.
   const esDuo = (p) => !/solista/i.test(p?.["Categoría"] || "");
 
+  // Los equipos no caben en un círculo: van en rectángulo 4:3 apaisado
+  const esEquipo = (p) => /equipo/i.test(p?.["Categoría"] || "");
+
   const numPuesto = (p) => {
     const n = parseInt(String(p["Puesto"] ?? "").replace(/[^0-9]/g, ""), 10);
     return Number.isFinite(n) && n >= 1 ? n : null;
@@ -364,6 +409,6 @@ export function crearPodio(C) {
 
   return {
     P, T, cargar, radioFoto, pintarPodio, pintarTop10, leerCSV, sinAcentos, sinTildes,
-    banderasDeFicha, banderasDe, urlFoto, cat, paisDe, esDuo, numPuesto, pruebas, nombreArchivo, precargar,
+    banderasDeFicha, banderasDe, urlFoto, cat, paisDe, esDuo, esEquipo, numPuesto, pruebas, nombreArchivo, precargar,
   };
 }
