@@ -17,6 +17,7 @@ const enlaces = [
         {...(e.href === actual ? { "aria-current": "page" } : {})}
       >{e.label}</a>
     ))}
+    <a class="in-nav__a in-nav__salir" href="?salir" title="Cerrar la sesión de uso interno">Salir</a>
   </div>
 </nav>
 
@@ -38,4 +39,7 @@ const enlaces = [
     transition:background .15s,color .15s}
   .in-nav__a:hover{color:#15151a;text-decoration:none}
   .in-nav__a--activo{background:#fff;color:#15151a;box-shadow:0 1px 3px rgba(0,0,0,.09)}
+  .in-nav__salir{margin-left:6px;padding-left:16px;padding-right:16px;
+    border-left:1px solid #dcdce2;border-radius:0 999px 999px 0;font-size:.8rem}
+  .in-nav__salir:hover{color:#ce0306}
 </style>

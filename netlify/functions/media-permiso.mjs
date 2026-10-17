@@ -1,16 +1,9 @@
 // Entrega un permiso de subida firmado y caduco.
 // El secreto se queda aquí: al navegador solo le llega la firma.
-import { createHmac, timingSafeEqual } from "node:crypto";
+import { createHmac } from "node:crypto";
+import { autorizado } from "./lib/sesion.mjs";
 
 const MINUTOS = 20;
-
-const claveValida = (recibida, esperada) => {
-  if (typeof recibida !== "string" || !esperada) return false;
-  const a = Buffer.from(recibida);
-  const b = Buffer.from(esperada);
-  if (a.length !== b.length) return false;
-  return timingSafeEqual(a, b);
-};
 
 export default async (req) => {
   const json = (data, status = 200) =>
@@ -29,9 +22,9 @@ export default async (req) => {
   let cuerpo = {};
   try { cuerpo = await req.json(); } catch { /* cuerpo vacío */ }
 
-  if (!claveValida(cuerpo.clave, clave)) {
+  if (!autorizado(req, cuerpo.clave)) {
     await new Promise((r) => setTimeout(r, 700));
-    return json({ error: "Contraseña incorrecta." }, 401);
+    return json({ error: "Sin autorización: entra por /interno/." }, 401);
   }
 
   const exp = String(Math.floor(Date.now() / 1000) + MINUTOS * 60);

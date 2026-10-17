@@ -12,16 +12,9 @@ import InternoNav from "../../components/InternoNav.astro";
       <p class="li__kicker">Uso interno</p>
       <h1 class="li__h1">Formularios recibidos</h1>
 
-      <form class="li__login" data-login>
-        <label>
-          <span>Contraseña</span>
-          <input type="password" name="clave" autocomplete="current-password" required />
-        </label>
-        <button class="li__btn" type="submit">Entrar</button>
-        <p class="li__error" data-error hidden></p>
-      </form>
+      <p class="li__error" data-error hidden></p>
 
-      <div class="li__panel" data-panel hidden>
+      <div class="li__panel" data-panel>
         <nav class="li__tabs" data-tabs aria-label="Formularios"></nav>
 
         <div class="li__barra">
@@ -63,14 +56,7 @@ import InternoNav from "../../components/InternoNav.astro";
   .li__btn--claro{background:#fff;color:var(--li-tinta);border:1px solid var(--li-linea)}
   .li__btn--claro:hover{border-color:var(--li-tinta);filter:none}
 
-  .li__login{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;max-width:460px}
-  .li__login[hidden]{display:none}
-  .li__login label{display:flex;flex-direction:column;gap:6px;font-size:.7rem;font-weight:700;
-    color:var(--li-suave);text-transform:uppercase;letter-spacing:.06em}
-  .li__login input{font:inherit;font-weight:400;text-transform:none;letter-spacing:0;padding:11px 14px;
-    border:1px solid var(--li-linea);border-radius:9px;background:#fff;color:var(--li-tinta);min-width:240px}
-  .li__login input:focus{outline:none;border-color:var(--li-acc)}
-  .li__error{width:100%;margin:6px 0 0;color:var(--li-acc);font-size:.88rem}
+  .li__error{width:100%;margin:6px 0 14px;color:var(--li-acc);font-size:.88rem}
 
   /* Pestañas de formulario: separadas por idioma y ordenadas por actividad */
   .li__tabs{display:grid;gap:16px;margin:0 0 24px}
@@ -163,13 +149,11 @@ import InternoNav from "../../components/InternoNav.astro";
 
 <script>
   const $ = (s) => document.querySelector(s);
-  const login = $("[data-login]"), panel = $("[data-panel]"), error = $("[data-error]");
+  const panel = $("[data-panel]"), error = $("[data-error]");
   const tabs = $("[data-tabs]"), buscar = $("[data-buscar]");
   const cards = $("[data-cards]"), contador = $("[data-contador]");
   const vacio = $("[data-vacio]"), btnCsv = $("[data-csv]");
 
-  // La contraseña vive solo en memoria: al recargar se vuelve a pedir.
-  let clave = "";
   let envios = [];
   let columnas = [];
   let listaForms = [];
@@ -247,9 +231,15 @@ import InternoNav from "../../components/InternoNav.astro";
     const r = await fetch("/.netlify/functions/lista-espera", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ clave, formulario }),
+      // Sin contraseña: la función reconoce la sesión que dejó la puerta
+      body: JSON.stringify({ formulario }),
+      credentials: "same-origin",
     });
-    const data = await r.json();
+    const data = await r.json().catch(() => null);
+    if (!data) throw new Error(r.status === 404
+      ? "Las funciones de Netlify no están disponibles aquí."
+      : `El servidor respondió ${r.status} sin datos.`);
+    if (r.status === 401) throw new Error("La sesión ha caducado. Recarga la página para volver a entrar.");
     if (!r.ok) throw new Error(data.error || "Error inesperado");
     return data;
   };
@@ -403,23 +393,9 @@ import InternoNav from "../../components/InternoNav.astro";
     pintar();
   };
 
-  login.addEventListener("submit", async (ev) => {
-    ev.preventDefault();
-    error.hidden = true;
-    clave = login.clave.value;
-    const btn = login.querySelector("button");
-    btn.disabled = true; btn.textContent = "Comprobando…";
-    try {
-      await cargar();
-      login.hidden = true;
-      panel.hidden = false;
-    } catch (e) {
-      clave = "";
-      error.textContent = e.message;
-      error.hidden = false;
-    } finally {
-      btn.disabled = false; btn.textContent = "Entrar";
-    }
+  cargar().catch((e) => {
+    error.textContent = e.message;
+    error.hidden = false;
   });
 
   tabs.addEventListener("click", (ev) => {

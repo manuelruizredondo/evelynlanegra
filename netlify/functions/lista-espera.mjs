@@ -1,17 +1,11 @@
 // Lee los formularios enviados desde la API de Netlify.
 // Corre en el servidor: ni el token ni la contraseña llegan nunca al navegador.
-import { timingSafeEqual } from "node:crypto";
+import { autorizado } from "./lib/sesion.mjs";
 
 const API = "https://api.netlify.com/api/v1";
 
-// Comparación en tiempo constante: evita adivinar la clave midiendo cuánto tarda en fallar.
-const claveValida = (recibida, esperada) => {
-  if (typeof recibida !== "string" || !esperada) return false;
-  const a = Buffer.from(recibida);
-  const b = Buffer.from(esperada);
-  if (a.length !== b.length) return false;
-  return timingSafeEqual(a, b);
-};
+// La autorización llega por dos vías: la galleta que deja la puerta de
+// /interno/ o, si alguien llama a la función a pelo, la contraseña.
 
 const pedir = async (ruta, token) => {
   const r = await fetch(`${API}${ruta}`, { headers: { Authorization: `Bearer ${token}` } });
@@ -37,9 +31,9 @@ export default async (req, context) => {
   let cuerpo = {};
   try { cuerpo = await req.json(); } catch { /* cuerpo vacío o mal formado */ }
 
-  if (!claveValida(cuerpo.clave, clave)) {
+  if (!autorizado(req, cuerpo.clave)) {
     await new Promise((r) => setTimeout(r, 700)); // frena los intentos por fuerza bruta
-    return json({ error: "Contraseña incorrecta." }, 401);
+    return json({ error: "Sin autorización: entra por /interno/." }, 401);
   }
 
   try {

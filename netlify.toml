@@ -6,6 +6,15 @@
   directory = "netlify/functions"
   node_bundler = "esbuild"
 
+# Todo /interno/ pasa antes por la puerta: sin contraseña no se sirve ni el HTML
+[[edge_functions]]
+  path = "/interno"
+  function = "interno"
+
+[[edge_functions]]
+  path = "/interno/*"
+  function = "interno"
+
 [build.environment]
   NODE_VERSION = "20"
 
