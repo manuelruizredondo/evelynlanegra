@@ -44,6 +44,7 @@ export const LOGOS = [
 export const FIJOS = {
   fondo: "/img/portadas/fondo-gran-final.jpg",
   fondoVideo: "/img/portadas/fondo-gran-final.mp4",
+
   // Centrado en el lienzo; el tamaño se regula desde la propia página.
   // El tope lo marca «GRAN FINAL», cuya tinta empieza en y=368.
   logoCaja: { centroX: 960, centroY: 209, lado: 280, min: 160, max: 320 },
@@ -76,4 +77,11 @@ export const PROGRAMA = [
   { dia: "Domingo 25", fase: "GRAN FINAL", categoria: "Dúos Mixtos", disciplina: "Bachata" },
   { dia: "Domingo 25", fase: "GRAN FINAL", categoria: "Parejas", disciplina: "Salsa" },
   { dia: "Domingo 25", fase: "GRAN FINAL", categoria: "Equipos", disciplina: "Bachata" },
+];
+
+// Capas de partículas, sobre fondo negro. Se superponen en modo «screen»: el
+// negro desaparece solo y quedan las chispas, sin recortar nada.
+export const PARTICULAS = [
+  { id: "chispas", nombre: "Chispas", src: "/img/portadas/particulas-doradas.mp4" },
+  { id: "polvo", nombre: "Polvo dorado", src: "/img/portadas/particulas-polvo.mp4" },
 ];

@@ -1,8 +1,8 @@
 ---
 import Base from "../../layouts/Base.astro";
 import InternoNav from "../../components/InternoNav.astro";
-import { LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTELLOS, PROGRAMA } from "../../data/portadas";
-const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTELLOS, PROGRAMA });
+import { LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTELLOS, PROGRAMA, PARTICULAS } from "../../data/portadas";
+const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTELLOS, PROGRAMA, PARTICULAS });
 ---
 <Base title="Creador de portadas · uso interno" description="Generador de portadas del campeonato." noindex={true}>
   <InternoNav actual="/interno/portadas/" />
@@ -62,6 +62,21 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
               <input type="checkbox" data-destellos checked />
               <span>Destellos dorados</span>
             </label>
+            <label class="pt__campo">
+              <span>Partículas</span>
+              <select data-particulas>
+                <option value="">Ninguna</option>
+                {PARTICULAS.map((p, i) => (
+                  <option value={p.id} selected={i === 0}>{p.nombre}</option>
+                ))}
+              </select>
+            </label>
+            <label class="pt__campo">
+              <span>Fuerza de las partículas <em data-fuerza-val>100 %</em></span>
+              <input type="range" data-fuerza min="20" max="100" step="5" value="100" />
+            </label>
+            <p class="pt__pista">El vídeo trae su propio resplandor, que calienta el fondo.
+              Bájalo si quieres el mar más azul.</p>
           </div>
 
           <div class="pt__acciones">
@@ -135,6 +150,9 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
   .pt__campo input[type=text]:focus{outline:none;border-color:var(--li-acc)}
   .pt__campo em{font-style:normal;color:var(--li-tinta);text-transform:none;letter-spacing:0}
   .pt__campo input[type=range]{accent-color:var(--li-acc);width:100%}
+  .pt__campo select{border:1px solid var(--li-linea);border-radius:9px;padding:9px 10px;
+    font:inherit;font-size:.82rem;font-weight:500;color:var(--li-tinta);background:#fff;
+    text-transform:none;letter-spacing:0;width:100%}
   .pt__campo input[type=file]{font:inherit;font-weight:400;text-transform:none;letter-spacing:0;font-size:.78rem}
   .pt__pista{margin:0;color:var(--li-suave);font-size:.74rem;line-height:1.45}
 
@@ -214,6 +232,8 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
     fondo: "imagen",
     logoTam: D.FIJOS.logoCaja.lado,
     destellos: true,
+    particulas: D.PARTICULAS[0]?.id ?? "",
+    fuerza: 1,
   };
 
   const aviso = document.querySelector("[data-aviso]");
@@ -229,6 +249,16 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
   vid.style.cssText = "position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;left:-10px";
   document.body.appendChild(vid);
 
+  // Capa de partículas: va por encima del fondo marino, en modo «screen», que
+  // deja fuera el negro del vídeo sin tener que recortarlo.
+  const chispas = document.createElement("video");
+  const fuenteDe = (id) => D.PARTICULAS.find((p) => p.id === id)?.src ?? "";
+  chispas.src = fuenteDe(estado.particulas);
+  chispas.muted = true; chispas.loop = true; chispas.playsInline = true; chispas.preload = "auto";
+  chispas.crossOrigin = "anonymous";
+  chispas.style.cssText = vid.style.cssText;
+  document.body.appendChild(chispas);
+
   let bucle = null;
   const arrancarBucle = () => {
     if (bucle) return;
@@ -236,6 +266,17 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
     bucle = requestAnimationFrame(paso);
   };
   const pararBucle = () => { if (bucle) cancelAnimationFrame(bucle); bucle = null; };
+
+  // El lienzo sólo tiene que repintarse solo si hay algo moviéndose
+  const revisarBucle = async () => {
+    if (estado.particulas) {
+      const quiero = fuenteDe(estado.particulas);
+      if (!chispas.src.endsWith(quiero)) chispas.src = quiero;
+      try { await chispas.play(); } catch { /* bloqueado */ }
+    } else chispas.pause();
+    if (estado.fondo === "video" || estado.particulas) arrancarBucle();
+    else { pararBucle(); pintar(); }
+  };
 
   // Cuerpo necesario para que el texto llene exactamente la caja.
   // Se mide a un tamaño de referencia y se escala: así cualquier texto,
@@ -360,6 +401,16 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
       ctx.drawImage(fondo, 0, 0, D.LIENZO.w, D.LIENZO.h);
     }
 
+    // Partículas por encima del fondo y por debajo del logo y los textos, para
+    // que no les quiten legibilidad. «screen» hace transparente el negro.
+    if (estado.particulas && chispas.readyState >= 2) {
+      ctx.save();
+      ctx.globalCompositeOperation = "screen";
+      ctx.globalAlpha = estado.fuerza;
+      ctx.drawImage(chispas, 0, 0, D.LIENZO.w, D.LIENZO.h);
+      ctx.restore();
+    }
+
     // Logo de arriba, centrado en su hueco y sin deformarse
     try {
       const lg = imagenes[estado.logo] ?? await cargar(estado.logo);
@@ -455,12 +506,9 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
       btn.textContent = esVideo ? "Descargar vídeo" : "Descargar PNG";
       document.querySelector("[data-medida]").textContent =
         esVideo ? `${D.LIENZO.w} × ${D.LIENZO.h} · 15 s` : `${D.LIENZO.w} × ${D.LIENZO.h}`;
-      if (esVideo) {
-        try { await vid.play(); } catch { /* el navegador lo bloqueó */ }
-        arrancarBucle();
-      } else {
-        pararBucle(); vid.pause(); pintar();
-      }
+      if (esVideo) { try { await vid.play(); } catch { /* el navegador lo bloqueó */ } }
+      else vid.pause();
+      await revisarBucle();
       decir("");
     });
   });
@@ -473,6 +521,17 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
   document.querySelector("[data-destellos]").addEventListener("change", (ev) => {
     estado.destellos = ev.target.checked;
     pintar();
+  });
+
+  document.querySelector("[data-particulas]").addEventListener("change", (ev) => {
+    estado.particulas = ev.target.value;
+    revisarBucle();
+  });
+
+  document.querySelector("[data-fuerza]").addEventListener("input", (ev) => {
+    estado.fuerza = +ev.target.value / 100;
+    document.querySelector("[data-fuerza-val]").textContent = `${ev.target.value} %`;
+    if (!bucle) pintar();
   });
 
   // Las tres líneas, para que dos portadas distintas no acaben con el mismo
@@ -595,6 +654,8 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
     const original = "Descargar vídeo";
     try {
       vid.pause(); vid.currentTime = 0;
+      if (estado.particulas) { chispas.currentTime = 0; try { await chispas.play(); } catch { /* bloqueado */ } }
+
       await new Promise((ok) => { vid.onseeked = ok; setTimeout(ok, 600); });
 
       const stream = canvas.captureStream(30);
@@ -697,5 +758,5 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
     cargar(estado.logo).catch(() => {}),
     cargar(D.FIJOS.sello.src).catch(() => {}),
     cargar(D.FIJOS.hotel.src).catch(() => {}),
-  ]).then(pintar).catch(pintar);
+  ]).then(pintar).catch(pintar).then(revisarBucle);
 </script>
