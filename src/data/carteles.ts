@@ -70,17 +70,14 @@ export const PODIO = {
   numeros: "/img/ganadores/numeros/",
   // Por debajo de la barra negra de la cabecera, que acaba en y=116
   titulo: { centroY: 214, cuerpo: 48, anchoMax: 940 },
-  // Sin la lista del 4 al 10, el podio dejaba vacío todo el tercio de abajo y
-  // la composición quedaba arriba. Cuando no hay lista, baja esto. Con lista
-  // se queda donde estaba, que si no se le echaría encima.
-  bajaSinLista: 82,
+  // Aquí van sólo los tres primeros —del 4 al 10 se encarga el cartel del top
+  // 10—, así que el podio se baja esto para no dejar vacío el tercio de abajo.
+  baja: 82,
   puestos: [
     { n: 1, cx: 540, cy: 596, radio: 171, cuerpoNombre: 41, cuerpoPais: 33 },
     { n: 2, cx: 196, cy: 720, radio: 113, cuerpoNombre: 28, cuerpoPais: 23 },
     { n: 3, cx: 884, cy: 720, radio: 113, cuerpoNombre: 28, cuerpoPais: 23 },
   ],
-  // Del 4 al 10, en dos columnas
-  lista: { desde: 4, hasta: 10, y: 965, salto: 46, colX: [140, 600], ancho: 400, cuerpo: 27 },
 };
 
 // Cartel del top 10: los diez uno debajo de otro. La plantilla sólo tiene
@@ -90,6 +87,8 @@ export const TOP10 = {
   w: 1080, h: 1350,
   plantilla: "/img/ganadores/plantilla-podio-1350.jpg",
   antetitulo: "CLASIFICACIÓN",
+  // Los tres primeros salen del podio; estos se buscan a mano en el editor
+  restantes: { desde: 4, hasta: 10 },
   // Reborde de 1 px en oro muy oscuro, para que despegue del fondo
   ante: { centroY: 262, cuerpo: 54, borde: { color: "#3E1F05", grosor: 1 } },
   titulo: { centroY: 194, cuerpo: 48, anchoMax: 940 },

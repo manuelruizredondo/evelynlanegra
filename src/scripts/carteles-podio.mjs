@@ -250,9 +250,9 @@ export function crearPodio(C) {
 
     const aro = await cargar(C.aro.src).catch(() => null);
 
-    // Con lista debajo, el podio se queda arriba; sin ella baja al centro
-    const hayLista = Boolean((estado.lista || "").trim());
-    const baja = hayLista ? 0 : (P.bajaSinLista ?? 0);
+    // Este cartel es sólo de los tres primeros, así que el podio se baja al
+    // centro: del 4 al 10 ya se encarga el cartel del top 10
+    const baja = P.baja ?? 0;
 
     /* Con equipos, los tres marcos se alinean por abajo y los nombres van en
        una sola línea. Si no, el nombre del ganador —que a esa altura cae a
@@ -324,27 +324,6 @@ export function crearPodio(C) {
         : yN + lineas.length * salto;
       texto(ctx, (e.pais || "").toUpperCase(), d.cuerpoPais, d.cx, yPais, ancho, "blanco");
     }
-
-    // Del 4 al 10, en dos columnas
-    const filas = (estado.lista || "").split("\n").map((l) => l.trim()).filter(Boolean);
-    const L = P.lista;
-    filas.slice(0, L.hasta - L.desde + 1).forEach((fila, i) => {
-      const y = L.y + (i % 4) * L.salto;
-      const x = L.colX[i < 4 ? 0 : 1];
-      const [nombre, pais] = fila.split(",").map((s) => s.trim());
-      ctx.textAlign = "left"; ctx.textBaseline = "middle";
-      ctx.font = `${L.cuerpo}px Anton, sans-serif`;
-      ctx.fillStyle = oro(ctx, y - L.cuerpo * 0.6, y + L.cuerpo * 0.3);
-      ctx.fillText(`${L.desde + i}`, x, y);
-      ctx.fillStyle = "#fff";
-      ctx.font = `${L.cuerpo * 0.86}px Anton, sans-serif`;
-      ctx.fillText((nombre || "").toUpperCase(), x + 52, y - 2);
-      if (pais) {
-        ctx.font = `${L.cuerpo * 0.66}px Anton, sans-serif`;
-        ctx.fillStyle = "rgba(255,255,255,.82)";
-        ctx.fillText(pais.toUpperCase(), x + 52, y + L.cuerpo * 0.72);
-      }
-    });
   };
 
   /* ── Cartel del top 10: los diez, uno debajo de otro ── */

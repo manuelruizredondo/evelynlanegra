@@ -215,7 +215,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
     }));
 
     const sinFoto = puestos.filter((e) => e.nombre && !e.foto).length;
-    return { titulo, podio: { titulo, puestos, lista: "" }, top: { titulo, puestos: diez }, sinFoto, cuantos: lista.length };
+    return { titulo, podio: { titulo, puestos }, top: { titulo, puestos: diez }, sinFoto, cuantos: lista.length };
   };
 
   /* ── Orden de salida: salsa antes que bachata, y dentro por tipo ── */

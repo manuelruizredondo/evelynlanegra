@@ -36,7 +36,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
 
           <div class="pt__grupo" data-puestos></div>
 
-          <div class="pt__grupo">
+          <div class="pt__grupo" data-grupo-lista hidden>
             <p class="pt__t">Del 4 al 10</p>
             <label class="pt__campo">
               <span>Buscar</span>
@@ -178,12 +178,11 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
   const estado = {
     titulo: "SEMIFINAL SOLISTA FEMENINO BACHATA",
     puestos: P.puestos.map((p) => ({ n: p.n, nombre: "", pais: "", foto: null, banderas: [], zoom: 1, dx: 0, dy: 0 })),
-    lista: "",
   };
 
   estado.cartel = "podio";
 
-  // El top 10 junta el podio y la lista de abajo en una sola tabla
+  // El top 10 junta el podio y los buscados aparte en una sola tabla
   const losDiez = () => [
     ...estado.puestos.map((e, i) => ({
       puesto: i + 1, nombre: e.nombre, pais: e.pais, foto: e.foto, duo: e.duo, equipo: e.equipo,
@@ -204,6 +203,8 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
     estado.cartel = b.dataset.cartel;
     document.querySelectorAll("[data-cartel]").forEach((x) =>
       x.classList.toggle("pt__tipo--on", x === b));
+    // Del 4 al 10 sólo pinta en el top 10; en el de 1·2·3 estorba
+    document.querySelector("[data-grupo-lista]").hidden = estado.cartel !== "top10";
     pintar();
   });
 
@@ -372,19 +373,14 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
   }, { passive: false });
 
   document.querySelector("[data-titulo]").addEventListener("input", (e) => { estado.titulo = e.target.value; pintar(); });
-  /* ── Del 4 al 10: se eligen buscando, como los puestos del podio ── */
-  const L = P.lista;
+  /* ── Del 4 al 10 del top 10: se eligen buscando, como los del podio ── */
+  const L = M.T.restantes;
   const TOPE = L.hasta - L.desde + 1;
   const cajaLista = document.querySelector("[data-b-lista]");
   const resLista = document.querySelector("[data-res-lista]");
   const orden = document.querySelector("[data-orden]");
   const pistaLista = document.querySelector("[data-pista-lista]");
   let restantes = [];
-
-  // El cartel sigue leyendo una línea por puesto; aquí sólo se arma esa cadena
-  const sincronizarLista = () => {
-    estado.lista = restantes.map((x) => [x.nombre, x.pais].filter(Boolean).join(", ")).join("\n");
-  };
 
   const pintarOrden = () => {
     orden.innerHTML = "";
@@ -409,7 +405,6 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
       ? `${restantes.length} de ${TOPE}. Las flechas cambian el orden.`
       : `Busca y pulsa para ir llenando del ${L.desde} al ${L.hasta}.`;
     cajaLista.disabled = restantes.length >= TOPE;
-    sincronizarLista();
   };
 
   const yaEsta = (p) => restantes.some((x) => x.id === p["ID participante"])
