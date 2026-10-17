@@ -210,6 +210,29 @@ export function crearPodio(C) {
     ctx.restore();
   };
 
+  /* Reparte un nombre en líneas sin pasar de «ancho», que es el de la imagen
+     de arriba. Encoger hasta que quepa dejaba los nombres largos ilegibles;
+     es mejor que salten de línea. */
+  const repartir = (ctx, t, cuerpo, ancho, maximo = 2) => {
+    if (!t) return [];
+    ctx.font = `${cuerpo}px Anton, sans-serif`;
+    const lineas = [];
+    let actual = "";
+    for (const palabra of t.split(/\s+/)) {
+      const prueba = actual ? `${actual} ${palabra}` : palabra;
+      if (!actual || ctx.measureText(prueba).width <= ancho) actual = prueba;
+      else { lineas.push(actual); actual = palabra; }
+    }
+    if (actual) lineas.push(actual);
+    // Lo que no quepa en las líneas permitidas se junta en la última, y «texto»
+    // ya se encarga de encogerla lo justo
+    while (lineas.length > maximo) {
+      const sobra = lineas.pop();
+      lineas[lineas.length - 1] += ` ${sobra}`;
+    }
+    return lineas;
+  };
+
   const banderasEn = (ctx, banderas, cx, y, lado) => {
     if (!banderas?.length) return;
     const total = banderas.length * lado + (banderas.length - 1) * lado * 0.14;
@@ -231,12 +254,32 @@ export function crearPodio(C) {
     const hayLista = Boolean((estado.lista || "").trim());
     const baja = hayLista ? 0 : (P.bajaSinLista ?? 0);
 
+    /* Con equipos, los tres marcos se alinean por abajo y los nombres van en
+       una sola línea. Si no, el nombre del ganador —que a esa altura cae a
+       media altura de los marcos de los lados— se les echaba encima: un
+       círculo ya se ha estrechado ahí, pero un rectángulo conserva todo su
+       ancho y se tocaban. */
+    const encs = P.puestos.map((_, i) => encuadre(estado.puestos[i], radioFoto(P.puestos[i].radio * 2.2)));
+    const llenos = encs.filter((_, i) => estado.puestos[i].nombre);
+    const alineados = llenos.length > 0 && llenos.every((x) => x.rect);
+    const sueloComun = P.puestos[0].cy + baja + encs[0].medioAlto;
+    const yNombre = sueloComun + P.puestos[0].cuerpoNombre * 1.55;
+    // Cuántas líneas ocupa el nombre más largo: los países van todos debajo
+    const saltoComun = P.puestos[0].cuerpoNombre * 1.02;
+    const renglones = Math.max(1, ...P.puestos.map((d, i) =>
+      repartir(ctx, (estado.puestos[i].nombre || "").toUpperCase(),
+               d.cuerpoNombre, encs[i].medioAncho * 2).length));
+
     for (let i = 0; i < P.puestos.length; i++) {
-      const d = { ...P.puestos[i], cy: P.puestos[i].cy + baja };
+      const enc0 = encs[i];
+      const cyAjustada = alineados
+        ? sueloComun - enc0.medioAlto          // todos apoyados en la misma línea
+        : P.puestos[i].cy + baja;
+      const d = { ...P.puestos[i], cy: cyAjustada };
       const e = estado.puestos[i];
 
       // El número va primero: la foto y el aro le pasan por encima y lo recortan
-      const encN = encuadre(e, radioFoto(d.radio * 2.2));
+      const encN = enc0;
       const arribaN = d.cy - encN.medioAlto;
 
       const num = await cargar(`${P.numeros}${d.n}-v3.png`).catch(() => null);
@@ -246,8 +289,7 @@ export function crearPodio(C) {
         ctx.drawImage(num, d.cx - centroOptico(num) * w, arribaN - alto * 0.86, w, alto);
       }
 
-      const rFoto = radioFoto(d.radio * 2.2);
-      const enc = encuadre(e, rFoto);
+      const enc = enc0;
       const abajo = d.cy + enc.medioAlto;   // borde inferior del encuadre
 
       if (e.foto) {
@@ -266,10 +308,21 @@ export function crearPodio(C) {
 
       banderasEn(ctx, e.banderas, d.cx, abajo - d.radio * 0.42 * 0.56, d.radio * 0.42);
 
-      texto(ctx, (e.nombre || "").toUpperCase(), d.cuerpoNombre, d.cx,
-            abajo + d.cuerpoNombre * 1.55, d.radio * 2.5, "blanco");
-      texto(ctx, (e.pais || "").toUpperCase(), d.cuerpoPais, d.cx,
-            abajo + d.cuerpoNombre * 1.55 + d.cuerpoPais * 1.25, d.radio * 2.5, "blanco");
+      // Alineados, los tres nombres comparten renglón; si no, cada uno va bajo el suyo
+      const yN = alineados ? yNombre : abajo + d.cuerpoNombre * 1.55;
+      // El nombre no pasa del ancho de su propia imagen; si no cabe, salta de línea
+      const ancho = enc.medioAncho * 2;
+      const salto = d.cuerpoNombre * 1.02;
+      const lineas = repartir(ctx, (e.nombre || "").toUpperCase(), d.cuerpoNombre, ancho);
+      lineas.forEach((l, k) => texto(ctx, l, d.cuerpoNombre, d.cx, yN + k * salto, ancho, "blanco"));
+
+      /* El país va bajo el nombre más largo de los tres y con un salto común:
+         si cada uno usara el suyo, el del centro —que tiene la letra más
+         grande— caería más abajo que los de los lados. */
+      const yPais = alineados
+        ? yNombre + renglones * saltoComun
+        : yN + lineas.length * salto;
+      texto(ctx, (e.pais || "").toUpperCase(), d.cuerpoPais, d.cx, yPais, ancho, "blanco");
     }
 
     // Del 4 al 10, en dos columnas
@@ -406,10 +459,28 @@ export function crearPodio(C) {
   // Compatibilidad: la primera candidata
   const urlFoto = (p) => urlsFoto(p)[0] ?? null;
 
+  /* Las fotos de los participantes se piden revalidando contra el servidor.
+     Hace falta porque llegan con «cache-control: max-age=31536000» —un año— y
+     el nombre del archivo no cambia cuando se vuelve a subir reencuadrada: sin
+     esto el navegador seguiría enseñando la vieja durante meses. Con
+     «no-cache» se pregunta si ha cambiado: si no, responde 304 y no se
+     descarga nada; si sí, llega la nueva. */
+  const frescas = {};
+  const cargarFresca = async (url) => {
+    if (frescas[url]) return frescas[url];
+    const r = await fetch(url, { cache: "no-cache" });
+    if (!r.ok) throw new Error(String(r.status));
+    const blob = await r.blob();
+    const im = new Image();
+    im.src = URL.createObjectURL(blob);
+    await im.decode();
+    return (frescas[url] = im);
+  };
+
   // Prueba las candidatas por orden y devuelve la primera que cargue
   const cargarFoto = async (p) => {
     for (const u of urlsFoto(p)) {
-      const im = await cargar(u).catch(() => null);
+      const im = await cargarFresca(u).catch(() => null);
       if (im) return im;
     }
     return null;
