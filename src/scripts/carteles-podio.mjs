@@ -169,11 +169,15 @@ export function crearPodio(C) {
      torcido. El rectángulo calca las tres distancias y también ese desajuste,
      girando cada filo un par de grados y moviéndolo un pelín, para que no
      parezca hecho con escuadra. */
+  // Un filo pegado al borde de la foto, y encima tres del mismo tamaño,
+  // cada uno girado y movido a su aire.
+  const BORDE_FOTO = -0.004;
   const ANILLOS = [
-    { sep: (325.5 - 327) / 327, giro: -1.7, dx: 0.004, dy: -0.006 },
-    { sep: (346.5 - 327) / 327, giro: 1.2, dx: -0.005, dy: 0.004 },
-    { sep: (361.5 - 327) / 327, giro: -0.6, dx: 0.003, dy: 0.005 },
+    { giro: -2.2, dx: 0.006, dy: -0.004 },
+    { giro: 1.5, dx: -0.004, dy: 0.007 },
+    { giro: 0.5, dx: 0.002, dy: -0.007 },
   ];
+  const SEPARACION = 0.055;     // lo que se apartan del borde de la foto
   const GRUESO = 4 / 327;
 
   const marcoEn = (ctx, cx, cy, enc, aro) => {
@@ -186,11 +190,19 @@ export function crearPodio(C) {
     ctx.save();
     ctx.lineJoin = "round";
     ctx.lineWidth = Math.max(1.5, enc.medioAncho * GRUESO);
+    const dorado = oro(ctx, cy - enc.medioAlto, cy + enc.medioAlto);
+
+    // El borde de la propia foto
+    ctx.strokeStyle = dorado;
+    caminoEncuadre(ctx, cx, cy, enc, enc.medioAncho * BORDE_FOTO);
+    ctx.stroke();
+
+    // Y los tres de fuera, todos iguales y cada uno a su aire
     for (const a of ANILLOS) {
       ctx.save();
       ctx.translate(cx + enc.medioAncho * a.dx, cy + enc.medioAncho * a.dy);
       ctx.rotate(a.giro * Math.PI / 180);
-      caminoEncuadre(ctx, 0, 0, enc, enc.medioAncho * a.sep);
+      caminoEncuadre(ctx, 0, 0, enc, enc.medioAncho * SEPARACION);
       ctx.strokeStyle = oro(ctx, -enc.medioAlto, enc.medioAlto);
       ctx.stroke();
       ctx.restore();
