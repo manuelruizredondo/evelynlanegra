@@ -265,8 +265,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
     // Primero se vacía: si el nuevo no tiene foto, no puede quedarse la del anterior
     e.foto = null;
     recentrar(i);
-    const url = urlFoto(p);
-    if (url) e.foto = await cargar(url).catch(() => null);
+    e.foto = await M.cargarFoto(p);
     pintar();
   });
 
@@ -438,8 +437,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
     pintarOrden();
     pintar();
     // La foto hace falta para el cartel del top 10; llega cuando llegue
-    const u = urlFoto(p);
-    if (u) cargar(u).then((im) => { ficha.foto = im; pintar(); }).catch(() => {});
+    M.cargarFoto(p).then((im) => { ficha.foto = im; pintar(); });
   });
 
   orden.addEventListener("click", (ev) => {

@@ -356,13 +356,41 @@ export function crearPodio(C) {
       .filter(Boolean).slice(0, 2);
   };
 
-  // La hoja no guarda la ruta de la foto, pero sí la del PDF del que salió
-  const urlFoto = (p) => {
+  /* La hoja no guarda la ruta de la foto, pero sí la del PDF del que salió.
+     Cuando esa columna viene vacía —34 filas— la carpeta se deduce del nombre
+     de la disciplina, la categoría y la fase, que es como están ordenadas en
+     el servidor: fotos_salsa/duo_femenino_salsa/semifinal/. Comprobado contra
+     las 395 rutas que la hoja sí trae: acierta las 395.
+     Algunas categorías no tienen subcarpeta de fase, así que se devuelven
+     varias candidatas y se prueban por orden. */
+  const aRuta = (s) => (s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
+
+  const urlsFoto = (p) => {
     const foto = (p["Foto"] || "").trim();
-    if (!foto) return null;
+    if (!foto) return [];
+    const enlace = (ruta) => C.HOJA.fotos + ruta.split("/").map(encodeURIComponent).join("/");
+
     const pdf = (p["PDF fuente"] || "").trim();
-    const carpeta = pdf.includes("/") ? pdf.slice(0, pdf.lastIndexOf("/") + 1) : "";
-    return C.HOJA.fotos + (carpeta + foto).split("/").map(encodeURIComponent).join("/");
+    if (pdf.includes("/")) return [enlace(pdf.slice(0, pdf.lastIndexOf("/") + 1) + foto)];
+
+    const d = aRuta(p["Disciplina"]), c = aRuta(p["Categoría"]);
+    let f = aRuta(p["Fase"]);
+    if (f === "preeliminatoria") f = "pre_eliminatoria";
+    const base = `fotos_${d}/${c}_${d}/`;
+    return [...(f ? [enlace(base + f + "/" + foto)] : []), enlace(base + foto), enlace(foto)];
+  };
+
+  // Compatibilidad: la primera candidata
+  const urlFoto = (p) => urlsFoto(p)[0] ?? null;
+
+  // Prueba las candidatas por orden y devuelve la primera que cargue
+  const cargarFoto = async (p) => {
+    for (const u of urlsFoto(p)) {
+      const im = await cargar(u).catch(() => null);
+      if (im) return im;
+    }
+    return null;
   };
 
   const cat = (p) => [C.FASES[p["Fase"]] ?? p["Fase"], p["Categoría"], p["Disciplina"]]
@@ -409,6 +437,7 @@ export function crearPodio(C) {
 
   return {
     P, T, cargar, radioFoto, pintarPodio, pintarTop10, leerCSV, sinAcentos, sinTildes,
-    banderasDeFicha, banderasDe, urlFoto, cat, paisDe, esDuo, esEquipo, numPuesto, pruebas, nombreArchivo, precargar,
+    banderasDeFicha, banderasDe, urlFoto, urlsFoto, cargarFoto, cat, paisDe, esDuo, esEquipo,
+    numPuesto, pruebas, nombreArchivo, precargar,
   };
 }

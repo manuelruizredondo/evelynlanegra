@@ -198,21 +198,19 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
       const p = lista.find((x) => x.__puesto === d.n);
       if (!p) return { n: d.n, nombre: "", pais: "", foto: null, banderas: [], zoom: 1, dx: 0, dy: 0 };
       const banderas = (await Promise.all(M.banderasDeFicha(p).map((b) => M.cargar(b).catch(() => null)))).filter(Boolean);
-      const url = M.urlFoto(p);
-      const foto = url ? await M.cargar(url).catch(() => null) : null;
+      const foto = await M.cargarFoto(p);
       return { n: d.n, nombre: p["Nombre / equipo"], pais: M.paisDe(p), foto, banderas,
                duo: M.esDuo(p), equipo: M.esEquipo(p), zoom: 1, dx: 0, dy: 0 };
     }));
 
     const diez = await Promise.all(lista.filter((x) => x.__puesto <= T.filas.cuantas).map(async (p) => {
-      const url = M.urlFoto(p);
       return {
         puesto: p.__puesto,
         nombre: p["Nombre / equipo"],
         pais: M.paisDe(p),
         duo: M.esDuo(p),
         equipo: M.esEquipo(p),
-        foto: url ? await M.cargar(url).catch(() => null) : null,
+        foto: await M.cargarFoto(p),
       };
     }));
 
