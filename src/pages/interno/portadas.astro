@@ -660,6 +660,20 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
     return null;
   };
 
+  // Señal de parada: la levanta el botón y la miran la grabación y el lote,
+  // que comprueban entre fotograma y fotograma si tienen que dejarlo.
+  let parar = false;
+
+  // Espera troceada, para poder cortar a mitad. Devuelve false si se ha pedido parar.
+  const esperarPudiendoParar = async (ms) => {
+    const fin = performance.now() + ms;
+    while (performance.now() < fin) {
+      if (parar) return false;
+      await new Promise((ok) => setTimeout(ok, 120));
+    }
+    return true;
+  };
+
   // Graba una pasada completa del fondo y devuelve el vídeo. Lo usan tanto el
   // botón de descargar como la generación en bloque.
   const grabar = async (alProgresar) => {
@@ -685,29 +699,36 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
     const reloj = setInterval(
       () => alProgresar?.(Math.min(99, Math.round((performance.now() - t0) / dura * 100))), 300);
 
-    await new Promise((ok) => setTimeout(ok, dura));
+    const entera = await esperarPudiendoParar(dura);
     rec.stop();
     clearInterval(reloj);
     await terminado;
+
+    // Si se ha parado a mitad, el trozo grabado no vale: se tira
+    if (!entera) return { cortado: true };
 
     const ext = tipo.startsWith("video/mp4") ? "mp4" : "webm";
     return { blob: new Blob(trozos, { type: tipo }), ext };
   };
 
+  let grabando = false;
+
   const grabarVideo = async () => {
-    btn.disabled = true;
-    const original = "Descargar vídeo";
+    // Mientras graba, el mismo botón sirve para dejarlo
+    if (grabando) { parar = true; btn.textContent = "Parando…"; return; }
+    grabando = true; parar = false;
     try {
-      const { blob, ext } = await grabar((pc) => { btn.textContent = `Grabando… ${pc}%`; });
-      const comoSeLlama = `${nombreArchivo()}-1920x1080.${ext}`;
-      bajar(blob, comoSeLlama);
-      registrar(blob, comoSeLlama);
-      decir(ext === "webm" ? "Guardado en WebM: es lo que graba este navegador. Safari lo da en MP4." : "");
+      const r = await grabar((pc) => { btn.textContent = `Grabando ${pc}% · parar`; });
+      if (r.cortado) { decir("Grabación parada."); return; }
+      const comoSeLlama = `${nombreArchivo()}-1920x1080.${r.ext}`;
+      bajar(r.blob, comoSeLlama);
+      registrar(r.blob, comoSeLlama);
+      decir(r.ext === "webm" ? "Guardado en WebM: es lo que graba este navegador. Safari lo da en MP4." : "");
     } catch (e) {
       decir("No se pudo grabar: " + e.message);
     } finally {
-      btn.disabled = false;
-      btn.textContent = original;
+      grabando = false; parar = false;
+      btn.textContent = "Descargar vídeo";
     }
   };
 
@@ -742,9 +763,17 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
 
   const comoPNG = () => new Promise((listo) => canvas.toBlob(listo, "image/png"));
 
+  let montando = false;
+
   btnFinales.addEventListener("click", async () => {
-    btnFinales.disabled = true;
-    const original = btnFinales.textContent;
+    if (montando) {
+      parar = true;
+      btnFinales.textContent = "Parando…";
+      avisoFinales.textContent = "Se para al acabar lo que tiene entre manos.";
+      return;
+    }
+    montando = true; parar = false;
+    const original = "Portadas de finales y semifinales";
     try {
       const lista = D.PROGRAMA;
       const enVideo = document.querySelector("[data-formato-lote]").value === "video";
@@ -758,7 +787,9 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
         await revisarBucle();
       }
 
+      let hechas = 0;
       for (let i = 0; i < lista.length; i++) {
+        if (parar) break;
         const f = lista[i];
         avisoFinales.textContent = `${f.dia} · ${f.fase} ${f.categoria} ${f.disciplina}`;
         estado.textos.linea1 = f.fase;
@@ -769,13 +800,15 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
         await pintar();
 
         if (enVideo) {
-          const { blob, ext } = await grabar(
-            (pc) => { btnFinales.textContent = `Grabando ${i + 1} de ${lista.length}… ${pc}%`; });
-          registrar(blob, `${nombreArchivo()}-${D.LIENZO.w}x${D.LIENZO.h}.${ext}`);
+          const r = await grabar(
+            (pc) => { btnFinales.textContent = `Grabando ${i + 1} de ${lista.length} · ${pc}% · parar`; });
+          if (r.cortado) break;
+          registrar(r.blob, `${nombreArchivo()}-${D.LIENZO.w}x${D.LIENZO.h}.${r.ext}`);
         } else {
-          btnFinales.textContent = `Montando ${i + 1} de ${lista.length}…`;
+          btnFinales.textContent = `Montando ${i + 1} de ${lista.length} · parar`;
           registrar(await comoPNG(), `${nombreArchivo()}-${D.LIENZO.w}x${D.LIENZO.h}.png`);
         }
+        hechas++;
       }
 
       if (enVideo && fondoAntes !== "video") {
@@ -784,11 +817,13 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
         vid.pause();
         await revisarBucle();
       }
-      avisoFinales.textContent = `${lista.length} portadas montadas. Están abajo, en «Generadas».`;
+      avisoFinales.textContent = parar
+        ? `Parado. ${hechas} de ${lista.length} portadas montadas, abajo en «Generadas».`
+        : `${lista.length} portadas montadas. Están abajo, en «Generadas».`;
     } catch (e) {
       avisoFinales.textContent = "No se pudo: " + e.message;
     } finally {
-      btnFinales.disabled = false;
+      montando = false; parar = false;
       btnFinales.textContent = original;
     }
   });
