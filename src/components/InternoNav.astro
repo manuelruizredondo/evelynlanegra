@@ -42,4 +42,37 @@ const enlaces = [
   .in-nav__salir{margin-left:6px;padding-left:16px;padding-right:16px;
     border-left:1px solid #dcdce2;border-radius:0 999px 999px 0;font-size:.8rem}
   .in-nav__salir:hover{color:#ce0306}
+
+  /* En el móvil no cabe la píldora centrada: las cinco pastillas miden 492 px
+     y la pantalla 375, así que se cortaba por los dos lados y «Salir» no se
+     veía. Aquí pasa a ser una franja de ancho completo que se arrastra con el
+     dedo, y ocupa el sitio de la cabecera del sitio, que dentro de una
+     herramienta no pinta nada y además ya quedaba tapada por esta barra. */
+  @media (max-width:760px){
+    :global(html:has(.in-nav)){--header-h:56px}
+    :global(html:has(.in-nav) .site-header){display:none}
+    /* El botón flotante de WhatsApp se plantaba encima de los controles */
+    :global(html:has(.in-nav) .wa-fab){display:none}
+    .in-nav{padding:0;background:#f1f1f4;border-bottom:1px solid #e4e4e8;
+      pointer-events:auto;justify-content:flex-start}
+    .in-nav__caja{width:100%;height:100%;padding:0 8px;gap:2px;
+      background:none;border:0;border-radius:0;flex-wrap:nowrap;
+      overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+    .in-nav__caja::-webkit-scrollbar{display:none}
+    .in-nav__a{flex:0 0 auto;padding:7px 13px;font-size:.8rem;white-space:nowrap}
+    .in-nav__salir{margin-left:2px;padding-left:12px;padding-right:12px;
+      border-radius:999px}
+    /* Degradado en el filo derecho: avisa de que la franja sigue */
+    .in-nav::after{content:"";position:absolute;top:0;bottom:1px;right:0;width:30px;
+      pointer-events:none;background:linear-gradient(to right,rgba(241,241,244,0),#f1f1f4)}
+  }
 </style>
+
+<script>
+  /* Si la franja no cabe, que al menos se vea dónde estás */
+  const caja = document.querySelector(".in-nav__caja");
+  const activo = caja?.querySelector(".in-nav__a--activo");
+  if (caja && activo && caja.scrollWidth > caja.clientWidth) {
+    caja.scrollLeft = activo.offsetLeft - (caja.clientWidth - activo.offsetWidth) / 2;
+  }
+</script>

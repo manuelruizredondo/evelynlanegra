@@ -66,6 +66,8 @@ import Base from "../../layouts/Base.astro";
      puerta se lo devolvería. El candado de verdad está en el borde; esto es
      sólo no enseñar la puerta. */
   .mobile-menu__privada{display:none !important}
+  /* El botón flotante de WhatsApp tapaba las fichas en el móvil */
+  @media (max-width:760px){ .wa-fab{display:none !important} }
 
   .ge__bloque{margin:0 0 42px}
   .ge__barra{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 16px}
