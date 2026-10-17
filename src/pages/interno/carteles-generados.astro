@@ -18,6 +18,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
       <div class="ge__barra">
         <button class="li__btn" type="button" data-generar disabled>Generar carteles</button>
         <button type="button" class="pt__reset" data-ensayo>Probar con puestos de ejemplo</button>
+        <label class="ge__check"><input type="checkbox" data-con-semis /> Incluir semifinales</label>
         <button type="button" class="pt__reset" data-bajar-todo hidden>Descargar todos</button>
         <button type="button" class="pt__reset" data-subir-todo hidden>Guardar en el servidor</button>
         <span class="ge__estado" data-estado>Leyendo la hoja…</span>
@@ -65,6 +66,9 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
 
   .ge__barra{display:flex;align-items:center;gap:13px;flex-wrap:wrap;margin:0 0 26px}
   .ge__estado{color:var(--li-suave);font-size:.82rem}
+  .ge__check{display:inline-flex;align-items:center;gap:7px;color:var(--li-suave);
+    font-size:.8rem;font-weight:600;cursor:pointer}
+  .ge__check input{accent-color:var(--li-acc)}
   .ge__enlace{border:0;background:none;padding:0;font:inherit;font-size:inherit;
     font-weight:700;color:var(--li-acc);cursor:pointer;text-decoration:underline}
 
@@ -129,6 +133,19 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
   let hechos = [];
   let ensayo = false;
 
+  /* Sólo se montan carteles de ganadores de las fases que deciden algo. Una
+     eliminatoria o una pre-eliminatoria no tiene podio que enseñar. */
+  const fasesBuenas = () =>
+    document.querySelector("[data-con-semis]").checked ? ["Final", "Semifinal"] : ["Final"];
+  const esDeFaseBuena = (p) => fasesBuenas().includes(p["Fase"]);
+
+  // Las pruebas de la hoja, ya filtradas por fase
+  const pruebasBuenas = () => {
+    const m = M.pruebas(fichas);
+    for (const [k, v] of [...m]) if (!esDeFaseBuena(v[0])) m.delete(k);
+    return m;
+  };
+
   const btnSubir = document.querySelector("[data-subir-todo]");
 
   /* ── Lo guardado en el servidor, en su propio álbum ── */
@@ -143,7 +160,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
     },
     // Rehacer: se vuelve a montar esa misma prueba con lo que diga la hoja hoy
     alRehacer: async (ajustes) => {
-      const m = M.pruebas(fichas);
+      const m = pruebasBuenas();
       const clave = [ajustes.disciplina, ajustes.categoria, ajustes.fase].join("\u0001");
       const lista = m.get(clave);
       if (!lista?.length) {
@@ -309,7 +326,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
     // El mismo botón para: mientras trabaja dice «parar»
     if (btnGenerar.dataset.trabajando) { parar = true; btnGenerar.textContent = "Parando…"; return; }
 
-    const m = M.pruebas(fichas);
+    const m = pruebasBuenas();
     if (!m.size) return;
     btnGenerar.dataset.trabajando = "1";
     btnTodo.hidden = true; btnSubir.hidden = true;
@@ -362,6 +379,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
     // Las tres pruebas con más gente, para que el ensayo sea corto pero real
     const porPrueba = new Map();
     for (const p of fichas) {
+      if (!esDeFaseBuena(p)) continue;
       const k = [p["Disciplina"], p["Categoría"], p["Fase"]].join("\u0001");
       if (!porPrueba.has(k)) porPrueba.set(k, []);
       porPrueba.get(k).push(p);
@@ -372,7 +390,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
       .slice(0, 3);
 
     if (!elegidas.length) {
-      estadoTxt.textContent = "No hay ninguna prueba con tres participantes o más.";
+      estadoTxt.textContent = `No hay ninguna ${fasesBuenas().length > 1 ? "final ni semifinal" : "final"} con tres participantes o más.`;
       return;
     }
     for (const v of elegidas) v.slice(0, 10).forEach((p, i) => { p["Puesto"] = String(i + 1); });
@@ -414,15 +432,27 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
     btnTodo.disabled = false;
   });
 
+  // Cuántas pruebas hay listas con el filtro puesto
+  const recontar = () => {
+    if (!fichas.length) return;
+    const m = pruebasBuenas();
+    const todas = M.pruebas(fichas).size;
+    btnGenerar.disabled = m.size === 0 && !ensayo;
+    const fases = fasesBuenas().length > 1 ? "finales y semifinales" : "finales";
+    estadoTxt.textContent = m.size
+      ? `${fichas.length} participantes, ${m.size} ${m.size === 1 ? "prueba" : "pruebas"} con puestos entre las ${fases}.`
+      : todas
+        ? `Hay ${todas} ${todas === 1 ? "prueba" : "pruebas"} con puestos, pero ninguna entre las ${fases}.`
+        : `${fichas.length} participantes, pero ningún puesto todavía. En cuanto rellenes la columna «Puesto» de la hoja, el botón se activa solo.`;
+  };
+
+  document.querySelector("[data-con-semis]").addEventListener("change", recontar);
+
   /* ── Arranque ── */
   M.precargar();
   galeria.listar();
   fetch(C.HOJA.url).then((r) => r.text()).then((t) => {
     fichas = M.leerCSV(t).map((p, i) => ({ ...p, __i: i }));
-    const m = M.pruebas(fichas);
-    btnGenerar.disabled = m.size === 0;
-    estadoTxt.textContent = m.size
-      ? `${fichas.length} participantes, ${m.size} ${m.size === 1 ? "prueba resuelta" : "pruebas resueltas"}.`
-      : `${fichas.length} participantes, pero ningún puesto todavía. En cuanto rellenes la columna «Puesto» de la hoja, el botón se activa solo.`;
+    recontar();
   }).catch((e) => (estadoTxt.textContent = "No se pudo leer la hoja: " + e.message));
 </script>
