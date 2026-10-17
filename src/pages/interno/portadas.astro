@@ -294,8 +294,8 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
     ctx.restore();
   };
 
-  const dibujarLinea = (texto, peso, tracking, centroX, centroY, anchoDestino, maximo, dorado) => {
-    const { cuerpo, av, ancho } = medidaLinea(texto, peso, tracking, anchoDestino, maximo);
+  const dibujarLinea = (texto, peso, tracking, centroX, l, anchoDestino, dorado) => {
+    const { cuerpo, av, ancho } = medidaLinea(texto, peso, tracking, anchoDestino, l.cuerpoMax);
     ctx.font = `${peso} ${cuerpo}px Inter, sans-serif`;
     ctx.textAlign = "left";
     ctx.textBaseline = "alphabetic";
@@ -305,7 +305,9 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
     const m = ctx.measureText(texto);
     const arriba = m.actualBoundingBoxAscent ?? cuerpo * 0.72;
     const abajo = m.actualBoundingBoxDescent ?? 0;
-    const base = centroY + (arriba - abajo) / 2;
+    // Con «altoY» la línea cuelga de su borde de arriba y crece hacia abajo;
+    // con «centroY» se centra, como las dos primeras.
+    const base = l.altoY != null ? l.altoY + arriba : l.centroY + (arriba - abajo) / 2;
 
     const trazar = () => {
       let x = centroX - ancho / 2;
@@ -328,11 +330,24 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
 
     trazar();
 
-    // Dónde termina y dónde empieza la tinta, para colgar de ahí los destellos
+    // Dónde queda la tinta, para colgar de ahí los destellos. «asta» es la
+    // punta de arriba por la izquierda de la última letra: en una L es el
+    // palito, que es donde tiene que ir el brillo. La esquina de la caja
+    // caería en el vacío, a la derecha del pie de la L.
+    const anchoUltima = av[av.length - 1] * cuerpo;
+    const xUltima = centroX - ancho / 2
+      + av.slice(0, -1).reduce((t, a) => t + a, 0) * cuerpo
+      + tracking * cuerpo * Math.max(0, texto.length - 1);
+    const mu = ctx.measureText(texto[texto.length - 1]);
+    const tintaIzq = xUltima - (mu.actualBoundingBoxLeft ?? 0);
+    const altoUltima = mu.actualBoundingBoxAscent ?? arriba;
+
     return {
       derecha: centroX + ancho / 2 - tracking * cuerpo,
       arriba: base - arriba,
       abajo: base + abajo,
+      // Centrado en el grosor del asta, que en Inter ronda el 9 % del cuerpo
+      asta: { x: tintaIzq + cuerpo * 0.045, y: base - altoUltima, ancho: anchoUltima },
     };
   };
 
@@ -363,7 +378,7 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
       let t = (estado.textos[l.id] ?? "").trim();
       if (!t) continue;
       if (l.mayusculas) t = t.toUpperCase();
-      const caja = dibujarLinea(t, l.peso, l.tracking, centroX, l.centroY, D.CAJA.ancho, l.cuerpoMax, l.dorado);
+      const caja = dibujarLinea(t, l.peso, l.tracking, centroX, l, D.CAJA.ancho, l.dorado);
       if (l === D.LINEAS[0]) remateLinea1 = caja;
     }
 
@@ -385,8 +400,8 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
         let x, y;
         if (d.anclaje === "finTexto") {
           if (!remateLinea1) continue;
-          x = remateLinea1.derecha + (d.dx ?? 0);
-          y = remateLinea1.arriba + (d.dy ?? 0);
+          x = remateLinea1.asta.x + (d.dx ?? 0);
+          y = remateLinea1.asta.y + (d.dy ?? 0);
         } else {
           x = D.CAJA.x + d.px * D.CAJA.ancho;
           y = D.REGLA.y + D.REGLA.grosor / 2;

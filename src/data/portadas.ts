@@ -12,8 +12,13 @@ export const LINEAS = [
     peso: 400, tracking: 0.10, centroY: 413, cuerpoMax: 130, mayusculas: true, dorado: true },
   { id: "linea2", etiqueta: "Segunda línea", valor: "SOLISTA",
     peso: 400, tracking: 0.05, centroY: 598, cuerpoMax: 165, mayusculas: true },
+  // Llena el ancho como las otras dos. Como una palabra corta como «SALSA»
+  // necesita cuerpo 208 para llegar a los 690 px, se ancla por el borde de
+  // arriba y crece hacia abajo: así no se come la línea de encima y la tinta
+  // siempre empieza a la misma altura, mida lo que mida. Abajo tiene hasta el
+  // sello del aniversario, que empieza en y=846.
   { id: "linea3", etiqueta: "Tercera línea", valor: "BACHATA",
-    peso: 800, tracking: -0.025, centroY: 720, cuerpoMax: 152, mayusculas: true },
+    peso: 800, tracking: -0.025, altoY: 672, cuerpoMax: 210, mayusculas: true },
 ];
 
 export const REGLA = { x: 616, y: 484, ancho: 691, grosor: 9, dorado: true };
@@ -21,8 +26,9 @@ export const REGLA = { x: 616, y: 484, ancho: 691, grosor: 9, dorado: true };
 // Puntos de brillo, en proporción a la caja de texto. La fase los desacompasa
 // para que no parpadeen todos a la vez.
 export const DESTELLOS = [
-  // Clavado en el remate de la última letra, se escriba lo que se escriba
-  { anclaje: "finTexto", dx: 4, dy: -4, radio: 17, fase: 0.0 },
+  // En la punta del asta de la última letra —el palito de la L—, que es el
+  // borde de arriba por la izquierda de su tinta, no la esquina de la caja
+  { anclaje: "finTexto", dx: 0, dy: -2, radio: 17, fase: 0.0 },
   { anclaje: "regla", px: 0.012, radio: 15, fase: 2.1 },
   { anclaje: "regla", px: 0.78,  radio: 11, fase: 1.1 },
 ];
