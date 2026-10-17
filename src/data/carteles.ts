@@ -63,7 +63,11 @@ export const PODIO = {
   plantilla: "/img/ganadores/plantilla-podio.jpg",
   numeros: "/img/ganadores/numeros/",
   // Por debajo de la barra de fechas de la plantilla, que acaba en y=178
-  titulo: { centroY: 214, cuerpo: 52, anchoMax: 940 },
+  titulo: { centroY: 236, cuerpo: 52, anchoMax: 940 },
+  // Sin la lista del 4 al 10, el podio dejaba vacío todo el tercio de abajo y
+  // la composición quedaba arriba. Cuando no hay lista, baja esto. Con lista
+  // se queda donde estaba, que si no se le echaría encima.
+  bajaSinLista: 120,
   puestos: [
     { n: 1, cx: 540, cy: 648, radio: 184, cuerpoNombre: 44, cuerpoPais: 36 },
     { n: 2, cx: 196, cy: 782, radio: 122, cuerpoNombre: 30, cuerpoPais: 25 },

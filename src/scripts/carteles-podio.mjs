@@ -152,8 +152,13 @@ export function crearPodio(C) {
 
     const aro = await cargar(C.aro.src).catch(() => null);
 
+    // Con lista debajo, el podio se queda arriba; sin ella baja al centro
+    const hayLista = Boolean((estado.lista || "").trim());
+    const baja = hayLista ? 0 : (P.bajaSinLista ?? 0);
+
     for (let i = 0; i < P.puestos.length; i++) {
-      const d = P.puestos[i], e = estado.puestos[i];
+      const d = { ...P.puestos[i], cy: P.puestos[i].cy + baja };
+      const e = estado.puestos[i];
 
       // El número va primero: la foto y el aro le pasan por encima y lo recortan
       const num = await cargar(`${P.numeros}${d.n}-v3.png`).catch(() => null);
