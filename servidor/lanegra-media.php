@@ -17,7 +17,7 @@ const ORIGEN = 'https://evelynlanegra.com';   // quién puede llamar
 
 // Álbumes permitidos. Lista cerrada a propósito: el navegador elige entre
 // estos y no puede inventarse una ruta.
-const ALBUMES = ['subidas', 'portadas'];
+const ALBUMES = ['subidas', 'portadas', 'carteles'];
 
 function album(): string {
   $a = (string)($_POST['album'] ?? 'subidas');

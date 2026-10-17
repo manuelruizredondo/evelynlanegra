@@ -18,10 +18,25 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
       <div class="ge__barra">
         <button class="li__btn" type="button" data-generar disabled>Generar carteles</button>
         <button type="button" class="pt__reset" data-bajar-todo hidden>Descargar todos</button>
+        <button type="button" class="pt__reset" data-subir-todo hidden>Guardar en el servidor</button>
         <span class="ge__estado" data-estado>Leyendo la hoja…</span>
       </div>
 
       <div data-salida></div>
+
+      <section class="ge__guardados" data-guardados>
+        <div class="ge__barra">
+          <h2 class="ge__h2b">Guardados en el servidor</h2>
+          <span class="ge__estado" data-cuenta-srv></span>
+          <div class="ge__filtro" data-filtro>
+            <button type="button" class="ge__f ge__f--on" data-ver-tipo="">Todos</button>
+            <button type="button" class="ge__f" data-ver-tipo="imagen">Imágenes</button>
+            <button type="button" class="ge__f" data-ver-tipo="video">Vídeos</button>
+          </div>
+          <button type="button" class="pt__reset" data-refrescar>Actualizar</button>
+        </div>
+        <div class="ge__rejilla" data-rejilla-srv></div>
+      </section>
     </div>
   </section>
 </Base>
@@ -73,18 +88,30 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
   .ge__visor{position:fixed;inset:0;z-index:4000;background:rgba(8,8,12,.86);
     display:flex;align-items:center;justify-content:center;padding:26px}
   .ge__visor[hidden]{display:none}
-  .ge__visor img{max-width:min(100%,760px);max-height:100%;border-radius:10px}
+  .ge__visor-caja{display:flex;align-items:center;justify-content:center;max-width:100%;max-height:100%}
+  .ge__visor img,.ge__visor video{max-width:min(100%,900px);max-height:100%;
+    border-radius:10px;display:block;background:#000}
+  .ge__lienzo{cursor:zoom-in}
+  .ge__guardados{margin:46px 0 0;border-top:1px solid var(--li-linea);padding-top:24px}
+  .ge__barra{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 16px}
+  .ge__h2b{margin:0;font-size:1rem;font-weight:800;color:var(--li-tinta)}
+  .ge__filtro{display:inline-flex;gap:3px;padding:3px;border-radius:999px;
+    background:var(--li-alt);border:1px solid var(--li-linea);margin-left:auto}
+  .ge__f{border:0;background:none;border-radius:999px;padding:5px 13px;
+    font:inherit;font-size:.74rem;font-weight:600;color:var(--li-suave);cursor:pointer}
+  .ge__f--on{background:#fff;color:var(--li-tinta);box-shadow:0 1px 3px rgba(0,0,0,.09)}
   .ge__cerrar{position:fixed;top:18px;right:20px;border:0;border-radius:999px;width:38px;height:38px;
     background:#fff;color:#15151a;font-size:1.1rem;font-weight:700;cursor:pointer;line-height:1}
 </style>
 
 <div class="ge__visor" data-visor hidden>
   <button type="button" class="ge__cerrar" data-cerrar aria-label="Cerrar">×</button>
-  <img data-visor-img alt="" />
+  <div class="ge__visor-caja" data-visor-caja></div>
 </div>
 
 <script>
   import { crearPodio } from "../../scripts/carteles-podio.mjs";
+  import { crearGaleria } from "../../scripts/galeria.mjs";
 
   const C = JSON.parse(document.querySelector("[data-config]").textContent);
   const M = crearPodio(C);
@@ -98,12 +125,34 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
   let fichas = [];
   let hechos = [];
 
-  /* ── Visor ── */
-  const visor = document.querySelector("[data-visor]");
-  const visorImg = document.querySelector("[data-visor-img]");
-  const cerrar = () => { visor.hidden = true; visorImg.removeAttribute("src"); };
-  visor.addEventListener("click", (e) => { if (e.target === visor || e.target.closest("[data-cerrar]")) cerrar(); });
-  addEventListener("keydown", (e) => { if (e.key === "Escape" && !visor.hidden) cerrar(); });
+  const btnSubir = document.querySelector("[data-subir-todo]");
+
+  /* ── Lo guardado en el servidor, en su propio álbum ── */
+  const galeria = crearGaleria({
+    album: "carteles",
+    nodos: {
+      rejilla: document.querySelector("[data-rejilla-srv]"),
+      cuenta: document.querySelector("[data-cuenta-srv]"),
+      filtro: document.querySelector("[data-filtro]"),
+      visor: document.querySelector("[data-visor]"),
+      visorCaja: document.querySelector("[data-visor-caja]"),
+    },
+    // Rehacer: se vuelve a montar esa misma prueba con lo que diga la hoja hoy
+    alRehacer: async (ajustes) => {
+      const m = M.pruebas(fichas);
+      const clave = [ajustes.disciplina, ajustes.categoria, ajustes.fase].join("\u0001");
+      const lista = m.get(clave);
+      if (!lista?.length) {
+        estadoTxt.textContent = `«${M.cat({ Disciplina: ajustes.disciplina, "Categoría": ajustes.categoria, Fase: ajustes.fase })}» ya no tiene puestos en la hoja.`;
+        return;
+      }
+      estadoTxt.textContent = `Rehaciendo ${M.cat(lista[0])}…`;
+      const salidos = await montarPrueba(lista);
+      hechos.push(...salidos);
+      btnTodo.hidden = false; btnSubir.hidden = false;
+      estadoTxt.textContent = `${M.cat(lista[0])}, rehecho con lo que dice la hoja hoy. Está arriba, sin guardar todavía.`;
+    },
+  });
 
   /* ── Un lienzo de trabajo, fuera de pantalla ── */
   const taller = document.createElement("canvas");
@@ -201,7 +250,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
     return grupo.querySelector(".ge__rejilla");
   };
 
-  const ficha = (donde, titulo, sub, lienzo, blob, archivo) => {
+  const ficha = (donde, titulo, sub, lienzo, blob, archivo, ajustes) => {
     const url = URL.createObjectURL(blob);
     const caja = document.createElement("div");
     caja.className = "ge__ficha";
@@ -216,46 +265,91 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
       </div>`;
     pie.querySelector(".ge__t").textContent = titulo;
     pie.querySelector(".ge__sub").textContent = sub;
-    const abrir = (e) => { e.preventDefault(); visorImg.src = url; visor.hidden = false; };
+    const abrir = (e) => { e.preventDefault(); galeria.abrirVisor({ url, tipo: "imagen" }); };
     pie.querySelector("[data-ver]").addEventListener("click", abrir);
     lienzo.addEventListener("click", abrir);
     caja.append(pie);
     donde.append(caja);
-    return { url, archivo };
+    return { url, archivo, blob, ajustes };
   };
 
   /* ── Generar todo ── */
+  // Monta los carteles de una prueba y los deja en su sitio de la rejilla.
+  // La usan tanto el lote como «Rehacer».
+  const montarPrueba = async (lista) => {
+    const donde = rejillaDe(lista[0]);
+    const d = await montar(lista);
+    const base = M.nombreArchivo(d.titulo);
+    // Con qué se montó, para poder rehacerlo luego desde el servidor
+    const comoSeHizo = {
+      disciplina: lista[0]["Disciplina"], categoria: lista[0]["Categoría"],
+      fase: lista[0]["Fase"], titulo: d.titulo, puestos: d.cuantos,
+    };
+    const salidos = [];
+
+    await M.pintarPodio(tctx, d.podio);
+    salidos.push(ficha(donde, d.titulo, `Podio · ${d.sinFoto ? d.sinFoto + " sin foto" : "con sus fotos"}`,
+      miniatura(), await aBlob(), `${base}-podio.png`, { ...comoSeHizo, cartel: "podio" }));
+
+    if (d.cuantos > P.puestos.length) {
+      await M.pintarTop10(tctx, d.top);
+      salidos.push(ficha(donde, d.titulo, `Top ${Math.min(d.cuantos, T.filas.cuantas)}`,
+        miniatura(), await aBlob(), `${base}-top10.png`, { ...comoSeHizo, cartel: "top10" }));
+    }
+    return salidos;
+  };
+
+  let parar = false;
+
   btnGenerar.addEventListener("click", async () => {
+    // El mismo botón para: mientras trabaja dice «parar»
+    if (btnGenerar.dataset.trabajando) { parar = true; btnGenerar.textContent = "Parando…"; return; }
+
     const m = M.pruebas(fichas);
     if (!m.size) return;
-    btnGenerar.disabled = true;
-    btnTodo.hidden = true;
+    btnGenerar.dataset.trabajando = "1";
+    btnTodo.hidden = true; btnSubir.hidden = true;
     salida.innerHTML = "";
     hechos = [];
+    parar = false;
 
     const pruebas = ordenadas(m);
+    let montadas = 0;
     for (let i = 0; i < pruebas.length; i++) {
+      if (parar) break;
       const lista = pruebas[i][1];
       estadoTxt.textContent = `Montando ${i + 1} de ${pruebas.length}: ${M.cat(lista[0])}…`;
-      const donde = rejillaDe(lista[0]);
-      const d = await montar(lista);
-      const base = M.nombreArchivo(d.titulo);
-
-      await M.pintarPodio(tctx, d.podio);
-      hechos.push(ficha(donde, d.titulo, `Podio · ${d.sinFoto ? d.sinFoto + " sin foto" : "con sus fotos"}`,
-        miniatura(), await aBlob(), `${base}-podio.png`));
-
-      if (d.cuantos > P.puestos.length) {
-        await M.pintarTop10(tctx, d.top);
-        hechos.push(ficha(donde, d.titulo, `Top ${Math.min(d.cuantos, T.filas.cuantas)}`,
-          miniatura(), await aBlob(), `${base}-top10.png`));
-      }
+      btnGenerar.textContent = `Montando ${i + 1} de ${pruebas.length} · parar`;
+      hechos.push(...await montarPrueba(lista));
+      montadas++;
     }
 
-    estadoTxt.textContent = `${hechos.length} carteles de ${pruebas.length} ${pruebas.length === 1 ? "prueba" : "pruebas"}.`;
-    btnGenerar.disabled = false;
+    estadoTxt.textContent = parar
+      ? `Parado. ${hechos.length} carteles de ${montadas} ${montadas === 1 ? "prueba" : "pruebas"}.`
+      : `${hechos.length} carteles de ${pruebas.length} ${pruebas.length === 1 ? "prueba" : "pruebas"}.`;
+    delete btnGenerar.dataset.trabajando;
+    btnGenerar.textContent = "Generar carteles";
+    parar = false;
     btnTodo.hidden = hechos.length === 0;
+    btnSubir.hidden = hechos.length === 0;
   });
+
+  btnSubir.addEventListener("click", async () => {
+    btnSubir.disabled = true;
+    const original = btnSubir.textContent;
+    try {
+      for (let i = 0; i < hechos.length; i++) {
+        btnSubir.textContent = `Guardando ${i + 1} de ${hechos.length}…`;
+        await galeria.subir(hechos[i].blob, hechos[i].archivo, hechos[i].ajustes);
+      }
+      await galeria.listar();
+      estadoTxt.textContent = `${hechos.length} carteles guardados en el servidor.`;
+    } catch (e) {
+      estadoTxt.textContent = "No se pudo guardar: " + e.message;
+    } finally { btnSubir.disabled = false; btnSubir.textContent = original; }
+  });
+
+  document.querySelector("[data-refrescar]").addEventListener("click", () => galeria.listar());
 
   btnTodo.addEventListener("click", async () => {
     btnTodo.disabled = true;
@@ -269,6 +363,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
 
   /* ── Arranque ── */
   M.precargar();
+  galeria.listar();
   fetch(C.HOJA.url).then((r) => r.text()).then((t) => {
     fichas = M.leerCSV(t).map((p, i) => ({ ...p, __i: i }));
     const m = M.pruebas(fichas);
