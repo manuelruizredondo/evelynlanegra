@@ -50,12 +50,12 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
 
           <div class="pt__acciones">
             <button class="li__btn" type="button" data-descargar>Descargar PNG</button>
-            <span class="pt__medida">1080 × 1440</span>
+            <span class="pt__medida">1080 × 1350</span>
           </div>
         </div>
 
         <div class="pt__lienzo pt__lienzo--alto">
-          <canvas data-canvas width="1080" height="1440"></canvas>
+          <canvas data-canvas width="1080" height="1350"></canvas>
         </div>
       </div>
     </div>
@@ -105,9 +105,9 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
   .pt__lienzo canvas{display:block;width:100%;height:auto;touch-action:none}
   /* El póster se queda a la vista mientras se recorre el formulario.
      El alto se limita al del hueco visible, y como el ancho sale del alto
-     (lienzo de 1080x1440), nunca se recorta ni se deforma. */
+     (lienzo de 1080x1350), nunca se recorta ni se deforma. */
   .pt__lienzo{position:sticky;top:calc(var(--header-h) + 16px)}
-  .pt__lienzo--alto{max-width:min(620px, calc((100vh - var(--header-h) - 46px) * 0.75))}
+  .pt__lienzo--alto{max-width:min(620px, calc((100vh - var(--header-h) - 46px) * 0.8))}
   /* Resultados de la búsqueda: nombre arriba, categoría debajo y apagada */
   .pt__item{display:block;width:100%;text-align:left;background:none;border:0;cursor:pointer;
     padding:8px 11px;font:inherit;font-size:.82rem;font-weight:600;color:var(--li-tinta);

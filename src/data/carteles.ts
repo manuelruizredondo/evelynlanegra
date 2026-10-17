@@ -56,45 +56,51 @@ export const FASES = {
 };
 
 // Cartel de podio: un círculo grande para el ganador y dos menores al lado
+/* Plantilla nueva, 1080×1350, con el sello del 15 aniversario cambiado. La
+   cabecera y el pie miden lo mismo que en la de 1440 —el dibujo no se ha
+   escalado, sólo se ha acortado el fondo—, así que el hueco libre pasa de
+   131…1250 (1120 px) a 117…1154 (1038 px). Todo lo de aquí abajo que sea
+   vertical, medidas y cuerpos de letra, va al 92,7 % de lo que medía: es la
+   misma composición de antes, encogida para que quepa con los mismos aires. */
 export const PODIO = {
-  w: 1080, h: 1440,
+  w: 1080, h: 1350,
   // Plantilla propia: sin los escudos laterales ni la barra de fechas, que
   // en el cartel de podio sobran y le quitan sitio al título
-  plantilla: "/img/ganadores/plantilla-podio.jpg",
+  plantilla: "/img/ganadores/plantilla-podio-1350.jpg",
   numeros: "/img/ganadores/numeros/",
-  // Por debajo de la barra de fechas de la plantilla, que acaba en y=178
-  titulo: { centroY: 236, cuerpo: 52, anchoMax: 940 },
+  // Por debajo de la barra negra de la cabecera, que acaba en y=116
+  titulo: { centroY: 214, cuerpo: 48, anchoMax: 940 },
   // Sin la lista del 4 al 10, el podio dejaba vacío todo el tercio de abajo y
   // la composición quedaba arriba. Cuando no hay lista, baja esto. Con lista
   // se queda donde estaba, que si no se le echaría encima.
-  bajaSinLista: 88,
+  bajaSinLista: 82,
   puestos: [
-    { n: 1, cx: 540, cy: 648, radio: 184, cuerpoNombre: 44, cuerpoPais: 36 },
-    { n: 2, cx: 196, cy: 782, radio: 122, cuerpoNombre: 30, cuerpoPais: 25 },
-    { n: 3, cx: 884, cy: 782, radio: 122, cuerpoNombre: 30, cuerpoPais: 25 },
+    { n: 1, cx: 540, cy: 596, radio: 171, cuerpoNombre: 41, cuerpoPais: 33 },
+    { n: 2, cx: 196, cy: 720, radio: 113, cuerpoNombre: 28, cuerpoPais: 23 },
+    { n: 3, cx: 884, cy: 720, radio: 113, cuerpoNombre: 28, cuerpoPais: 23 },
   ],
   // Del 4 al 10, en dos columnas
-  lista: { desde: 4, hasta: 10, y: 1046, salto: 50, colX: [140, 600], ancho: 400, cuerpo: 29 },
+  lista: { desde: 4, hasta: 10, y: 965, salto: 46, colX: [140, 600], ancho: 400, cuerpo: 27 },
 };
 
 // Cartel del top 10: los diez uno debajo de otro. La plantilla sólo tiene
-// contenido propio de y=0 a 258 (cabecera) y de 1251 a 1409 (pie), así que las
-// filas caben holgadas entre medias.
+// contenido propio hasta y=116 (cabecera) y a partir de 1155 (pie), así que
+// las filas caben holgadas entre medias.
 export const TOP10 = {
-  w: 1080, h: 1440,
-  plantilla: "/img/ganadores/plantilla-podio.jpg",
+  w: 1080, h: 1350,
+  plantilla: "/img/ganadores/plantilla-podio-1350.jpg",
   antetitulo: "CLASIFICACIÓN",
   // Reborde de 1 px en oro muy oscuro, para que despegue del fondo
-  ante: { centroY: 288, cuerpo: 58, borde: { color: "#3E1F05", grosor: 1 } },
-  titulo: { centroY: 214, cuerpo: 52, anchoMax: 940 },
+  ante: { centroY: 262, cuerpo: 54, borde: { color: "#3E1F05", grosor: 1 } },
+  titulo: { centroY: 194, cuerpo: 48, anchoMax: 940 },
   filas: {
     cuantas: 10,
-    y0: 412, salto: 88,
+    y0: 377, salto: 81,
     numX: 142, textoX: 232, anchoTexto: 640,
     // A la derecha, la foto a la altura de la fila. Aquí no van banderas: el
     // país ya está escrito debajo del nombre.
-    foto: { cx: 958, radio: 40 },
-    cuerpoNum: 54, cuerpoNombre: 38, cuerpoPais: 21,
+    foto: { cx: 958, radio: 37 },
+    cuerpoNum: 50, cuerpoNombre: 35, cuerpoPais: 19,
     // El país va en la tipografía de texto, no en la de titulares
     familiaPais: '"Mona Sans","Lato",sans-serif', pesoPais: 400, espaciadoPais: 0.16,
   },
