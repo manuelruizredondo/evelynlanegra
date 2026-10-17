@@ -6,14 +6,44 @@
 export const bonito = (b) => b > 1048576 ? (b / 1048576).toFixed(1) + " MB"
                                          : Math.max(1, Math.round(b / 1024)) + " KB";
 
+/* Descarga en tanda.
+   El atributo «download» de un enlace lo ignora el navegador cuando el
+   archivo es de otro dominio, y el servidor de medios lo es: pulsar
+   «Descargar» en un vídeo lo abría en vez de guardarlo. Así que hay que
+   traerse cada archivo y soltarlo como blob, que ya es del mismo origen.
+
+   Van de uno en uno a propósito: una tanda de portadas en vídeo pasa de los
+   200 MB y bajarlas todas a la vez se come la memoria del navegador. */
+export async function bajarEnTanda(piezas, { alAvanzar, seguir = () => true } = {}) {
+  let hechas = 0;
+  for (const a of piezas) {
+    if (!seguir()) break;
+    alAvanzar?.(hechas, piezas.length, a);
+    const r = await fetch(a.url, { cache: "no-store" });
+    if (!r.ok) throw new Error(`${a.nombre}: el servidor respondió ${r.status}`);
+    const url = URL.createObjectURL(await r.blob());
+    const el = document.createElement("a");
+    el.href = url; el.download = a.nombre; el.click();
+    // Un respiro antes de soltar el objeto: si se revoca de inmediato, el
+    // navegador se queda a medias con los archivos grandes
+    await new Promise((listo) => setTimeout(listo, 500));
+    URL.revokeObjectURL(url);
+    hechas++;
+  }
+  alAvanzar?.(hechas, piezas.length, null);
+  return hechas;
+}
+
 /* «soloLectura» cambia de dónde salen los datos: en vez de pedir un permiso
    de subida —que vale igual para subir y para borrar— se llama a una función
    de Netlify que pregunta por nosotros y devuelve sólo la lista. */
 export function crearGaleria({ album, nodos, alRehacer, soloLectura = false }) {
-  const { rejilla, cuenta, filtro, visor, visorCaja } = nodos;
+  const { rejilla, cuenta, filtro, visor, visorCaja, bajarTodo } = nodos;
   let permiso = null;
   let enServidor = [];
   let tipoVisible = "";
+  // Lo que se ve ahora mismo, que es lo que se baja en tanda
+  let visibles = [];
 
   /* ── Permiso y llamadas ── */
   const permisoVigente = async () => {
@@ -85,6 +115,11 @@ export function crearGaleria({ album, nodos, alRehacer, soloLectura = false }) {
     const imagenes = todas.filter((a) => a.tipo === "imagen").length;
     const videos = todas.filter((a) => a.tipo === "video").length;
     const piezas = tipoVisible ? todas.filter((a) => a.tipo === tipoVisible) : todas;
+    visibles = piezas;
+    if (bajarTodo) {
+      bajarTodo.hidden = piezas.length === 0;
+      bajarTodo.textContent = `Descargar ${piezas.length === 1 ? "la que se ve" : `las ${piezas.length} que se ven`}`;
+    }
 
     cuenta.textContent = todas.length
       ? `${imagenes} ${imagenes === 1 ? "imagen" : "imágenes"} · ${videos} ${videos === 1 ? "vídeo" : "vídeos"}`
@@ -104,7 +139,7 @@ export function crearGaleria({ album, nodos, alRehacer, soloLectura = false }) {
           <p class="ge__sub"></p>
           <div class="ge__acciones">
             <button type="button" class="ge__a" data-abrir>Ver</button>
-            <a class="ge__a" href="${a.url}" download>Descargar</a>
+            <button type="button" class="ge__a" data-bajar>Descargar</button>
           </div>
         </div>`;
       caja.querySelector(".ge__t").textContent = a.nombre;
@@ -113,6 +148,14 @@ export function crearGaleria({ album, nodos, alRehacer, soloLectura = false }) {
         new Date(a.fecha).toLocaleDateString("es-ES", { day: "numeric", month: "short" });
       caja.querySelector("[data-abrir]").addEventListener("click", () => abrirVisor(a));
       caja.querySelector(".ge__lienzo").addEventListener("click", () => abrirVisor(a));
+      // Por el mismo motivo que la tanda: con un enlace a otro dominio el
+      // navegador abre el archivo en vez de guardarlo
+      caja.querySelector("[data-bajar]").addEventListener("click", async (ev) => {
+        const b = ev.currentTarget;
+        b.disabled = true; b.textContent = "Bajando…";
+        try { await bajarEnTanda([a]); } catch (e) { cuenta.textContent = e.message; }
+        b.disabled = false; b.textContent = "Descargar";
+      });
 
       const conAjustes = ajustes.get(a.nombre.replace(/\.[^.]+$/, ""));
       if (conAjustes && alRehacer) {
@@ -163,6 +206,32 @@ export function crearGaleria({ album, nodos, alRehacer, soloLectura = false }) {
       filtro.querySelectorAll("[data-ver-tipo]").forEach((x) =>
         x.classList.toggle("ge__f--on", x === b));
       pintar();
+    });
+  }
+
+  /* El botón baja lo que el filtro deja a la vista, así que «Vídeos» +
+     «Descargar» es la forma de llevarse sólo los vídeos. */
+  if (bajarTodo) {
+    let bajando = false, parar = false;
+    bajarTodo.hidden = true;
+    bajarTodo.addEventListener("click", async () => {
+      if (bajando) { parar = true; bajarTodo.textContent = "Parando…"; return; }
+      bajando = true; parar = false;
+      const vuelta = [...visibles];
+      try {
+        await bajarEnTanda(vuelta, {
+          seguir: () => !parar,
+          alAvanzar: (hechas, total) => {
+            bajarTodo.textContent = hechas < total
+              ? `Bajando ${hechas + 1} de ${total} · parar`
+              : `Listo: ${hechas} de ${total}`;
+          },
+        });
+      } catch (e) {
+        cuenta.textContent = e.message;
+      }
+      bajando = false;
+      setTimeout(pintar, 1600);
     });
   }
 

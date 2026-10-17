@@ -11,7 +11,8 @@ import Base from "../../layouts/Base.astro";
       <p class="li__kicker">La Negra World Championship</p>
       <h1 class="li__h1">Galería</h1>
       <p class="li__intro">Portadas y carteles ya publicados. Pulsa en cualquiera para verlo
-        a tamaño completo, o descárgalo.</p>
+        a tamaño completo, o descárgalo. Para llevarte sólo los vídeos, filtra
+        por vídeos y pulsa en descargar.</p>
 
       <section class="ge__bloque">
         <div class="ge__barra">
@@ -22,6 +23,7 @@ import Base from "../../layouts/Base.astro";
             <button type="button" class="ge__f" data-ver-tipo="imagen">Imágenes</button>
             <button type="button" class="ge__f" data-ver-tipo="video">Vídeos</button>
           </div>
+          <button type="button" class="ge__bajar" data-bajar-portadas hidden></button>
         </div>
         <div class="ge__rejilla" data-rejilla-portadas></div>
       </section>
@@ -35,6 +37,7 @@ import Base from "../../layouts/Base.astro";
             <button type="button" class="ge__f" data-ver-tipo="imagen">Imágenes</button>
             <button type="button" class="ge__f" data-ver-tipo="video">Vídeos</button>
           </div>
+          <button type="button" class="ge__bajar" data-bajar-carteles hidden></button>
         </div>
         <div class="ge__rejilla" data-rejilla-carteles></div>
       </section>
@@ -78,6 +81,11 @@ import Base from "../../layouts/Base.astro";
   .ge__f{border:0;background:none;border-radius:999px;padding:5px 13px;
     font:inherit;font-size:.74rem;font-weight:600;color:var(--li-suave);cursor:pointer}
   .ge__f--on{background:#fff;color:var(--li-tinta);box-shadow:0 1px 3px rgba(0,0,0,.09)}
+  .ge__bajar{border:1px solid var(--li-linea);background:var(--li-alt);border-radius:999px;
+    padding:7px 15px;font:inherit;font-size:.74rem;font-weight:600;
+    color:var(--li-tinta);cursor:pointer}
+  .ge__bajar:hover{border-color:var(--li-tinta)}
+  .ge__bajar[hidden]{display:none}
 
   .ge__rejilla{display:grid;gap:20px;grid-template-columns:repeat(auto-fill,minmax(236px,1fr))}
   .ge__ficha{border:1px solid var(--li-linea);border-radius:14px;overflow:hidden;background:#fff;
@@ -117,6 +125,7 @@ import Base from "../../layouts/Base.astro";
         rejilla: document.querySelector(`[data-rejilla-${sufijo}]`),
         cuenta: document.querySelector(`[data-cuenta-${sufijo}]`),
         filtro: document.querySelector(`[data-filtro-${sufijo}]`),
+        bajarTodo: document.querySelector(`[data-bajar-${sufijo}]`),
         visor, visorCaja,
       },
     });

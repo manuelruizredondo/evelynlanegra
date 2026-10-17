@@ -35,6 +35,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
             <button type="button" class="ge__f" data-ver-tipo="imagen">Imágenes</button>
             <button type="button" class="ge__f" data-ver-tipo="video">Vídeos</button>
           </div>
+          <button type="button" class="pt__reset" data-bajar-srv hidden></button>
           <button type="button" class="pt__reset" data-refrescar>Actualizar</button>
         </div>
         <div class="ge__rejilla" data-rejilla-srv></div>
@@ -155,6 +156,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
       rejilla: document.querySelector("[data-rejilla-srv]"),
       cuenta: document.querySelector("[data-cuenta-srv]"),
       filtro: document.querySelector("[data-filtro]"),
+      bajarTodo: document.querySelector("[data-bajar-srv]"),
       visor: document.querySelector("[data-visor]"),
       visorCaja: document.querySelector("[data-visor-caja]"),
     },

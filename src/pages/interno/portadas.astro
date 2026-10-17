@@ -129,6 +129,7 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
             <button type="button" class="gen__f" data-ver-tipo="imagen">Imágenes</button>
             <button type="button" class="gen__f" data-ver-tipo="video">Vídeos</button>
           </div>
+          <button type="button" class="pt__reset" data-bajar-srv hidden></button>
           <button type="button" class="pt__reset" data-refrescar>Actualizar</button>
         </div>
         <p class="pt__pista">Guardadas en el álbum «portadas». Cada una lleva al lado sus
@@ -268,6 +269,8 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
 <script type="application/json" data-config set:html={datos}></script>
 
 <script>
+  import { bajarEnTanda } from "../../scripts/galeria.mjs";
+
   const D = JSON.parse(document.querySelector("[data-config]").textContent);
   const canvas = document.querySelector("[data-canvas]");
   const ctx = canvas.getContext("2d");
@@ -815,7 +818,10 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
   let filtro = "";
   const rejillaSrv = document.querySelector("[data-rejilla-srv]");
   const cuentaSrv = document.querySelector("[data-cuenta-srv]");
+  const btnBajarSrv = document.querySelector("[data-bajar-srv]");
   let enServidor = [];
+  // Lo que el filtro deja a la vista, que es lo que se baja en tanda
+  let visiblesSrv = [];
 
   // Pedir al servidor y pintar van por separado: el filtro sólo repinta
   const listarServidor = async () => {
@@ -836,6 +842,10 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
     const imagenes = todas.filter((a) => a.tipo === "imagen").length;
     const videos = todas.filter((a) => a.tipo === "video").length;
     const piezas = filtro ? todas.filter((a) => a.tipo === filtro) : todas;
+    visiblesSrv = piezas;
+    btnBajarSrv.hidden = piezas.length === 0;
+    btnBajarSrv.textContent = `Descargar ${piezas.length === 1
+      ? "la que se ve" : `las ${piezas.length} que se ven`}`;
 
     cuentaSrv.textContent = todas.length
       ? `${imagenes} ${imagenes === 1 ? "imagen" : "imágenes"} · ${videos} ${videos === 1 ? "vídeo" : "vídeos"}`
@@ -857,7 +867,7 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
           <p class="gen__d"></p>
           <div class="gen__acc">
             <button type="button" class="gen__a" data-abrir>Ver</button>
-            <a class="gen__a" href="${a.url}" download>Descargar</a>
+            <button type="button" class="gen__a" data-bajar>Descargar</button>
           </div>
         </div>`;
       caja.querySelector(".gen__n").textContent = a.nombre;
@@ -866,6 +876,14 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
         new Date(a.fecha).toLocaleDateString("es-ES", { day: "numeric", month: "short" });
       caja.querySelector("[data-abrir]").addEventListener("click", () => abrirVisor(a));
       caja.querySelector(".gen__mini").addEventListener("click", () => abrirVisor(a));
+      // El «download» de un enlace no vale aquí: el archivo es de otro
+      // dominio y el navegador lo abriría en vez de guardarlo
+      caja.querySelector("[data-bajar]").addEventListener("click", async (ev) => {
+        const b = ev.currentTarget;
+        b.disabled = true; b.textContent = "Bajando…";
+        try { await bajarEnTanda([a]); } catch (e) { cuentaSrv.textContent = e.message; }
+        b.disabled = false; b.textContent = "Descargar";
+      });
 
       const conAjustes = ajustes.get(raiz);
       if (conAjustes) {
@@ -937,6 +955,28 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
   });
 
   document.querySelector("[data-refrescar]").addEventListener("click", listarServidor);
+
+  /* Baja lo que el filtro deja a la vista: con «Vídeos» puesto, se lleva sólo
+     los vídeos. De uno en uno, que una tanda entera pasa de los 200 MB. */
+  {
+    let bajando = false, parar = false;
+    btnBajarSrv.addEventListener("click", async () => {
+      if (bajando) { parar = true; btnBajarSrv.textContent = "Parando…"; return; }
+      bajando = true; parar = false;
+      try {
+        await bajarEnTanda([...visiblesSrv], {
+          seguir: () => !parar,
+          alAvanzar: (hechas, total) => {
+            btnBajarSrv.textContent = hechas < total
+              ? `Bajando ${hechas + 1} de ${total} · parar`
+              : `Listo: ${hechas} de ${total}`;
+          },
+        });
+      } catch (e) { decir(e.message); }
+      bajando = false;
+      setTimeout(pintarServidor, 1600);
+    });
+  }
 
   document.querySelector("[data-vaciar]").addEventListener("click", () => {
     generadas.forEach((g) => URL.revokeObjectURL(g.url));
