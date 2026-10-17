@@ -123,12 +123,22 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
         <div class="gen__barra">
           <h2 class="gen__t">En el servidor</h2>
           <span class="gen__cuenta" data-cuenta-srv></span>
+          <div class="gen__filtro" data-filtro>
+            <button type="button" class="gen__f gen__f--on" data-ver-tipo="">Todas</button>
+            <button type="button" class="gen__f" data-ver-tipo="imagen">Imágenes</button>
+            <button type="button" class="gen__f" data-ver-tipo="video">Vídeos</button>
+          </div>
           <button type="button" class="pt__reset" data-refrescar>Actualizar</button>
         </div>
         <p class="pt__pista">Guardadas en el álbum «portadas». Cada una lleva al lado sus
           ajustes, así que se puede rehacer tal cual.</p>
         <div class="gen__rejilla" data-rejilla-srv></div>
       </section>
+
+      <div class="gen__visor" data-visor hidden>
+        <button type="button" class="gen__cerrar" data-cerrar aria-label="Cerrar">×</button>
+        <div class="gen__visor-caja" data-visor-caja></div>
+      </div>
     </div>
   </section>
 </Base>
@@ -216,6 +226,21 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
     border:1px solid var(--li-linea);border-radius:8px;padding:7px 9px;
     font-size:.74rem;font-weight:600;color:var(--li-tinta);cursor:pointer}
   .gen__a:hover{border-color:var(--li-tinta);text-decoration:none}
+  .gen__mini{cursor:zoom-in}
+  .gen__filtro{display:inline-flex;gap:3px;padding:3px;border-radius:999px;
+    background:var(--li-alt);border:1px solid var(--li-linea)}
+  .gen__f{border:0;background:none;border-radius:999px;padding:5px 13px;
+    font:inherit;font-size:.74rem;font-weight:600;color:var(--li-suave);cursor:pointer}
+  .gen__f--on{background:#fff;color:var(--li-tinta);box-shadow:0 1px 3px rgba(0,0,0,.09)}
+
+  .gen__visor{position:fixed;inset:0;z-index:4000;background:rgba(8,8,12,.88);
+    display:flex;align-items:center;justify-content:center;padding:26px}
+  .gen__visor[hidden]{display:none}
+  .gen__visor-caja{display:flex;align-items:center;justify-content:center;max-width:100%;max-height:100%}
+  .gen__visor img,.gen__visor video{max-width:min(100%,1100px);max-height:100%;
+    border-radius:10px;display:block;background:#000}
+  .gen__cerrar{position:fixed;top:18px;right:20px;border:0;border-radius:999px;width:38px;height:38px;
+    background:#fff;color:#15151a;font-size:1.1rem;font-weight:700;cursor:pointer;line-height:1}
 
   .pt__lienzo{border:1px solid var(--li-linea);border-radius:13px;overflow:hidden;background:#000}
   .pt__lienzo canvas{display:block;width:100%;height:auto}
@@ -761,10 +786,28 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
     return guardado;
   };
 
+  /* ── Visor a pantalla grande, para ver de verdad lo guardado ── */
+  const visor = document.querySelector("[data-visor]");
+  const visorCaja = document.querySelector("[data-visor-caja]");
+  const cerrarVisor = () => { visor.hidden = true; visorCaja.innerHTML = ""; };
+  visor.addEventListener("click", (ev) => {
+    if (ev.target === visor || ev.target.closest("[data-cerrar]")) cerrarVisor();
+  });
+  addEventListener("keydown", (ev) => { if (ev.key === "Escape" && !visor.hidden) cerrarVisor(); });
+
+  const abrirVisor = (a) => {
+    visorCaja.innerHTML = a.tipo === "video"
+      ? `<video src="${a.url}" controls autoplay loop playsinline></video>`
+      : `<img src="${a.url}" alt="" />`;
+    visor.hidden = false;
+  };
+
+  let filtro = "";
   const rejillaSrv = document.querySelector("[data-rejilla-srv]");
   const cuentaSrv = document.querySelector("[data-cuenta-srv]");
   let enServidor = [];
 
+  // Pedir al servidor y pintar van por separado: el filtro sólo repinta
   const listarServidor = async () => {
     try {
       const data = await alServidor("listar");
@@ -773,12 +816,19 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
       cuentaSrv.textContent = e.message;
       return;
     }
+    pintarServidor();
+  };
+
+  const pintarServidor = () => {
     const ajustes = new Map(enServidor.filter((a) => a.tipo === "ajustes")
       .map((a) => [a.nombre.replace(/\.json$/, ""), a]));
-    const piezas = enServidor.filter((a) => a.tipo !== "ajustes");
+    const todas = enServidor.filter((a) => a.tipo !== "ajustes");
+    const imagenes = todas.filter((a) => a.tipo === "imagen").length;
+    const videos = todas.filter((a) => a.tipo === "video").length;
+    const piezas = filtro ? todas.filter((a) => a.tipo === filtro) : todas;
 
-    cuentaSrv.textContent = piezas.length
-      ? `${piezas.length} ${piezas.length === 1 ? "portada guardada" : "portadas guardadas"}`
+    cuentaSrv.textContent = todas.length
+      ? `${imagenes} ${imagenes === 1 ? "imagen" : "imágenes"} · ${videos} ${videos === 1 ? "vídeo" : "vídeos"}`
       : "Todavía no hay ninguna.";
 
     rejillaSrv.innerHTML = "";
@@ -788,19 +838,24 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
       caja.className = "gen__ficha";
       caja.innerHTML = `
         ${a.tipo === "video"
-          ? `<video class="gen__mini" src="${a.url}" muted loop playsinline></video>`
+          // El «#t=1» obliga al navegador a enseñar un fotograma de verdad;
+          // sin él la miniatura de un vídeo sale en negro.
+          ? `<video class="gen__mini" src="${a.url}#t=1" preload="metadata" muted loop playsinline></video>`
           : `<img class="gen__mini" src="${a.url}" alt="" loading="lazy" />`}
         <div class="gen__pie">
           <p class="gen__n"></p>
           <p class="gen__d"></p>
           <div class="gen__acc">
-            <a class="gen__a" href="${a.url}" target="_blank" rel="noopener">Ver</a>
+            <button type="button" class="gen__a" data-abrir>Ver</button>
             <a class="gen__a" href="${a.url}" download>Descargar</a>
           </div>
         </div>`;
       caja.querySelector(".gen__n").textContent = a.nombre;
       caja.querySelector(".gen__d").textContent =
-        `${bonito(a.bytes)} · ${new Date(a.fecha).toLocaleDateString("es-ES", { day: "numeric", month: "short" })}`;
+        `${a.tipo === "video" ? "Vídeo" : "Imagen"} · ${bonito(a.bytes)} · ` +
+        new Date(a.fecha).toLocaleDateString("es-ES", { day: "numeric", month: "short" });
+      caja.querySelector("[data-abrir]").addEventListener("click", () => abrirVisor(a));
+      caja.querySelector(".gen__mini").addEventListener("click", () => abrirVisor(a));
 
       const conAjustes = ajustes.get(raiz);
       if (conAjustes) {
@@ -860,6 +915,15 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
     } catch (e) {
       decir("No se pudo subir: " + e.message);
     } finally { b.disabled = false; b.textContent = original; }
+  });
+
+  document.querySelector("[data-filtro]").addEventListener("click", (ev) => {
+    const b = ev.target.closest("[data-ver-tipo]");
+    if (!b) return;
+    filtro = b.dataset.verTipo;
+    document.querySelectorAll("[data-ver-tipo]").forEach((x) =>
+      x.classList.toggle("gen__f--on", x === b));
+    pintarServidor();
   });
 
   document.querySelector("[data-refrescar]").addEventListener("click", listarServidor);
