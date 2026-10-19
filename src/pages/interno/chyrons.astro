@@ -128,9 +128,14 @@ const datos = JSON.stringify({ CHYRON });
   const canvas = document.querySelector("[data-canvas]");
   const ctx = canvas.getContext("2d");
 
+  /* Leído del formulario, no de las constantes: al recargar, el navegador
+     devuelve a cada control lo que tenía sin avisar con un «change», y un
+     estado sacado de las constantes acabaría diciendo una cosa y pintando otra. */
+  const uno = (sel) => document.querySelector(sel);
   const estado = {
-    disciplina: C.logos[0].id,
-    textos: Object.fromEntries(C.lineas.map((l) => [l.id, l.valor])),
+    disciplina: uno('input[name="disc"]:checked')?.value ?? C.logos[0].id,
+    textos: Object.fromEntries(C.lineas.map((l) =>
+      [l.id, uno(`[data-linea="${l.id}"]`)?.value ?? l.valor])),
   };
 
   const imagenes = {};

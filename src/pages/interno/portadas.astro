@@ -290,17 +290,30 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
     im.src = src;
   });
 
+  /* El estado arranca leyendo el formulario, no las constantes.
+     Al recargar, el navegador le devuelve a cada control el valor que tenía
+     —y lo hace sin disparar «change»—, así que un estado sacado de las
+     constantes podía no tener nada que ver con lo que ponía en pantalla. Pasó
+     con las partículas: el desplegable decía «Polvo dorado» y se pintaban
+     chispas, porque la elección se restauró sola y nadie se enteró. */
+  const uno = (sel) => document.querySelector(sel);
   const estado = {
-    textos: Object.fromEntries(D.LINEAS.map((l) => [l.id, l.valor])),
-    logo: document.querySelector('input[name="logo"]:checked').value,
-    regla: true,
-    fondo: "imagen",
-    logoTam: D.FIJOS.logoCaja.lado,
-    destellos: true,
+    textos: Object.fromEntries(D.LINEAS.map((l) =>
+      [l.id, uno(`[data-linea="${l.id}"]`)?.value ?? l.valor])),
+    logo: uno('input[name="logo"]:checked').value,
+    regla: uno("[data-regla]").checked,
+    fondo: uno('input[name="fondo"]:checked').value,
+    logoTam: +uno("[data-logo-tam]").value,
+    destellos: uno("[data-destellos]").checked,
     congelado: false,
-    particulas: D.PARTICULAS[0]?.id ?? "",
-    fuerza: 1,
+    particulas: uno("[data-particulas]").value,
+    fuerza: +uno("[data-fuerza]").value / 100,
   };
+
+  // Las dos etiquetas que van al lado de los deslizadores llevan su número
+  // escrito en el HTML; si el navegador restauró otro, aquí se ponen al día
+  uno("[data-tam-valor]").textContent = `${estado.logoTam} px`;
+  uno("[data-fuerza-val]").textContent = `${Math.round(estado.fuerza * 100)} %`;
 
   const aviso = document.querySelector("[data-aviso]");
   const btn = document.querySelector("[data-descargar]");
