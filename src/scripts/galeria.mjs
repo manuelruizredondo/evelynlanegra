@@ -38,7 +38,7 @@ export async function bajarEnTanda(piezas, { alAvanzar, seguir = () => true } = 
    de subida —que vale igual para subir y para borrar— se llama a una función
    de Netlify que pregunta por nosotros y devuelve sólo la lista. */
 export function crearGaleria({ album, nodos, alRehacer, soloLectura = false }) {
-  const { rejilla, cuenta, filtro, visor, visorCaja, bajarTodo } = nodos;
+  const { rejilla, cuenta, filtro, visor, visorCaja, bajarTodo, borrarTodo } = nodos;
   let permiso = null;
   let enServidor = [];
   let tipoVisible = "";
@@ -93,6 +93,16 @@ export function crearGaleria({ album, nodos, alRehacer, soloLectura = false }) {
     return guardado;
   };
 
+  /* ── Borrar: la pieza y, si lo tiene, su .json de ajustes ── */
+  const borrar = async (a) => {
+    if (soloLectura) throw new Error("Esta vista es de sólo lectura.");
+    await pedir("borrar", { nombre: a.nombre });
+    const raiz = a.nombre.replace(/\.[^.]+$/, "");
+    const ajustes = enServidor.find((x) => x.tipo === "ajustes" && x.nombre === `${raiz}.json`);
+    if (ajustes) await pedir("borrar", { nombre: ajustes.nombre }).catch(() => {});
+    enServidor = enServidor.filter((x) => x !== a && x !== ajustes);
+  };
+
   /* ── Visor ── */
   const cerrarVisor = () => { visor.hidden = true; visorCaja.innerHTML = ""; };
   visor.addEventListener("click", (ev) => {
@@ -116,6 +126,10 @@ export function crearGaleria({ album, nodos, alRehacer, soloLectura = false }) {
     const videos = todas.filter((a) => a.tipo === "video").length;
     const piezas = tipoVisible ? todas.filter((a) => a.tipo === tipoVisible) : todas;
     visibles = piezas;
+    if (borrarTodo) {
+      borrarTodo.hidden = piezas.length === 0;
+      borrarTodo.textContent = `Borrar ${piezas.length === 1 ? "la que se ve" : `las ${piezas.length} que se ven`}`;
+    }
     if (bajarTodo) {
       bajarTodo.hidden = piezas.length === 0;
       bajarTodo.textContent = `Descargar ${piezas.length === 1 ? "la que se ve" : `las ${piezas.length} que se ven`}`;
@@ -140,6 +154,7 @@ export function crearGaleria({ album, nodos, alRehacer, soloLectura = false }) {
           <div class="ge__acciones">
             <button type="button" class="ge__a" data-abrir>Ver</button>
             <button type="button" class="ge__a" data-bajar>Descargar</button>
+            ${soloLectura ? "" : `<button type="button" class="ge__a ge__a--ojo" data-borrar>Borrar</button>`}
           </div>
         </div>`;
       caja.querySelector(".ge__t").textContent = a.nombre;
@@ -155,6 +170,14 @@ export function crearGaleria({ album, nodos, alRehacer, soloLectura = false }) {
         b.disabled = true; b.textContent = "Bajando…";
         try { await bajarEnTanda([a]); } catch (e) { cuenta.textContent = e.message; }
         b.disabled = false; b.textContent = "Descargar";
+      });
+
+      caja.querySelector("[data-borrar]")?.addEventListener("click", async (ev) => {
+        if (!confirm(`¿Borrar «${a.nombre}» del servidor?\n\nNo se puede deshacer.`)) return;
+        const b = ev.currentTarget;
+        b.disabled = true; b.textContent = "Borrando…";
+        try { await borrar(a); pintar(); }
+        catch (e) { cuenta.textContent = e.message; b.disabled = false; b.textContent = "Borrar"; }
       });
 
       const conAjustes = ajustes.get(a.nombre.replace(/\.[^.]+$/, ""));
@@ -235,5 +258,28 @@ export function crearGaleria({ album, nodos, alRehacer, soloLectura = false }) {
     });
   }
 
-  return { subir, listar, pintar, abrirVisor };
+  /* Borrar en tanda lo que el filtro deja a la vista. Va detrás de una
+     confirmación que dice cuántas son, porque de esto no se vuelve. */
+  if (borrarTodo) {
+    borrarTodo.hidden = true;
+    borrarTodo.addEventListener("click", async () => {
+      const lista = [...visibles];
+      if (!lista.length) return;
+      if (!confirm(`¿Borrar del servidor ${lista.length} ${lista.length === 1 ? "archivo" : "archivos"}?\n\n`
+        + "Se van también sus ajustes. No se puede deshacer.")) return;
+      borrarTodo.disabled = true;
+      let hechos = 0;
+      try {
+        for (const a of lista) {
+          borrarTodo.textContent = `Borrando ${hechos + 1} de ${lista.length}`;
+          await borrar(a);
+          hechos++;
+        }
+      } catch (e) { cuenta.textContent = e.message; }
+      borrarTodo.disabled = false;
+      pintar();
+    });
+  }
+
+  return { subir, listar, pintar, abrirVisor, borrar };
 }

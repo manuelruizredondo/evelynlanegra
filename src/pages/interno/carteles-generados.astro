@@ -36,6 +36,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
             <button type="button" class="ge__f" data-ver-tipo="video">Vídeos</button>
           </div>
           <button type="button" class="pt__reset" data-bajar-srv hidden></button>
+          <button type="button" class="pt__reset pt__reset--ojo" data-borrar-srv hidden></button>
           <button type="button" class="pt__reset" data-refrescar>Releer el servidor</button>
         </div>
         <div class="ge__rejilla" data-rejilla-srv></div>
@@ -63,6 +64,9 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
   .pt__reset{background:var(--li-alt);border:1px solid var(--li-linea);border-radius:9px;
     padding:10px 15px;font:inherit;font-size:.78rem;font-weight:600;color:var(--li-tinta);cursor:pointer}
   .pt__reset:hover{border-color:var(--li-tinta)}
+  /* Lo que borra se distingue, pero sin gritar */
+  .pt__reset--ojo,.ge__a--ojo{color:#a11}
+  .pt__reset--ojo:hover,.ge__a--ojo:hover{border-color:#a11;color:#a11}
   .pt__reset[hidden]{display:none}
 
   .ge__barra{display:flex;align-items:center;gap:13px;flex-wrap:wrap;margin:0 0 26px}
@@ -157,6 +161,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
       cuenta: document.querySelector("[data-cuenta-srv]"),
       filtro: document.querySelector("[data-filtro]"),
       bajarTodo: document.querySelector("[data-bajar-srv]"),
+      borrarTodo: document.querySelector("[data-borrar-srv]"),
       visor: document.querySelector("[data-visor]"),
       visorCaja: document.querySelector("[data-visor-caja]"),
     },

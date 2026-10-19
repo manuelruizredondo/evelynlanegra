@@ -131,6 +131,7 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
             <button type="button" class="gen__f" data-ver-tipo="video">Vídeos</button>
           </div>
           <button type="button" class="pt__reset" data-bajar-srv hidden></button>
+          <button type="button" class="pt__reset pt__reset--ojo" data-borrar-srv hidden></button>
           <button type="button" class="pt__reset" data-refrescar>Releer el servidor</button>
         </div>
         <p class="pt__pista">Guardadas en el álbum «portadas». Cada una lleva al lado sus
@@ -218,6 +219,9 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
   .pt__reset{background:var(--li-alt);border:1px solid var(--li-linea);border-radius:9px;
     padding:9px 14px;font:inherit;font-size:.76rem;font-weight:600;color:var(--li-tinta);cursor:pointer}
   .pt__reset:hover{border-color:var(--li-tinta)}
+  /* Lo que borra se distingue, pero sin gritar */
+  .pt__reset--ojo,.gen__a--ojo{color:#a11}
+  .pt__reset--ojo:hover,.gen__a--ojo:hover{border-color:#a11;color:#a11}
   .pt__enlace{border:0;background:none;padding:0;font:inherit;font-size:inherit;
     font-weight:700;color:var(--li-acc);cursor:pointer;text-decoration:underline}
 
@@ -786,6 +790,15 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
     return data;
   };
 
+  // Borra la portada y, si lo tiene, el .json de ajustes de al lado
+  const borrarDelServidor = async (a) => {
+    await alServidor("borrar", { nombre: a.nombre });
+    const raiz = a.nombre.replace(/\.[^.]+$/, "");
+    const ajustes = enServidor.find((x) => x.tipo === "ajustes" && x.nombre === `${raiz}.json`);
+    if (ajustes) await alServidor("borrar", { nombre: ajustes.nombre }).catch(() => {});
+    enServidor = enServidor.filter((x) => x !== a && x !== ajustes);
+  };
+
   // Sube la portada y, al lado, un .json con los ajustes para poder rehacerla
   const guardarEnServidor = async (ficha) => {
     const subida = await alServidor("subir", {
@@ -820,6 +833,7 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
   const rejillaSrv = document.querySelector("[data-rejilla-srv]");
   const cuentaSrv = document.querySelector("[data-cuenta-srv]");
   const btnBajarSrv = document.querySelector("[data-bajar-srv]");
+  const btnBorrarSrv = document.querySelector("[data-borrar-srv]");
   let enServidor = [];
   // Lo que el filtro deja a la vista, que es lo que se baja en tanda
   let visiblesSrv = [];
@@ -844,6 +858,9 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
     const videos = todas.filter((a) => a.tipo === "video").length;
     const piezas = filtro ? todas.filter((a) => a.tipo === filtro) : todas;
     visiblesSrv = piezas;
+    btnBorrarSrv.hidden = piezas.length === 0;
+    btnBorrarSrv.textContent = `Borrar ${piezas.length === 1
+      ? "la que se ve" : `las ${piezas.length} que se ven`}`;
     btnBajarSrv.hidden = piezas.length === 0;
     btnBajarSrv.textContent = `Descargar ${piezas.length === 1
       ? "la que se ve" : `las ${piezas.length} que se ven`}`;
@@ -869,6 +886,7 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
           <div class="gen__acc">
             <button type="button" class="gen__a" data-abrir>Ver</button>
             <button type="button" class="gen__a" data-bajar>Descargar</button>
+            <button type="button" class="gen__a gen__a--ojo" data-borrar>Borrar</button>
           </div>
         </div>`;
       caja.querySelector(".gen__n").textContent = a.nombre;
@@ -884,6 +902,13 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
         b.disabled = true; b.textContent = "Bajando…";
         try { await bajarEnTanda([a]); } catch (e) { cuentaSrv.textContent = e.message; }
         b.disabled = false; b.textContent = "Descargar";
+      });
+      caja.querySelector("[data-borrar]").addEventListener("click", async (ev) => {
+        if (!confirm(`¿Borrar «${a.nombre}» del servidor?\n\nNo se puede deshacer.`)) return;
+        const b = ev.currentTarget;
+        b.disabled = true; b.textContent = "Borrando…";
+        try { await borrarDelServidor(a); pintarServidor(); }
+        catch (e) { cuentaSrv.textContent = e.message; b.disabled = false; b.textContent = "Borrar"; }
       });
 
       const conAjustes = ajustes.get(raiz);
@@ -956,6 +981,27 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
   });
 
   document.querySelector("[data-refrescar]").addEventListener("click", listarServidor);
+
+  /* Borra en tanda lo que el filtro deja a la vista. Es la forma de limpiar
+     una tanda vieja antes de subir la nueva: el servidor nunca pisa archivos,
+     así que si no se borra antes quedan las dos, con «-2» al final. */
+  btnBorrarSrv.addEventListener("click", async () => {
+    const lista = [...visiblesSrv];
+    if (!lista.length) return;
+    if (!confirm(`¿Borrar del servidor ${lista.length} ${lista.length === 1 ? "archivo" : "archivos"}?\n\n`
+      + "Se van también sus ajustes. No se puede deshacer.")) return;
+    btnBorrarSrv.disabled = true;
+    let hechos = 0;
+    try {
+      for (const a of lista) {
+        btnBorrarSrv.textContent = `Borrando ${hechos + 1} de ${lista.length}`;
+        await borrarDelServidor(a);
+        hechos++;
+      }
+    } catch (e) { decir(e.message); }
+    btnBorrarSrv.disabled = false;
+    pintarServidor();
+  });
 
   /* Baja lo que el filtro deja a la vista: con «Vídeos» puesto, se lleva sólo
      los vídeos. De uno en uno, que una tanda entera pasa de los 200 MB. */
