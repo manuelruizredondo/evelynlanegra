@@ -167,10 +167,21 @@ export default async (req, context) => {
        usa se pasa la tarde pensando que la escribe mal. Sólo aparece cuando
        falta de verdad, así que a quien no debería estar aquí no le dice nada
        que no supiera ya. */
-    return html(pagina(claveGaleria
-      ? "Contraseña incorrecta."
-      : "Contraseña incorrecta. (Ojo: GALERIA_PASSWORD no está configurada en Netlify, "
-        + "así que la llave de sólo mirar no puede funcionar todavía.)", limpia), 401);
+    /* Pista de diagnóstico, temporal: comparar a ciegas no lleva a ningún
+       sitio. No dice el valor ni su longitud; sólo si lo escrito tiene el
+       mismo número de caracteres que la llave de galería, y si sería correcto
+       de no ser por las mayúsculas. Son dos bits, y ahorran tardes enteras. */
+    const pista = () => {
+      if (!claveGaleria) return " (Ojo: GALERIA_PASSWORD no está configurada en Netlify, "
+        + "así que la llave de sólo mirar no puede funcionar todavía.)";
+      if (!enviada) return "";
+      if (enviada.toLowerCase() === claveGaleria.toLowerCase())
+        return " Con la llave de galería coincidiría de no ser por las mayúsculas.";
+      if (enviada.length !== claveGaleria.length)
+        return " La llave de galería tiene otro número de caracteres que lo que has escrito.";
+      return " Tiene el mismo largo que la llave de galería, pero algún carácter no es el mismo.";
+    };
+    return html(pagina("Contraseña incorrecta." + pista(), limpia), 401);
   }
 
   return html(pagina("", limpia), 401);
