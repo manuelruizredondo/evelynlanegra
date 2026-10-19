@@ -91,6 +91,10 @@ export const PROGRAMA = [
 // El polvo va primero porque es el que se usa: el primero de la lista es el
 // que sale puesto por defecto, tanto en las portadas fijas como en las de vídeo.
 export const PARTICULAS = [
-  { id: "polvo", nombre: "Polvo dorado", src: "/img/portadas/particulas-polvo.mp4" },
+  /* El «-v2» no es capricho: /img/ se sirve con un año de caché, así que un
+     archivo corregido con el mismo nombre no le llegaría a quien ya lo tuviera.
+     Esta copia va sin los dos fogonazos de un fotograma que traía el original
+     (iban en los fotogramas 140 y 250, y no en la vuelta del bucle). */
+  { id: "polvo", nombre: "Polvo dorado", src: "/img/portadas/particulas-polvo-v2.mp4" },
   { id: "chispas", nombre: "Chispas", src: "/img/portadas/particulas-doradas.mp4" },
 ];
