@@ -1,0 +1,239 @@
+---
+import Base from "../../layouts/Base.astro";
+import InternoNav from "../../components/InternoNav.astro";
+import { CHYRON } from "../../data/chyrons";
+const datos = JSON.stringify({ CHYRON });
+---
+<Base title="Chyrons · uso interno" description="Rótulos de directo del campeonato." noindex={true}>
+  <InternoNav actual="/interno/chyrons/" />
+
+  <section class="li">
+    <div class="li__ancho">
+      <p class="li__kicker">Uso interno</p>
+      <h1 class="li__h1">Chyrons</h1>
+      <p class="li__intro">Los rótulos de directo, a {CHYRON.w}×{CHYRON.h} y con el fondo
+        transparente, para montarlos encima de la señal.</p>
+
+      <div class="ch">
+        <div class="ch__panel">
+          <div class="pt__grupo">
+            <p class="pt__t">Disciplina</p>
+            <div class="ch__discs">
+              {CHYRON.logos.map((l, i) => (
+                <label class="ch__disc">
+                  <input type="radio" name="disc" value={l.id} checked={i === 0} />
+                  <img src={l.src} alt={l.nombre} />
+                  <span>{l.nombre}</span>
+                </label>
+              ))}
+            </div>
+            <p class="pt__pista">Cambia el sello del círculo.</p>
+          </div>
+
+          <div class="pt__grupo">
+            <p class="pt__t">Texto</p>
+            {CHYRON.lineas.map((l) => (
+              <label class="pt__campo">
+                <span>{l.etiqueta}</span>
+                <input type="text" data-linea={l.id} value={l.valor} autocomplete="off" />
+              </label>
+            ))}
+            <p class="pt__pista">Si una línea no cabe antes del polvo de estrellas,
+              se encoge lo justo. Dejar una vacía la quita del rótulo.</p>
+          </div>
+
+          <div class="pt__grupo">
+            <p class="pt__t">En blanco</p>
+            <p class="pt__pista">Con el sello puesto y sin nada escrito, para rotular
+              desde la mesa de realización.</p>
+            {CHYRON.logos.map((l) => (
+              <button type="button" class="pt__reset" data-vacio={l.id}>PNG en blanco · {l.nombre}</button>
+            ))}
+          </div>
+
+          <div class="pt__acciones">
+            <button class="li__btn" type="button" data-descargar>Descargar PNG</button>
+            <span class="pt__medida">{CHYRON.w} × {CHYRON.h}</span>
+          </div>
+        </div>
+
+        <div class="ch__lienzo">
+          <canvas data-canvas width={CHYRON.w} height={CHYRON.h}></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;800&display=swap" />
+
+<style is:global>
+  .li{--li-tinta:#15151a;--li-suave:#6d6d76;--li-linea:#e4e4e8;--li-fondo:#fff;--li-alt:#f6f6f8;--li-acc:#ce0306;
+    background:var(--li-fondo);color:var(--li-tinta);padding:calc(var(--header-h) + 8px) 0 70px;min-height:100vh}
+  html,body{background:#fff !important}
+  .li__ancho{max-width:var(--maxw);margin-inline:auto;padding-inline:clamp(18px,4vw,34px)}
+  .li__kicker{margin:0 0 6px;font-size:.72rem;font-weight:800;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--li-acc)}
+  .li__h1{color:var(--li-tinta);margin:0 0 10px;font-size:clamp(1.7rem,3.5vw,2.4rem);line-height:1.05}
+  .li__intro{margin:0 0 30px;color:var(--li-suave);font-size:.9rem;max-width:60ch}
+  .li__btn{background:var(--li-acc);color:#fff;border:0;border-radius:10px;padding:11px 20px;
+    font:inherit;font-weight:700;font-size:.85rem;cursor:pointer}
+
+  .ch{display:grid;gap:26px}
+  .ch__panel{display:grid;gap:16px;align-content:start}
+  .pt__grupo{border:1px solid var(--li-linea);border-radius:13px;padding:16px;display:grid;gap:11px}
+  .pt__t{margin:0;font-size:.7rem;font-weight:800;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--li-suave)}
+  .pt__campo{display:grid;gap:5px}
+  .pt__campo>span{font-size:.7rem;font-weight:700;letter-spacing:.06em;
+    text-transform:uppercase;color:var(--li-suave)}
+  .pt__campo input[type=text]{width:100%;font:inherit;font-size:.86rem;padding:10px 12px;
+    border:1px solid var(--li-linea);border-radius:9px;background:#fff;color:inherit}
+  .pt__campo input:focus{outline:none;border-color:var(--li-acc)}
+  .pt__pista{margin:0;color:var(--li-suave);font-size:.75rem;line-height:1.5}
+  .pt__reset{background:var(--li-alt);border:1px solid var(--li-linea);border-radius:9px;
+    padding:9px 13px;font:inherit;font-size:.78rem;font-weight:600;color:var(--li-tinta);cursor:pointer}
+  .pt__reset:hover{border-color:var(--li-tinta)}
+  .pt__acciones{display:flex;align-items:center;gap:13px;flex-wrap:wrap}
+  .pt__medida{color:var(--li-suave);font-size:.75rem}
+
+  /* Los dos sellos, para elegir mirándolos */
+  .ch__discs{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .ch__disc{border:1px solid var(--li-linea);border-radius:11px;padding:12px 8px;
+    display:grid;justify-items:center;gap:7px;cursor:pointer;background:var(--li-alt)}
+  .ch__disc:has(input:checked){background:#fff;border-color:var(--li-acc)}
+  .ch__disc img{width:54px;height:54px;object-fit:contain}
+  .ch__disc span{font-size:.76rem;font-weight:600}
+  .ch__disc input{margin:0}
+
+  /* Damero: el rótulo es transparente y conviene verlo */
+  .ch__lienzo{border:1px solid var(--li-linea);border-radius:13px;overflow:hidden;padding:14px;
+    background-color:#e9e9ee;
+    background-image:linear-gradient(45deg,#d7d7de 25%,transparent 25%,transparent 75%,#d7d7de 75%),
+                     linear-gradient(45deg,#d7d7de 25%,transparent 25%,transparent 75%,#d7d7de 75%);
+    background-size:22px 22px;background-position:0 0,11px 11px}
+  .ch__lienzo canvas{display:block;width:100%;height:auto}
+
+  @media (min-width:1000px){
+    .ch{grid-template-columns:minmax(300px,380px) 1fr;align-items:start}
+    .ch__lienzo{position:sticky;top:calc(var(--header-h) + 16px)}
+  }
+</style>
+
+<script type="application/json" data-config set:html={datos}></script>
+
+<script>
+  const { CHYRON: C } = JSON.parse(document.querySelector("[data-config]").textContent);
+  const canvas = document.querySelector("[data-canvas]");
+  const ctx = canvas.getContext("2d");
+
+  const estado = {
+    disciplina: C.logos[0].id,
+    textos: Object.fromEntries(C.lineas.map((l) => [l.id, l.valor])),
+  };
+
+  const imagenes = {};
+  const cargar = (src) => new Promise((ok, mal) => {
+    if (imagenes[src]) return ok(imagenes[src]);
+    const im = new Image();
+    im.onload = () => { imagenes[src] = im; ok(im); };
+    im.onerror = () => mal(new Error("no se pudo cargar " + src));
+    im.src = src;
+  });
+
+  /* Letra a letra en vez de «ctx.letterSpacing»: esa propiedad no la tiene
+     Safari, y donde sí está mide distinto de lo que pinta. Midiendo y
+     dibujando con el mismo bucle, el ancho que se calcula es el que sale. */
+  const escribir = (c, l, texto) => {
+    if (!texto) return;
+    c.textAlign = "left";
+    c.textBaseline = "alphabetic";
+    c.fillStyle = l.color;
+
+    const ancho = (cuerpo) => {
+      const extra = cuerpo * l.espaciado;
+      let w = 0;
+      for (const ch of texto) w += c.measureText(ch).width + extra;
+      return Math.max(0, w - extra);
+    };
+
+    // Se encoge sólo si no cabe, y nunca por debajo del 55 %
+    let cuerpo = l.cuerpo;
+    c.font = `${l.peso} ${cuerpo}px Inter, sans-serif`;
+    const mide = ancho(cuerpo);
+    if (mide > C.anchoMax) {
+      cuerpo = Math.max(l.cuerpo * 0.55, cuerpo * (C.anchoMax / mide));
+      c.font = `${l.peso} ${cuerpo}px Inter, sans-serif`;
+    }
+
+    const extra = cuerpo * l.espaciado;
+    let x = l.x;
+    for (const ch of texto) {
+      c.fillText(ch, x, l.base);
+      x += c.measureText(ch).width + extra;
+    }
+  };
+
+  /* Pinta en el contexto que se le pase: el de pantalla, o uno aparte cuando
+     se piden los de en blanco sin tocar lo que haya escrito. */
+  const pintarEn = async (c, disciplina, textos) => {
+    const logo = C.logos.find((l) => l.id === disciplina) ?? C.logos[0];
+    const [fondo, sello] = await Promise.all([cargar(C.fondo), cargar(logo.src)]);
+    c.clearRect(0, 0, C.w, C.h);
+    c.drawImage(fondo, 0, 0, C.w, C.h);
+    c.drawImage(sello, logo.x, logo.y, logo.ancho, logo.alto);
+    for (const l of C.lineas) escribir(c, l, (textos[l.id] || "").trim());
+  };
+
+  const pintar = () => pintarEn(ctx, estado.disciplina, estado.textos);
+
+  /* ── Controles ── */
+  document.querySelectorAll('input[name="disc"]').forEach((rad) => {
+    rad.addEventListener("change", () => { estado.disciplina = rad.value; pintar(); });
+  });
+
+  document.querySelectorAll("[data-linea]").forEach((inp) => {
+    inp.addEventListener("input", () => {
+      estado.textos[inp.dataset.linea] = inp.value;
+      pintar();
+    });
+  });
+
+  const comoPNG = async (c) =>
+    new Promise((listo) => c.canvas.toBlob(listo, "image/png"));
+
+  const bajar = (blob, nombre) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = nombre; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+
+  const comoArchivo = (t) => (t || "")
+    .normalize("NFD").replace(/[̀-ͯ]/g, "")
+    .toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+  document.querySelector("[data-descargar]").addEventListener("click", async () => {
+    const raiz = [estado.disciplina, comoArchivo(estado.textos.nombre)]
+      .filter(Boolean).join("-") || "chyron";
+    bajar(await comoPNG(ctx), `chyron-${raiz}-${C.w}x${C.h}.png`);
+  });
+
+  // Los de en blanco se montan aparte, para no borrar lo que haya escrito
+  document.querySelectorAll("[data-vacio]").forEach((b) => {
+    b.addEventListener("click", async () => {
+      const aparte = document.createElement("canvas");
+      aparte.width = C.w; aparte.height = C.h;
+      const c = aparte.getContext("2d");
+      await pintarEn(c, b.dataset.vacio, {});
+      bajar(await comoPNG(c), `chyron-${b.dataset.vacio}-blanco-${C.w}x${C.h}.png`);
+    });
+  });
+
+  // Inter tiene que estar cargada antes de medir, o el ajuste saldría mal
+  Promise.all([
+    document.fonts.load("500 100px Inter"),
+    document.fonts.load("800 100px Inter"),
+  ]).then(pintar).then(() => document.fonts.ready).then(pintar);
+</script>
