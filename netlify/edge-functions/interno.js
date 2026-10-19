@@ -70,7 +70,7 @@ export const nuevaGalleta = async (secreto, papel) => {
     `; Path=/; Max-Age=${HORAS * 3600}; HttpOnly; Secure; SameSite=Lax`;
 };
 
-const pagina = (aviso) => `<!doctype html>
+const pagina = (aviso, acción = "") => `<!doctype html>
 <html lang="es"><head><meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex, nofollow" />
@@ -95,7 +95,7 @@ const pagina = (aviso) => `<!doctype html>
   .e{margin:12px 0 0;color:#ce0306;font-size:.82rem;font-weight:600}
 </style></head>
 <body>
-  <form method="post">
+  <form method="post"${acción ? ` action="${acción}"` : ""}>
     <p class="k">Uso interno</p>
     <h1>Contraseña</h1>
     <label for="c">Clave de acceso</label>
@@ -125,9 +125,13 @@ export default async (req, context) => {
 
   const url = new URL(req.url);
 
-  // Salir: se vacía la galleta y se vuelve a pedir la clave
-  if (url.searchParams.has("salir")) {
-    return html(pagina("Sesión cerrada."), 401, {
+  /* Al salir, el navegador se queda en «…?salir», y el formulario de la clave
+     se manda a esa misma dirección. Si «salir» se mirara también en el POST,
+     se tragaría el intento de entrar y la contraseña no se comprobaría nunca:
+     quien cerraba sesión ya no podía volver. Así que salir es cosa del GET. */
+  const limpia = url.pathname;   // la ruta sin «?salir» colgando
+  if (req.method !== "POST" && url.searchParams.has("salir")) {
+    return html(pagina("Sesión cerrada.", limpia), 401, {
       "set-cookie": `${COOKIE}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax`,
     });
   }
@@ -152,7 +156,7 @@ export default async (req, context) => {
         status: 303,
         headers: {
           // La llave de galería entra siempre por su página, venga de donde venga
-          location: papel === "galeria" ? SOLO_GALERIA : url.pathname + url.search,
+          location: papel === "galeria" ? SOLO_GALERIA : limpia,
           "set-cookie": await nuevaGalleta(secreto, papel),
           "cache-control": "no-store",
         },
@@ -166,8 +170,8 @@ export default async (req, context) => {
     return html(pagina(claveGaleria
       ? "Contraseña incorrecta."
       : "Contraseña incorrecta. (Ojo: GALERIA_PASSWORD no está configurada en Netlify, "
-        + "así que la llave de sólo mirar no puede funcionar todavía.)"), 401);
+        + "así que la llave de sólo mirar no puede funcionar todavía.)", limpia), 401);
   }
 
-  return html(pagina(), 401);
+  return html(pagina("", limpia), 401);
 };
