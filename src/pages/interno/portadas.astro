@@ -89,8 +89,9 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
                 <option value="video">Vídeo</option>
               </select>
             </label>
-            <button type="button" class="pt__reset" data-finales>Portadas de finales y semifinales</button>
-            <p class="pt__pista" data-finales-estado>{PROGRAMA.length} portadas, en el orden de la jornada y con el escudo que toca.</p>
+            <button type="button" class="li__btn" data-finales>Generar las {PROGRAMA.length} portadas</button>
+            <p class="pt__pista" data-finales-estado>Las {PROGRAMA.length} del programa, en el orden de la jornada y
+              con el escudo que toca. Aparecen abajo, en «Generadas».</p>
             <p class="pt__pista">En vídeo tarda unos cinco minutos, porque graba cada una entera, y
               ocupa cerca de 230 MB en memoria: descárgalas y vacía la lista antes de hacer otra tanda.</p>
           </div>
@@ -130,7 +131,7 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
             <button type="button" class="gen__f" data-ver-tipo="video">Vídeos</button>
           </div>
           <button type="button" class="pt__reset" data-bajar-srv hidden></button>
-          <button type="button" class="pt__reset" data-refrescar>Actualizar</button>
+          <button type="button" class="pt__reset" data-refrescar>Releer el servidor</button>
         </div>
         <p class="pt__pista">Guardadas en el álbum «portadas». Cada una lleva al lado sus
           ajustes, así que se puede rehacer tal cual.</p>
@@ -1113,7 +1114,7 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
       return;
     }
     montando = true; parar = false;
-    const original = "Portadas de finales y semifinales";
+    const original = `Generar las ${D.PROGRAMA.length} portadas`;
     try {
       const lista = D.PROGRAMA;
       const enVideo = document.querySelector("[data-formato-lote]").value === "video";
