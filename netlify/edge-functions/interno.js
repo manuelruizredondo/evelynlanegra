@@ -111,8 +111,12 @@ const html = (cuerpo, status, extra = {}) => new Response(cuerpo, {
 });
 
 export default async (req, context) => {
-  const clave = entorno("LISTA_PASSWORD");
-  const claveGaleria = entorno("GALERIA_PASSWORD");
+  /* Se recortan los espacios: una clave pegada en Netlify con un salto de
+     línea o un espacio al final es un clásico, y deja fuera a quien la escribe
+     bien. Se recorta igual lo que llega del formulario, para que las dos
+     partes se comparen en las mismas condiciones. */
+  const clave = (entorno("LISTA_PASSWORD") ?? "").trim();
+  const claveGaleria = (entorno("GALERIA_PASSWORD") ?? "").trim();
   const secreto = entorno("INTERNO_SECRET") ?? entorno("MEDIA_SECRET");
 
   if (!clave || !secreto) {
@@ -139,7 +143,7 @@ export default async (req, context) => {
 
   if (req.method === "POST") {
     const form = await req.formData().catch(() => null);
-    const enviada = form?.get("clave");
+    const enviada = (form?.get("clave") ?? "").toString().trim();
     const papel = iguales(enviada, clave) ? "todo"
       : (claveGaleria && iguales(enviada, claveGaleria)) ? "galeria" : null;
 
@@ -155,7 +159,14 @@ export default async (req, context) => {
       });
     }
     await new Promise((r) => setTimeout(r, 700));  // frena la fuerza bruta
-    return html(pagina("Contraseña incorrecta."), 401);
+    /* Si la llave de galería ni siquiera está puesta, decirlo: si no, quien la
+       usa se pasa la tarde pensando que la escribe mal. Sólo aparece cuando
+       falta de verdad, así que a quien no debería estar aquí no le dice nada
+       que no supiera ya. */
+    return html(pagina(claveGaleria
+      ? "Contraseña incorrecta."
+      : "Contraseña incorrecta. (Ojo: GALERIA_PASSWORD no está configurada en Netlify, "
+        + "así que la llave de sólo mirar no puede funcionar todavía.)"), 401);
   }
 
   return html(pagina(), 401);
