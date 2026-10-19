@@ -865,9 +865,16 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
     btnBajarSrv.textContent = `Descargar ${piezas.length === 1
       ? "la que se ve" : `las ${piezas.length} que se ven`}`;
 
+    /* El vacío se explica: «no hay nada» y «el filtro no deja ver nada» son
+       dos cosas distintas, y lo que está sólo en «Generadas» todavía no está
+       aquí por mucho que se acabe de montar. */
     cuentaSrv.textContent = todas.length
-      ? `${imagenes} ${imagenes === 1 ? "imagen" : "imágenes"} · ${videos} ${videos === 1 ? "vídeo" : "vídeos"}`
-      : "Todavía no hay ninguna.";
+      ? (piezas.length
+          ? `${imagenes} ${imagenes === 1 ? "imagen" : "imágenes"} · ${videos} ${videos === 1 ? "vídeo" : "vídeos"}`
+          : `Ninguna de las ${todas.length} que hay es de ese tipo.`)
+      : (generadas.length
+          ? `Vacío. Las ${generadas.length} de arriba están sólo en esta pestaña: súbelas con «Subir todas al servidor».`
+          : "Vacío: aquí no hay nada guardado.");
 
     rejillaSrv.innerHTML = "";
     for (const a of piezas) {
