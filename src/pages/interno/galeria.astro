@@ -1,5 +1,6 @@
 ---
 import Base from "../../layouts/Base.astro";
+import { CHYRON } from "../../data/chyrons";
 /* Vista de sólo mirar: lo ya publicado en el servidor, portadas y carteles.
    No lleva la barra del área privada a propósito — quien entra aquí no tiene
    por qué ver que existen los creadores ni los formularios. Y tampoco le
@@ -10,9 +11,9 @@ import Base from "../../layouts/Base.astro";
     <div class="li__ancho">
       <p class="li__kicker">La Negra World Championship</p>
       <h1 class="li__h1">Galería</h1>
-      <p class="li__intro">Portadas y carteles ya publicados. Pulsa en cualquiera para verlo
-        a tamaño completo, o descárgalo. Para llevarte sólo los vídeos, filtra
-        por vídeos y pulsa en descargar.</p>
+      <p class="li__intro">Portadas, carteles y los rótulos de directo. Pulsa en cualquiera
+        para verlo a tamaño completo, o descárgalo. Para llevarte sólo los vídeos,
+        filtra por vídeos y pulsa en descargar.</p>
 
       <section class="ge__bloque">
         <div class="ge__barra">
@@ -40,6 +41,31 @@ import Base from "../../layouts/Base.astro";
           <button type="button" class="ge__bajar" data-bajar-carteles hidden></button>
         </div>
         <div class="ge__rejilla" data-rejilla-carteles></div>
+      </section>
+
+      <section class="ge__bloque">
+        <div class="ge__barra">
+          <h2 class="ge__h2">Chyrons</h2>
+          <span class="ge__estado">Los rótulos de directo, en blanco</span>
+        </div>
+        <p class="li__intro ch__nota">A {CHYRON.w}×{CHYRON.h} y con el fondo transparente,
+          con el sello puesto y sin texto, para rotularlos desde la mesa.</p>
+        <div class="ge__rejilla ge__rejilla--ancha">
+          {CHYRON.logos.map((l) => (
+            <div class="ge__ficha">
+              <img class="ge__lienzo ge__lienzo--damero" src={`/img/chyrons/chyron-${l.id}-blanco.png`}
+                   alt={`Chyron de ${l.nombre}`} loading="lazy" />
+              <div class="ge__pie">
+                <p class="ge__t">chyron-{l.id}-blanco.png</p>
+                <p class="ge__sub">PNG · {CHYRON.w} × {CHYRON.h} · fondo transparente</p>
+                <div class="ge__acciones">
+                  <a class="ge__a" href={`/img/chyrons/chyron-${l.id}-blanco.png`} target="_blank">Ver</a>
+                  <a class="ge__a" href={`/img/chyrons/chyron-${l.id}-blanco.png`} download>Descargar</a>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </section>
 
       <p class="li__pie"><a href="?salir">Salir</a></p>
@@ -86,6 +112,17 @@ import Base from "../../layouts/Base.astro";
     color:var(--li-tinta);cursor:pointer}
   .ge__bajar:hover{border-color:var(--li-tinta)}
   .ge__bajar[hidden]{display:none}
+  .ch__nota{margin:-6px 0 16px;font-size:.82rem}
+  /* Los chyrons son anchos y transparentes: fichas más grandes y damero
+     detrás, que si no el rótulo se ve sobre blanco y no se entiende */
+  .ge__rejilla--ancha{grid-template-columns:repeat(auto-fill,minmax(420px,1fr))}
+  @media (max-width:520px){.ge__rejilla--ancha{grid-template-columns:1fr}}
+  .ge__lienzo--damero{cursor:default;padding:10px;
+    background-color:#e9e9ee;
+    background-image:linear-gradient(45deg,#d7d7de 25%,transparent 25%,transparent 75%,#d7d7de 75%),
+                     linear-gradient(45deg,#d7d7de 25%,transparent 25%,transparent 75%,#d7d7de 75%);
+    background-size:20px 20px;background-position:0 0,10px 10px}
+  .ge__acciones a.ge__a{text-decoration:none}
 
   .ge__rejilla{display:grid;gap:20px;grid-template-columns:repeat(auto-fill,minmax(236px,1fr))}
   .ge__ficha{border:1px solid var(--li-linea);border-radius:14px;overflow:hidden;background:#fff;
