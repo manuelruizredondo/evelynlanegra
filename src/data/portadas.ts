@@ -88,7 +88,9 @@ export const PROGRAMA = [
 
 // Capas de partículas, sobre fondo negro. Se superponen en modo «screen»: el
 // negro desaparece solo y quedan las chispas, sin recortar nada.
+// El polvo va primero porque es el que se usa: el primero de la lista es el
+// que sale puesto por defecto, tanto en las portadas fijas como en las de vídeo.
 export const PARTICULAS = [
-  { id: "chispas", nombre: "Chispas", src: "/img/portadas/particulas-doradas.mp4" },
   { id: "polvo", nombre: "Polvo dorado", src: "/img/portadas/particulas-polvo.mp4" },
+  { id: "chispas", nombre: "Chispas", src: "/img/portadas/particulas-doradas.mp4" },
 ];
