@@ -1054,15 +1054,15 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
   });
 
   // Se prefiere MP4 si el navegador sabe grabarlo; si no, WebM
-  /* «avc3» antes que «avc1», que es lo que pide Chrome por consola.
-     La diferencia está en dónde viajan los parámetros del códec: «avc1» los
-     escribe una sola vez en la cabecera, así que si el codificador los cambia
-     a mitad —le pasa en grabaciones largas— el vídeo se rompe a partir de ahí
-     y el aviso de la consola avisa justo de eso. «avc3» los lleva dentro del
-     propio flujo, con cada fotograma clave, y entonces da igual que cambien.
-     Sigue siendo H.264 en un MP4: lo abre lo mismo que antes. */
+  /* «avc1», no «avc3». Chrome avisa por consola de que con avc1 la descripción
+     del códec no puede cambiar a mitad de grabación; da igual, porque el lienzo
+     siempre mide 1920×1080 y nunca cambia, así que no hay nada que cambie.
+     Y es necesario: QuickTime, Keynote y Final Cut abren avc1 pero rechazan
+     avc3, que lleva los parámetros del códec dentro del flujo en vez de en la
+     cabecera. El reempaquetado conserva la etiqueta, así que hay que grabar ya
+     en avc1 para que el vídeo final sea el que estos programas aceptan. */
   const formatoGrabacion = () => {
-    for (const f of ["video/mp4;codecs=avc3.42E01E", "video/mp4;codecs=avc1.42E01E", "video/mp4",
+    for (const f of ["video/mp4;codecs=avc1.42E01E", "video/mp4",
                      "video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"]) {
       if (window.MediaRecorder?.isTypeSupported?.(f)) return f;
     }
