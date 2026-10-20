@@ -275,6 +275,7 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
 
 <script>
   import { bajarEnTanda } from "../../scripts/galeria.mjs";
+  import { Input, Output, Mp4OutputFormat, BufferTarget, Conversion, BlobSource, ALL_FORMATS } from "mediabunny";
 
   const D = JSON.parse(document.querySelector("[data-config]").textContent);
   const canvas = document.querySelector("[data-canvas]");
@@ -1116,7 +1117,27 @@ const datos = JSON.stringify({ LIENZO, CAJA, LINEAS, REGLA, LOGOS, FIJOS, DESTEL
     if (!entera) return { cortado: true };
 
     const ext = tipo.startsWith("video/mp4") ? "mp4" : "webm";
-    return { blob: new Blob(trozos, { type: tipo }), ext };
+    const bruto = new Blob(trozos, { type: tipo });
+    // El grabador sólo da MP4 fragmentado (fMP4), que QuickTime, Keynote y
+    // Final Cut no abren. Se vuelve a empaquetar como MP4 normal —los mismos
+    // fotogramas, sin recomprimir— con la cabecera delante. El WebM se deja.
+    return { blob: ext === "mp4" ? await aProgresivo(bruto) : bruto, ext };
+  };
+
+  /* fMP4 → MP4 progresivo, sin reconvertir el vídeo (copia de pistas). Si algo
+     falla, devuelve el original: más vale un vídeo fragmentado que ninguno. */
+  const aProgresivo = async (blob) => {
+    try {
+      const input = new Input({ source: new BlobSource(blob), formats: ALL_FORMATS });
+      const output = new Output({ format: new Mp4OutputFormat({ fastStart: "in-memory" }), target: new BufferTarget() });
+      const conv = await Conversion.init({ input, output });
+      if (!conv.isValid) return blob;
+      await conv.execute();
+      return new Blob([output.target.buffer], { type: "video/mp4" });
+    } catch (e) {
+      console.warn("No se pudo reempaquetar el MP4, se deja fragmentado:", e);
+      return blob;
+    }
   };
 
   let grabando = false;
