@@ -80,6 +80,47 @@ export const PODIO = {
   ],
 };
 
+/* Versión 16:9 (1920×1080) del podio, para pantalla. No hay plantilla propia
+   horizontal, así que va sobre el fondo submarino de las portadas y se le pone
+   el sello del 15 aniversario para que lleve marca. Los tres puestos se
+   reparten a lo ancho: el ganador en el centro y más grande, 2 y 3 a los lados. */
+export const PODIO_16 = {
+  w: 1920, h: 1080,
+  plantilla: "/img/portadas/fondo-gran-final.jpg",
+  numeros: "/img/ganadores/numeros/",
+  titulo: { centroY: 82, cuerpo: 54, anchoMax: 1560 },
+  baja: 0,
+  sello: { src: "/img/portadas/sello-15-v2.png", x: 70, y: 915, ancho: 140, alto: 121 },
+  puestos: [
+    { n: 1, cx: 960,  cy: 600, radio: 196, cuerpoNombre: 46, cuerpoPais: 36 },
+    { n: 2, cx: 410,  cy: 638, radio: 138, cuerpoNombre: 33, cuerpoPais: 26 },
+    { n: 3, cx: 1510, cy: 638, radio: 138, cuerpoNombre: 33, cuerpoPais: 26 },
+  ],
+};
+
+/* Versión 16:9 del top 10: dos columnas de cinco, que a lo ancho quedan mucho
+   mejor que una sola columna estirada. Mismo fondo y sello que el podio 16:9. */
+export const TOP10_16 = {
+  w: 1920, h: 1080,
+  plantilla: "/img/portadas/fondo-gran-final.jpg",
+  antetitulo: "CLASIFICACIÓN",
+  restantes: { desde: 4, hasta: 10 },
+  ante: { centroY: 168, cuerpo: 52, borde: { color: "#3E1F05", grosor: 1 } },
+  titulo: { centroY: 90, cuerpo: 44, anchoMax: 1560 },
+  sello: { src: "/img/portadas/sello-15-v2.png", x: 905, y: 946, ancho: 110, alto: 95 },
+  filas: {
+    cuantas: 10,
+    // Dos columnas: las cinco primeras a la izquierda, las cinco siguientes a
+    // la derecha, desplazadas «colAncho» en horizontal.
+    columnas: 2, colAncho: 950,
+    y0: 300, salto: 138,
+    numX: 120, textoX: 212, anchoTexto: 520,
+    foto: { cx: 832, radio: 46 },
+    cuerpoNum: 48, cuerpoNombre: 34, cuerpoPais: 18,
+    familiaPais: '"Mona Sans","Lato",sans-serif', pesoPais: 400, espaciadoPais: 0.16,
+  },
+};
+
 // Cartel del top 10: los diez uno debajo de otro. La plantilla sólo tiene
 // contenido propio hasta y=116 (cabecera) y a partir de 1155 (pie), así que
 // las filas caben holgadas entre medias.

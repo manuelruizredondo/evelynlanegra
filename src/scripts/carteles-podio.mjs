@@ -241,10 +241,19 @@ export function crearPodio(C) {
   };
 
   /* ── Cartel de podio: 1 grande, 2 y 3 a los lados ── */
+  // Sello opcional (el del 15 aniversario) en una esquina, para los formatos
+  // que van sobre el fondo desnudo y no traen la marca en la plantilla.
+  const sueltaSello = async (ctx, s) => {
+    if (!s) return;
+    const im = await cargar(s.src).catch(() => null);
+    if (im) ctx.drawImage(im, s.x, s.y, s.ancho, s.alto);
+  };
+
   const pintarPodio = async (ctx, estado) => {
     const base = await cargar(P.plantilla);
     ctx.clearRect(0, 0, P.w, P.h);
     ctx.drawImage(base, 0, 0, P.w, P.h);
+    await sueltaSello(ctx, P.sello);
     texto(ctx, (estado.titulo || "").toUpperCase(), P.titulo.cuerpo, P.w / 2,
           P.titulo.centroY, P.titulo.anchoMax, "blanco");
 
@@ -331,20 +340,30 @@ export function crearPodio(C) {
     const base = await cargar(T.plantilla);
     ctx.clearRect(0, 0, T.w, T.h);
     ctx.drawImage(base, 0, 0, T.w, T.h);
+    await sueltaSello(ctx, T.sello);
     texto(ctx, (estado.titulo || "").toUpperCase(), T.titulo.cuerpo, T.w / 2,
           T.titulo.centroY, T.titulo.anchoMax, "blanco");
     texto(ctx, T.antetitulo, T.ante.cuerpo, T.w / 2, T.ante.centroY, T.titulo.anchoMax, "oro",
           { borde: T.ante.borde });
 
     const F = T.filas;
+    // Una o varias columnas: con 2, las cinco primeras a la izquierda y las
+    // cinco siguientes desplazadas «colAncho» a la derecha.
+    const cols = F.columnas ?? 1;
+    const porCol = Math.ceil(F.cuantas / cols);
     const puestos = (estado.puestos || []).slice(0, F.cuantas);
 
     puestos.forEach((e, i) => {
-      const y = F.y0 + i * F.salto;
+      const col = Math.floor(i / porCol);
+      const fila = i % porCol;
+      const dx = col * (F.colAncho ?? 0);
+      const y = F.y0 + fila * F.salto;
+      const numX = F.numX + dx, textoX = F.textoX + dx, fotoCx = F.foto.cx + dx;
 
-      // Raya tenue de separación, menos debajo del último
-      if (i < puestos.length - 1) {
-        const izq = F.numX - 26, der = F.foto.cx + F.foto.radio;
+      // Raya tenue de separación, menos debajo del último de cada columna
+      const ultimoDeColumna = fila === porCol - 1 || i === puestos.length - 1;
+      if (!ultimoDeColumna) {
+        const izq = numX - 26, der = fotoCx + F.foto.radio;
         const g = ctx.createLinearGradient(izq, 0, der, 0);
         g.addColorStop(0, "rgba(224,172,70,0)");
         g.addColorStop(0.5, "rgba(233,201,124,.34)");
@@ -357,12 +376,12 @@ export function crearPodio(C) {
       const yNombre = hayPais ? y - F.cuerpoPais * 0.72 : y;
 
       // El número va a la altura del nombre, no al centro de la fila
-      texto(ctx, String(e.puesto ?? i + 1), F.cuerpoNum, F.numX, yNombre, 100, "oro", { alineado: "center" });
+      texto(ctx, String(e.puesto ?? i + 1), F.cuerpoNum, numX, yNombre, 100, "oro", { alineado: "center" });
 
-      texto(ctx, (e.nombre || "").toUpperCase(), F.cuerpoNombre, F.textoX,
+      texto(ctx, (e.nombre || "").toUpperCase(), F.cuerpoNombre, textoX,
             yNombre, F.anchoTexto, "blanco", { alineado: "left" });
       if (hayPais) {
-        textoEspaciado(ctx, e.pais.toUpperCase(), F.cuerpoPais, F.textoX,
+        textoEspaciado(ctx, e.pais.toUpperCase(), F.cuerpoPais, textoX,
                        y + F.cuerpoNombre * 0.62, F.anchoTexto,
                        { familia: F.familiaPais, peso: F.pesoPais, espaciado: F.espaciadoPais });
       }
@@ -370,10 +389,10 @@ export function crearPodio(C) {
       // La foto, a la derecha y con la altura de la fila
       const f = F.foto;
       const encF = encuadre(e, f.radio);
-      if (e.foto) fotoEn(ctx, e.foto, f.cx, y, encF);
-      else silueta(ctx, f.cx, y, encF, e.duo ? 2 : 1);
+      if (e.foto) fotoEn(ctx, e.foto, fotoCx, y, encF);
+      else silueta(ctx, fotoCx, y, encF, e.duo ? 2 : 1);
       // El filo va igual haya foto o silueta, para que la fila no cambie
-      caminoEncuadre(ctx, f.cx, y, encF, -1);
+      caminoEncuadre(ctx, fotoCx, y, encF, -1);
       ctx.lineWidth = 2.5;
       ctx.lineJoin = "round";
       ctx.strokeStyle = oro(ctx, y - encF.medioAlto, y + encF.medioAlto);

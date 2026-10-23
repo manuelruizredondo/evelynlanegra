@@ -2,9 +2,9 @@
 import Base from "../../layouts/Base.astro";
 import InternoNav from "../../components/InternoNav.astro";
 import SubNavCarteles from "../../components/SubNavCarteles.astro";
-import { CARTEL, PODIO, TOP10, HOJA, FASES } from "../../data/carteles";
+import { CARTEL, PODIO, TOP10, PODIO_16, TOP10_16, HOJA, FASES } from "../../data/carteles";
 import { BANDERAS, ES_EN } from "../../data/banderas";
-const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDERAS, ES_EN });
+const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, PODIO_16, TOP10_16, HOJA, FASES, BANDERAS, ES_EN });
 ---
 <Base title="Carteles de ganadores · uso interno" description="Generador de carteles de podio." noindex={true}>
   <InternoNav actual="/interno/carteles/" />
@@ -22,6 +22,11 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
             <div class="pt__tipos" data-tipos>
               <button type="button" class="pt__tipo pt__tipo--on" data-cartel="podio">Podio 1·2·3</button>
               <button type="button" class="pt__tipo" data-cartel="top10">Top 10</button>
+            </div>
+            <p class="pt__t" style="margin-top:12px">Formato</p>
+            <div class="pt__tipos" data-formatos>
+              <button type="button" class="pt__tipo pt__tipo--on" data-formato="vertical">Vertical</button>
+              <button type="button" class="pt__tipo" data-formato="ancho">16:9 pantalla</button>
             </div>
           </div>
 
@@ -50,7 +55,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
 
           <div class="pt__acciones">
             <button class="li__btn" type="button" data-descargar>Descargar PNG</button>
-            <span class="pt__medida">1080 × 1350</span>
+            <span class="pt__medida" data-medida>1080 × 1350</span>
           </div>
         </div>
 
@@ -168,16 +173,22 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
   import { crearPodio } from "../../scripts/carteles-podio.mjs";
 
   const C = JSON.parse(document.querySelector("[data-config]").textContent);
-  const M = crearPodio(C);
-  const { P, cargar, radioFoto, urlFoto, cat, paisDe: pais, banderasDeFicha, sinTildes } = M;
+  // Dos juegos de medidas: vertical (1080×1350) y 16:9 (1920×1080). Comparten
+  // todo lo demás —fotos, banderas, lectura de la hoja—, sólo cambian el
+  // lienzo y dónde van los elementos.
+  const Mv = crearPodio(C);
+  const Mh = crearPodio({ ...C, PODIO: C.PODIO_16, TOP10: C.TOP10_16 });
+  let M = Mv;
+  const { cargar, radioFoto, urlFoto, cat, paisDe: pais, banderasDeFicha, sinTildes } = Mv;
 
   const canvas = document.querySelector("[data-canvas]");
   const ctx = canvas.getContext("2d");
   const estadoTxt = document.querySelector("[data-estado]");
+  const medida = document.querySelector("[data-medida]");
 
   const estado = {
     titulo: "SEMIFINAL SOLISTA FEMENINO BACHATA",
-    puestos: P.puestos.map((p) => ({ n: p.n, nombre: "", pais: "", foto: null, banderas: [], zoom: 1, dx: 0, dy: 0 })),
+    puestos: Mv.P.puestos.map((p) => ({ n: p.n, nombre: "", pais: "", foto: null, banderas: [], zoom: 1, dx: 0, dy: 0 })),
   };
 
   estado.cartel = "podio";
@@ -213,7 +224,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
   cont.innerHTML = `<p class="pt__t">Podio</p>
     <p class="pt__pista">Arrastra cualquiera de las tres fotos sobre el cartel para moverla
       y usa la rueda del ratón encima para acercarla. El deslizador sirve para afinar.</p>`
-    + P.puestos.map((p, i) => `
+    + Mv.P.puestos.map((p, i) => `
     <details class="pt__puesto" open>
       <summary class="pt__num">PUESTO ${p.n}<em data-resumen="${i}"></em></summary>
       <label class="pt__campo"><span>Buscar</span><input type="search" data-b="${i}" placeholder="nombre…" /></label>
@@ -321,17 +332,30 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
 
   const aLienzo = (ev) => {
     const r = canvas.getBoundingClientRect();
-    return { x: (ev.clientX - r.left) * (P.w / r.width), y: (ev.clientY - r.top) * (P.h / r.height) };
+    return { x: (ev.clientX - r.left) * (M.P.w / r.width), y: (ev.clientY - r.top) * (M.P.h / r.height) };
   };
   // Qué círculo hay bajo el puntero. De delante atrás: el del ganador pisa a los otros.
   const puestoEn = (p) => {
     if (estado.cartel !== "podio") return -1;
     for (const i of [0, 1, 2]) {
-      const d = P.puestos[i];
+      const d = M.P.puestos[i];
       if (estado.puestos[i].foto && Math.hypot(p.x - d.cx, p.y - d.cy) <= radioFoto(d.radio * 2.2)) return i;
     }
     return -1;
   };
+
+  // Conmutar vertical ↔ 16:9: cambia el juego de medidas, redimensiona el
+  // lienzo y lo vuelve a pintar. Nombres, fotos y países se conservan.
+  document.querySelector("[data-formatos]").addEventListener("click", (ev) => {
+    const b = ev.target.closest("[data-formato]");
+    if (!b) return;
+    M = b.dataset.formato === "ancho" ? Mh : Mv;
+    canvas.width = M.P.w; canvas.height = M.P.h;
+    medida.textContent = `${M.P.w} × ${M.P.h}`;
+    document.querySelectorAll("[data-formato]").forEach((x) =>
+      x.classList.toggle("pt__tipo--on", x === b));
+    pintar();
+  });
 
   let arrastrando = -1, previo = null;
 
@@ -455,7 +479,7 @@ const datos = JSON.stringify({ aro: CARTEL.aro, PODIO, TOP10, HOJA, FASES, BANDE
     canvas.toBlob((b) => {
       const a = document.createElement("a");
       a.href = URL.createObjectURL(b);
-      a.download = `${M.nombreArchivo(estado.titulo)}-${estado.cartel}.png`;
+      a.download = `${M.nombreArchivo(estado.titulo)}-${estado.cartel}-${M.P.w}x${M.P.h}.png`;
       a.click();
       setTimeout(() => URL.revokeObjectURL(a.href), 4000);
     }, "image/png");
