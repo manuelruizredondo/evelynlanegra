@@ -77,26 +77,28 @@ push(1.5, 0.25, 8, 2.7, 0, 0.6, ROJO);
 // justo delante del control de luz.
 function escritorio(x0: number, y0: number, x1: number, y1: number, pcs: number) {
   push(x0, y0, x1, y1, 0, 0.45, MESA);
-  const w = x1 - x0;
+  const horizontal = (x1 - x0) >= (y1 - y0);   // monitores repartidos a lo largo del lado mayor
   for (let i = 0; i < pcs; i++) {
-    const cx = x0 + (w * (i + 0.5)) / pcs - 0.22;
-    const py = y0 + (y1 - y0) * 0.45;
-    push(cx, py, cx + 0.44, py + 0.1, 0.45, 0.32, TECH);               // cuerpo del monitor
-    const car = [P(cx, py, 0.77), P(cx + 0.44, py, 0.77), P(cx + 0.44, py, 0.45), P(cx, py, 0.45)];
-    solidos.push({ k: cx + 0.44 + py + 0.48, s: `<polygon points="${pts(car)}" fill="#13324a"/>` }); // pantalla
+    const t = (i + 0.5) / pcs;
+    const mx = horizontal ? x0 + (x1 - x0) * t - 0.22 : x0 + (x1 - x0) * 0.32;
+    const my = horizontal ? y0 + (y1 - y0) * 0.45     : y0 + (y1 - y0) * t - 0.05;
+    push(mx, my, mx + 0.44, my + 0.1, 0.45, 0.32, TECH);              // cuerpo del monitor
+    const car = [P(mx, my, 0.77), P(mx + 0.44, my, 0.77), P(mx + 0.44, my, 0.45), P(mx, my, 0.45)];
+    solidos.push({ k: mx + 0.44 + my + 0.48, s: `<polygon points="${pts(car)}" fill="#13324a"/>` }); // pantalla
   }
 }
-escritorio(8.4, 0.5, 9.7, 1.45, 1);   // Control de eventos (pantalla del escenario)
-escritorio(8.4, 1.75, 9.7, 2.7, 1);   // DJ
-escritorio(8.4, 3.0, 9.7, 3.95, 1);   // Control de luz
+// Dos mesas largas, una enfrente de la otra, junto al lateral derecho
+escritorio(9.0, 0.6, 9.7, 3.6, 3);    // Control de luz y eventos (pegada a la pared)
+escritorio(8.0, 0.6, 8.7, 3.6, 3);    // DJs (enfrente)
 
 // Público: filas de sillas mirando al escenario (hacia −y)
 const fueraDe = (x: number, y: number) =>
   (x > 3.7 && x < 6.3 && y > 5.9 && y < 7.7) ||   // tarima de cámaras
   (x > 3.5 && x < 6.5 && y > 7.8 && y < 9.1) ||    // mesa de regiduría
-  (x > 8.2 && y < 4.2) ||                          // mesas técnicas (control/DJ/luz)
-  (x > 1.55 && x < 2.65 && y > 2.7 && y < 3.65);   // escaleras al escenario
-for (let fy = 3.4; fy < 11.1; fy += 0.78) {
+  (x > 7.8 && y < 4.2) ||                          // mesas técnicas (control y DJs)
+  (x > 8.9 && y > 6.6) ||                          // barra lateral derecha
+  (x > 3.0 && x < 7.0 && y > 3.3 && y < 4.7);      // mesa del jurado
+for (let fy = 4.9; fy < 10.4; fy += 0.78) {
   for (let fx = 1.1; fx < 8.7; fx += 0.66) {
     if (fueraDe(fx, fy)) continue;
     solidos.push({ k: fx + 0.42 + fy + 0.42, s: caja(fx, fy, fx + 0.44, fy + 0.44, 0, 0.17, SILLA) });
@@ -107,13 +109,18 @@ for (let fy = 3.4; fy < 11.1; fy += 0.78) {
   }
 }
 
-// Tarima elevada de cámaras (centro) + 3 cámaras encima
+// Tarima elevada de cámaras (centro) + 3 cámaras sobre trípode, mirando al
+// escenario. Se dibujan con clave por encima de la tarima (13.7) para que no
+// las tape la propia plataforma.
 push(3.9, 6.0, 6.1, 7.6, 0, 0.8, TARIMA);
+const CAM: Col = { top: "#33363f", fx: "#202329", fy: "#14161b", edge: "#4a505c" };
 for (let i = 0; i < 3; i++) {
-  const cx = 4.35 + i * 0.68;
-  push(cx, 6.5, cx + 0.3, 6.8, 0.8, 0.45, TECH);                 // cuerpo de cámara
-  const lente = [P(cx, 6.5, 1.1), P(cx + 0.3, 6.5, 1.1), P(cx + 0.15, 6.15, 1.0)]; // objetivo hacia el escenario
-  solidos.push({ k: cx + 6.0, s: `<polygon points="${pts(lente)}" fill="#20242b" stroke="#e2e2e8" stroke-width="1"/>` });
+  const cx = 4.4 + i * 0.62, cy = 6.8, bk = 13.8 + i * 0.25;
+  solidos.push({ k: bk,        s: caja(cx + 0.10, cy - 0.02, cx + 0.22, cy + 0.10, 0.8, 0.75, CAM) });  // trípode
+  solidos.push({ k: bk + 0.03, s: caja(cx - 0.02, cy - 0.06, cx + 0.34, cy + 0.14, 1.55, 0.4, CAM) });  // cuerpo
+  solidos.push({ k: bk + 0.05, s: caja(cx + 0.06, cy - 0.34, cx + 0.26, cy - 0.06, 1.66, 0.2, CAM) });  // objetivo (−y)
+  const g = [P(cx + 0.06, cy - 0.34, 1.86), P(cx + 0.26, cy - 0.34, 1.86), P(cx + 0.26, cy - 0.34, 1.66), P(cx + 0.06, cy - 0.34, 1.66)];
+  solidos.push({ k: bk + 0.07, s: `<polygon points="${pts(g)}" fill="#9cc2d2" stroke="#2a2d34" stroke-width="0.8"/>` }); // cristal
 }
 
 // Mesa de regiduría (justo detrás de la tarima) + 2 ordenadores
@@ -125,14 +132,34 @@ for (let i = 0; i < 2; i++) {
   solidos.push({ k: cx + 8.9, s: `<polygon points="${pts(car)}" fill="#13324a"/>` });
 }
 
-// Escenario 2 (cerca de la entrada)
-push(2.5, 11.3, 7.5, 12.9, 0, 0.42, AMBAR);
+// Jurado: mesa larga delante del público, con sus sillas detrás mirando al
+// escenario (los jueces puntúan de cara a la pantalla).
+push(3.2, 3.5, 6.8, 4.15, 0, 0.45, MESA);
+for (let i = 0; i < 4; i++) {
+  const cx = 3.5 + i * 0.86;
+  push(cx, 3.64, cx + 0.42, 3.74, 0.45, 0.2, TECH);                                    // placa/monitor
+  solidos.push({ k: cx + 5.04, s: caja(cx, 4.2, cx + 0.44, 4.58, 0, 0.32, SILLA) });   // silla del juez
+}
+
+// Escenario 2 (hacia la entrada)
+push(2.4, 10.6, 6.2, 12.1, 0, 0.42, AMBAR);
+
+// Bar: barra larga a lo largo del lateral derecho
+push(9.1, 6.8, 9.8, 12.4, 0, 0.95, MESA);
+
+// Control de puerta (acceso), en la esquina de la entrada
+push(1.1, 12.8, 2.9, 13.5, 0, 0.45, MESA);
+push(1.75, 12.95, 2.17, 13.05, 0.45, 0.28, TECH);
+{
+  const carP = [P(1.75, 12.95, 0.73), P(2.17, 12.95, 0.73), P(2.17, 12.95, 0.45), P(1.75, 12.95, 0.45)];
+  solidos.push({ k: 2.17 + 12.95 + 0.48, s: `<polygon points="${pts(carP)}" fill="#13324a"/>` });
+}
 
 // Escaleras de acceso al escenario (peldaños que suben hasta la tarima, en el
 // frente izquierdo). Cada peldaño sube un poco y se acerca al escenario (−y).
-push(1.75, 3.30, 2.55, 3.55, 0, 0.20, ESCAL);
-push(1.75, 3.05, 2.55, 3.30, 0, 0.40, ESCAL);
-push(1.75, 2.80, 2.55, 3.05, 0, 0.60, ESCAL);
+push(0.80, 1.1, 1.05, 2.4, 0, 0.20, ESCAL);
+push(1.05, 1.1, 1.30, 2.4, 0, 0.40, ESCAL);
+push(1.30, 1.1, 1.50, 2.4, 0, 0.60, ESCAL);
 
 solidos.sort((a, b) => a.k - b.k);
 const cuerpo = solidos.map((s) => s.s).join("");
@@ -189,16 +216,17 @@ const A = (x: number, y: number, z: number) => P(x, y, z);
 let etiquetas = "";
 etiquetas += etiqueta(...A(1.5, 0.1, 4.3), -555, -58, "L", "LUZ", "Estructura sobre el escenario");
 etiquetas += etiqueta(...A(4.75, 0.3, 0.6), -555, 42, "L", "ESCENARIO PRINCIPAL");
-etiquetas += etiqueta(...A(2.15, 3.1, 0.5), -555, 118, "L", "ESCALERAS", "Acceso al escenario");
+etiquetas += etiqueta(...A(1.15, 1.75, 0.5), -555, 118, "L", "ESCALERAS", "Subida lateral al escenario");
 etiquetas += etiqueta(...A(4.75, 0.15, 3.85), 150, -235, "R", "PANTALLA");
-etiquetas += etiqueta(...A(9.05, 0.95, 0.45), 430, 70, "R", "CONTROL DE EVENTOS", "Pantalla del escenario");
-etiquetas += etiqueta(...A(9.05, 2.2, 0.45), 430, 165, "R", "DJ");
-etiquetas += etiqueta(...A(9.05, 3.45, 0.45), 430, 245, "R", "CONTROL DE LUZ");
-etiquetas += etiqueta(...A(5, 6.8, 0.8), -555, 185, "L", "TARIMA DE CÁMARAS", "3 cámaras");
-etiquetas += etiqueta(...A(5, 8.45, 0.5), 430, 360, "R", "REGIDURÍA", "2 ordenadores");
-etiquetas += etiqueta(...A(1.6, 5.2, 0.2), -600, 320, "L", "PÚBLICO", "Butacas en filas");
-etiquetas += etiqueta(...A(5, 12.1, 0.42), -520, 445, "L", "ESCENARIO 2");
-etiquetas += etiqueta(...A(8.8, 13.6, 0), 60, 470, "R", "ENTRADA / ACCESO");
+etiquetas += etiqueta(...A(9.35, 1.1, 0.45), 430, 72, "R", "CONTROL DE LUZ", "y eventos");
+etiquetas += etiqueta(...A(8.35, 2.2, 0.45), 430, 150, "R", "DJS");
+etiquetas += etiqueta(...A(5, 3.82, 0.45), 430, 230, "R", "JURADO");
+etiquetas += etiqueta(...A(5, 6.8, 0.8), -555, 250, "L", "TARIMA DE CÁMARAS", "3 cámaras");
+etiquetas += etiqueta(...A(5, 8.45, 0.5), 430, 390, "R", "REGIDURÍA", "2 ordenadores");
+etiquetas += etiqueta(...A(1.6, 6.4, 0.2), -600, 360, "L", "PÚBLICO", "Butacas en filas");
+etiquetas += etiqueta(...A(4.3, 11.0, 0.42), -520, 440, "L", "ESCENARIO 2");
+etiquetas += etiqueta(...A(9.45, 9.6, 0.95), 430, 310, "R", "BAR");
+etiquetas += etiqueta(...A(2.0, 13.1, 0.45), -430, 495, "L", "CONTROL DE PUERTA");
 
 const svg = `
 <svg id="planoSvg" viewBox="-760 -290 1430 805" xmlns="http://www.w3.org/2000/svg" class="plano__svg" role="img" aria-label="Plano isométrico del teatro">
@@ -253,9 +281,9 @@ const svg = `
     <div class="li__ancho">
       <p class="li__kicker">Uso interno</p>
       <h1 class="li__h1">Evento</h1>
-      <p class="li__intro">El montaje del teatro de un vistazo: escenario y pantalla al fondo,
-        el público en filas, la tarima de cámaras con la regiduría detrás, el escenario 2
-        junto a la entrada y la zona técnica (control, DJ y luz) al costado.</p>
+      <p class="li__intro">El montaje del teatro de un vistazo: escenario, pantalla y estructura
+        de luz al fondo; el jurado delante; el público en filas; la tarima de cámaras con la
+        regiduría; y en la entrada, el escenario 2, el bar y el control de puerta.</p>
 
       <div class="anot-barra">
         <button id="btnAdd" class="anot-btn" type="button">＋ Añadir nota</button>
