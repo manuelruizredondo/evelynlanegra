@@ -1,0 +1,375 @@
+---
+import Base from "../../layouts/Base.astro";
+import InternoNav from "../../components/InternoNav.astro";
+
+/* ── Plano isométrico del teatro ──────────────────────────────────────────
+   Proyección dimétrica 2:1 (estilo «isométrico» de videojuego). La sala es un
+   rectángulo: el escenario principal y la pantalla van al fondo, el público
+   sentado en filas mirando hacia allí, la tarima de cámaras en el centro con
+   la regiduría justo detrás, y el escenario 2 cerca de la entrada.
+   Todo se genera en build: SVG estático, sin JavaScript de cliente.          */
+
+const S = 34;     // px por unidad en horizontal
+const HZ = 30;    // px por unidad de altura
+const P = (x: number, y: number, z = 0): [number, number] => [
+  +(((x - y) * S)).toFixed(1),
+  +((((x + y) * 0.5 * S) - z * HZ)).toFixed(1),
+];
+const pts = (a: [number, number][]) => a.map((p) => p.join(",")).join(" ");
+
+type Col = { top: string; fx: string; fy: string; edge?: string; frente?: string };
+// Paleta en modo claro (fondo blanco)
+const TARIMA: Col = { top: "#e0ad44", fx: "#bd8a2c", fy: "#94691d", edge: "#7a5a18" };
+const ROJO: Col  = { top: "#c3282e", fx: "#9c1f24", fy: "#7c181c", edge: "#8f1a1e" };
+const AMBAR: Col = { top: "#e08a3a", fx: "#b86a22", fy: "#8e4f16", edge: "#7a4312" };
+const TECH: Col  = { top: "#7b7b84", fx: "#595961", fy: "#434349", edge: "#2f2f38" };
+const SILLA: Col = { top: "#aec3c6", fx: "#86a3a6", fy: "#6b878a", edge: "#5f7b7e" };
+const MESA: Col  = { top: "#b4966a", fx: "#917548", fy: "#6e5834", edge: "#5a4a33" };
+
+// Una caja extruida: dibuja las dos caras vistas y la tapa (en ese orden).
+function caja(x0: number, y0: number, x1: number, y1: number, zb: number, h: number, c: Col) {
+  const T = zb + h;
+  const top = [P(x0, y0, T), P(x1, y0, T), P(x1, y1, T), P(x0, y1, T)];
+  const fx  = [P(x1, y0, T), P(x1, y1, T), P(x1, y1, zb), P(x1, y0, zb)];
+  const fy  = [P(x0, y1, T), P(x1, y1, T), P(x1, y1, zb), P(x0, y1, zb)];
+  return (
+    `<polygon points="${pts(fy)}" fill="${c.frente || c.fy}"/>` +
+    `<polygon points="${pts(fx)}" fill="${c.fx}"/>` +
+    `<polygon points="${pts(top)}" fill="${c.top}"${c.edge ? ` stroke="${c.edge}" stroke-width="1"` : ""}/>`
+  );
+}
+
+// Dimensiones de la sala (unidades)
+const W = 10, D = 14, MURO = 4.6;
+
+/* ── Suelo y muros ───────────────────────────────────────────────────────*/
+const suelo = [P(0, 0), P(W, 0), P(W, D), P(0, D)];
+const muroFondo = [P(0, 0, 0), P(W, 0, 0), P(W, 0, MURO), P(0, 0, MURO)];
+const muroIzq   = [P(0, 0, 0), P(0, D, 0), P(0, D, MURO), P(0, 0, MURO)];
+
+// Rejilla sutil del suelo
+let rejilla = "";
+for (let gx = 1; gx < W; gx++) rejilla += `<line x1="${P(gx,0)[0]}" y1="${P(gx,0)[1]}" x2="${P(gx,D)[0]}" y2="${P(gx,D)[1]}" stroke="#dcd7cd" stroke-width="1" opacity=".9"/>`;
+for (let gy = 1; gy < D; gy++) rejilla += `<line x1="${P(0,gy)[0]}" y1="${P(0,gy)[1]}" x2="${P(W,gy)[0]}" y2="${P(W,gy)[1]}" stroke="#dcd7cd" stroke-width="1" opacity=".9"/>`;
+
+/* ── Sólidos con orden de profundidad (se pintan de lejos a cerca) ────────*/
+type Solido = { k: number; s: string };
+const solidos: Solido[] = [];
+const push = (x0: number, y0: number, x1: number, y1: number, zb: number, h: number, c: Col) =>
+  solidos.push({ k: x1 + y1 + zb, s: caja(x0, y0, x1, y1, zb, h, c) });
+
+// Escenario principal (fondo) + Pantalla en el muro del fondo
+push(1.5, 0.25, 8, 2.7, 0, 0.6, ROJO);
+// Pantalla: panel alto pegado al muro, con cara de vidrio hacia el público
+{
+  const x0 = 1.6, x1 = 7.9, y0 = 0.05, y1 = 0.28, zb = 0.75, h = 3.1, T = zb + h;
+  const frente = [P(x0, y1, T), P(x1, y1, T), P(x1, y1, zb), P(x0, y1, zb)];
+  const top = [P(x0, y0, T), P(x1, y0, T), P(x1, y1, T), P(x0, y1, T)];
+  solidos.push({ k: y1 + zb - 2, s:
+    `<polygon points="${pts(top)}" fill="#121821"/>` +
+    `<polygon points="${pts(frente)}" fill="url(#scr)" stroke="#2b2b33" stroke-width="1.5"/>`
+  });
+}
+
+// Módulos técnicos a la derecha del escenario
+push(8.5, 0.35, 9.9, 1.5, 0, 0.9, TECH); // Control de eventos / pantalla
+push(8.5, 1.7, 9.9, 2.75, 0, 0.9, TECH); // DJ
+push(8.5, 2.95, 9.9, 4.05, 0, 0.9, TECH); // Luz
+
+// Público: filas de sillas mirando al escenario (hacia −y)
+const fueraDe = (x: number, y: number) =>
+  (x > 3.7 && x < 6.3 && y > 5.9 && y < 7.7) ||   // tarima de cámaras
+  (x > 3.5 && x < 6.5 && y > 7.8 && y < 9.1);      // mesa de regiduría
+for (let fy = 3.4; fy < 11.1; fy += 0.78) {
+  for (let fx = 1.1; fx < 8.7; fx += 0.66) {
+    if (fueraDe(fx, fy)) continue;
+    solidos.push({ k: fx + 0.42 + fy + 0.42, s: caja(fx, fy, fx + 0.44, fy + 0.44, 0, 0.17, SILLA) });
+    // respaldo, en el lado del escenario (−y)
+    const T = 0.34;
+    const resp = [P(fx, fy, T), P(fx + 0.44, fy, T), P(fx + 0.44, fy, 0.17), P(fx, fy, 0.17)];
+    solidos.push({ k: fx + 0.44 + fy + 0.001, s: `<polygon points="${pts(resp)}" fill="#7f9a9d"/>` });
+  }
+}
+
+// Tarima elevada de cámaras (centro) + 3 cámaras encima
+push(3.9, 6.0, 6.1, 7.6, 0, 0.8, TARIMA);
+for (let i = 0; i < 3; i++) {
+  const cx = 4.35 + i * 0.68;
+  push(cx, 6.5, cx + 0.3, 6.8, 0.8, 0.45, TECH);                 // cuerpo de cámara
+  const lente = [P(cx, 6.5, 1.1), P(cx + 0.3, 6.5, 1.1), P(cx + 0.15, 6.15, 1.0)]; // objetivo hacia el escenario
+  solidos.push({ k: cx + 6.0, s: `<polygon points="${pts(lente)}" fill="#20242b" stroke="#e2e2e8" stroke-width="1"/>` });
+}
+
+// Mesa de regiduría (justo detrás de la tarima) + 2 ordenadores
+push(3.7, 8.0, 6.3, 8.9, 0, 0.5, MESA);
+for (let i = 0; i < 2; i++) {
+  const cx = 4.4 + i * 1.0;
+  push(cx, 8.25, cx + 0.5, 8.35, 0.5, 0.35, TECH);              // pantalla de PC
+  const car = [P(cx, 8.25, 0.85), P(cx + 0.5, 8.25, 0.85), P(cx + 0.5, 8.25, 0.5), P(cx, 8.25, 0.5)];
+  solidos.push({ k: cx + 8.9, s: `<polygon points="${pts(car)}" fill="#13324a"/>` });
+}
+
+// Escenario 2 (cerca de la entrada)
+push(2.5, 11.3, 7.5, 12.9, 0, 0.42, AMBAR);
+
+solidos.sort((a, b) => a.k - b.k);
+const cuerpo = solidos.map((s) => s.s).join("");
+
+/* ── Etiquetas con línea guía ────────────────────────────────────────────*/
+function etiqueta(ax: number, ay: number, lx: number, ly: number, lado: "L" | "R", titulo: string, sub = "") {
+  const anchor = lado === "L" ? "end" : "start";
+  const tx = lx + (lado === "L" ? -12 : 12);
+  return (
+    `<line x1="${ax}" y1="${ay}" x2="${lx}" y2="${ly}" stroke="#b7923a" stroke-width="1.4" opacity=".85"/>` +
+    `<circle cx="${ax}" cy="${ay}" r="6.5" fill="#ffffff" stroke="#b7923a" stroke-width="2"/>` +
+    `<circle cx="${ax}" cy="${ay}" r="2" fill="#b7923a"/>` +
+    `<text x="${tx}" y="${ly}" text-anchor="${anchor}" class="lbl">${titulo}</text>` +
+    (sub ? `<text x="${tx}" y="${ly + 19}" text-anchor="${anchor}" class="sub">${sub}</text>` : "")
+  );
+}
+const A = (x: number, y: number, z: number) => P(x, y, z);
+let etiquetas = "";
+etiquetas += etiqueta(...A(4.75, 0.3, 0.6), -555, -40, "L", "ESCENARIO PRINCIPAL");
+etiquetas += etiqueta(...A(4.75, 0.15, 3.85), 150, -235, "R", "PANTALLA");
+etiquetas += etiqueta(...A(9.2, 0.9, 0.9), 430, 55, "R", "CONTROL DE EVENTOS", "Pantalla del escenario");
+etiquetas += etiqueta(...A(9.2, 2.2, 0.9), 430, 145, "R", "DJ");
+etiquetas += etiqueta(...A(9.2, 3.5, 0.9), 430, 225, "R", "LUZ");
+etiquetas += etiqueta(...A(5, 6.8, 0.8), -555, 150, "L", "TARIMA DE CÁMARAS", "3 cámaras");
+etiquetas += etiqueta(...A(5, 8.45, 0.5), 430, 335, "R", "REGIDURÍA", "2 ordenadores");
+etiquetas += etiqueta(...A(1.6, 5.2, 0.2), -600, 320, "L", "PÚBLICO", "Butacas en filas");
+etiquetas += etiqueta(...A(5, 12.1, 0.42), -520, 445, "L", "ESCENARIO 2");
+etiquetas += etiqueta(...A(8.8, 13.6, 0), 60, 470, "R", "ENTRADA / ACCESO");
+
+const svg = `
+<svg id="planoSvg" viewBox="-760 -290 1430 805" xmlns="http://www.w3.org/2000/svg" class="plano__svg" role="img" aria-label="Plano isométrico del teatro">
+  <defs>
+    <radialGradient id="bg" cx="42%" cy="30%" r="90%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#f1efea"/>
+    </radialGradient>
+    <linearGradient id="scr" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1c4a66"/>
+      <stop offset="50%" stop-color="#102c40"/>
+      <stop offset="100%" stop-color="#235a78"/>
+    </linearGradient>
+    <style>
+      .ttl{font-family:"Mona Sans","Lato",sans-serif;font-weight:800;fill:#1b1b20;letter-spacing:.04em}
+      .kick{font-family:"Mona Sans","Lato",sans-serif;font-weight:700;fill:#a07f2e;letter-spacing:.22em}
+      .lbl{font-family:"Mona Sans","Lato",sans-serif;font-weight:700;font-size:16px;fill:#1b1b20;letter-spacing:.05em}
+      .sub{font-family:"Mona Sans","Lato",sans-serif;font-weight:400;font-size:12.5px;fill:#6a6a72;letter-spacing:.02em}
+    </style>
+  </defs>
+
+  <rect x="-760" y="-290" width="1430" height="805" fill="url(#bg)"/>
+
+  <text x="-720" y="-200" class="kick" font-size="13">MUNDIAL DE PASOS LIBRES · CALPE 2026</text>
+  <text x="-722" y="-158" class="ttl" font-size="40">EL TEATRO</text>
+  <text x="-720" y="-130" class="sub" font-size="14">Plano isométrico del montaje</text>
+
+  <!-- Muros y suelo -->
+  <polygon points="${pts(muroFondo)}" fill="#e6e1d8"/>
+  <polygon points="${pts(muroIzq)}" fill="#dcd6cb"/>
+  <polygon points="${pts(suelo)}" fill="#f3f0ea"/>
+  ${rejilla}
+  <polygon points="${pts(suelo)}" fill="none" stroke="#c7c0b2" stroke-width="1.5"/>
+
+  <!-- Elementos -->
+  ${cuerpo}
+
+  <!-- Etiquetas -->
+  ${etiquetas}
+
+  <!-- Capa de anotaciones (la rellena el script) -->
+  <g id="anotCapa"></g>
+</svg>`;
+---
+<Base title="Evento · uso interno" description="Plano del teatro para el montaje del campeonato." noindex={true}>
+  <InternoNav actual="/interno/evento/" />
+
+  <section class="li">
+    <div class="li__ancho">
+      <p class="li__kicker">Uso interno</p>
+      <h1 class="li__h1">Evento</h1>
+      <p class="li__intro">El montaje del teatro de un vistazo: escenario y pantalla al fondo,
+        el público en filas, la tarima de cámaras con la regiduría detrás, el escenario 2
+        junto a la entrada y la zona técnica (control, DJ y luz) al costado.</p>
+
+      <div class="anot-barra">
+        <button id="btnAdd" class="anot-btn" type="button">＋ Añadir nota</button>
+        <button id="btnCopy" class="anot-btn" type="button">Copiar</button>
+        <button id="btnPaste" class="anot-btn" type="button">Pegar</button>
+        <button id="btnClear" class="anot-btn" type="button">Vaciar</button>
+        <span class="anot-hint">Las notas se guardan en este navegador.</span>
+        <span id="anotAviso" class="anot-aviso"></span>
+      </div>
+
+      <div class="plano">
+        <Fragment set:html={svg} />
+      </div>
+
+      <ol id="anotLista" class="anot-lista"></ol>
+
+      <p class="plano__pie">Boceto de trabajo — dime qué cambiar (posiciones, zonas que falten, aseos, barra, backstage…) y lo ajusto.</p>
+    </div>
+  </section>
+
+  <script>
+    const svg = document.getElementById("planoSvg");
+    const capa = document.getElementById("anotCapa");
+    const lista = document.getElementById("anotLista");
+    const btnAdd = document.getElementById("btnAdd");
+    const plano = document.querySelector(".plano");
+    const avisoEl = document.getElementById("anotAviso");
+    const CLAVE = "evento-anotaciones";
+
+    let datos = [];
+    try { datos = JSON.parse(localStorage.getItem(CLAVE) || "[]"); } catch { datos = []; }
+    if (!Array.isArray(datos)) datos = [];
+    let modo = false;
+    let sel = null;
+    let avisoT;
+
+    const guardar = () => { try { localStorage.setItem(CLAVE, JSON.stringify(datos)); } catch {} };
+    const esc = (s) => (s || "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    const aviso = (m) => { if (!avisoEl) return; avisoEl.textContent = m; avisoEl.classList.add("on"); clearTimeout(avisoT); avisoT = setTimeout(() => avisoEl.classList.remove("on"), 1800); };
+
+    function toSvg(evt) {
+      const p = svg.createSVGPoint(); p.x = evt.clientX; p.y = evt.clientY;
+      const m = svg.getScreenCTM(); if (!m) return { x: 0, y: 0 };
+      const q = p.matrixTransform(m.inverse());
+      return { x: Math.round(q.x), y: Math.round(q.y) };
+    }
+
+    function pintarPins() {
+      capa.innerHTML = datos.map((d, i) =>
+        `<g class="pin${sel === d.id ? " sel" : ""}" data-pin="${d.id}" transform="translate(${d.x},${d.y})"><circle r="13"/><text>${i + 1}</text></g>`
+      ).join("");
+    }
+    function resaltarFilas() {
+      document.querySelectorAll(".anot-item").forEach((li) => li.classList.toggle("sel", li.dataset.row == sel));
+    }
+    function pintarLista() {
+      if (!datos.length) { lista.innerHTML = '<li class="anot-vacia">Sin anotaciones. Pulsa «Añadir nota» y haz clic en el plano donde quieras dejar una.</li>'; return; }
+      lista.innerHTML = datos.map((d, i) =>
+        `<li class="anot-item${sel === d.id ? " sel" : ""}" data-row="${d.id}"><span class="anot-num">${i + 1}</span><textarea class="anot-txt" data-ta="${d.id}" rows="1" placeholder="Escribe la nota…">${esc(d.t)}</textarea><button class="anot-del" data-del="${d.id}" type="button" aria-label="Borrar nota">✕</button></li>`
+      ).join("");
+      lista.querySelectorAll(".anot-txt").forEach((ta) => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + "px"; });
+    }
+    const pintar = () => { pintarPins(); pintarLista(); };
+
+    btnAdd.addEventListener("click", () => {
+      modo = !modo;
+      btnAdd.classList.toggle("on", modo);
+      plano.classList.toggle("add", modo);
+      btnAdd.textContent = modo ? "✓ Haz clic en el plano" : "＋ Añadir nota";
+    });
+
+    svg.addEventListener("click", (e) => {
+      if (!modo) return;
+      if (e.target.closest(".pin")) return;
+      const { x, y } = toSvg(e);
+      const n = { id: Date.now(), x, y, t: "" };
+      datos.push(n); sel = n.id; guardar(); pintar();
+      const ta = lista.querySelector(`[data-ta="${n.id}"]`);
+      if (ta) { ta.focus(); ta.scrollIntoView({ block: "nearest" }); }
+    });
+
+    lista.addEventListener("input", (e) => {
+      const ta = e.target.closest(".anot-txt"); if (!ta) return;
+      const d = datos.find((x) => x.id == ta.dataset.ta); if (!d) return;
+      d.t = ta.value; ta.style.height = "auto"; ta.style.height = ta.scrollHeight + "px"; guardar();
+    });
+    lista.addEventListener("click", (e) => {
+      const del = e.target.closest(".anot-del");
+      if (del) { datos = datos.filter((x) => x.id != del.dataset.del); if (sel == del.dataset.del) sel = null; guardar(); pintar(); return; }
+      const row = e.target.closest(".anot-item");
+      if (row) { sel = +row.dataset.row; pintarPins(); resaltarFilas(); }
+    });
+
+    capa.addEventListener("pointerdown", (e) => {
+      const g = e.target.closest(".pin"); if (!g) return;
+      e.preventDefault();
+      const id = +g.dataset.pin; const d = datos.find((x) => x.id === id); if (!d) return;
+      sel = id; pintarPins(); resaltarFilas();
+      let movido = false;
+      const move = (ev) => { const p = toSvg(ev); d.x = p.x; d.y = p.y; movido = true; pintarPins(); };
+      const up = () => {
+        window.removeEventListener("pointermove", move);
+        window.removeEventListener("pointerup", up);
+        if (movido) guardar();
+        resaltarFilas();
+        lista.querySelector(`[data-row="${id}"]`)?.scrollIntoView({ block: "nearest" });
+      };
+      window.addEventListener("pointermove", move);
+      window.addEventListener("pointerup", up);
+    });
+
+    document.getElementById("btnCopy").addEventListener("click", async () => {
+      const txt = JSON.stringify(datos);
+      try { await navigator.clipboard.writeText(txt); aviso("Anotaciones copiadas"); }
+      catch { prompt("Copia estas anotaciones:", txt); }
+    });
+    document.getElementById("btnPaste").addEventListener("click", async () => {
+      let txt = "";
+      try { txt = await navigator.clipboard.readText(); } catch {}
+      txt = prompt("Pega aquí las anotaciones:", txt) ?? "";
+      if (!txt.trim()) return;
+      try { const arr = JSON.parse(txt); if (Array.isArray(arr)) { datos = arr; sel = null; guardar(); pintar(); aviso("Anotaciones cargadas"); } else aviso("El texto no es válido"); }
+      catch { aviso("No se pudo leer el texto"); }
+    });
+    document.getElementById("btnClear").addEventListener("click", () => {
+      if (datos.length && confirm("¿Borrar todas las anotaciones?")) { datos = []; sel = null; guardar(); pintar(); }
+    });
+
+    pintar();
+  </script>
+</Base>
+
+<style>
+  .li { padding: calc(var(--header-h) + 28px) 16px 80px; }
+  .li__ancho { max-width: 1120px; margin: 0 auto; }
+  .li__kicker { font-size: .78rem; font-weight: 700; letter-spacing: .14em;
+    text-transform: uppercase; color: #a08043; margin: 0 0 6px; }
+  .li__h1 { font-size: 2rem; margin: 0 0 8px; }
+  .li__intro { color: #55555e; max-width: 640px; margin: 0 0 22px; line-height: 1.5; }
+
+  .plano { border-radius: 18px; overflow: hidden; background: #fff;
+    box-shadow: 0 10px 30px rgba(0,0,0,.08); border: 1px solid #e7e4dd; position: relative; }
+  .plano :global(.plano__svg) { display: block; width: 100%; height: auto; }
+  .plano.add :global(.plano__svg) { cursor: crosshair; }
+  .plano__pie { margin: 16px 2px 0; color: #8a8a93; font-size: .9rem; }
+
+  /* Barra de anotaciones */
+  .anot-barra { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0 12px; }
+  .anot-btn { border: 1px solid #d9d6cf; background: #fff; color: #2a2a30;
+    font: 600 .86rem/1 "Mona Sans","Lato",sans-serif; padding: 9px 15px; border-radius: 999px; cursor: pointer; }
+  .anot-btn:hover { background: #f5f3ee; }
+  .anot-btn.on { background: #c3282e; border-color: #c3282e; color: #fff; }
+  .anot-hint { color: #9a9aa2; font-size: .82rem; margin-left: 2px; }
+  .anot-aviso { opacity: 0; transition: opacity .2s; color: #1e7a3a; font-size: .82rem; font-weight: 600; }
+  .anot-aviso.on { opacity: 1; }
+
+  /* Lista de anotaciones */
+  .anot-lista { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 8px; }
+  .anot-vacia { color: #9a9aa2; font-size: .9rem; padding: 8px 2px; }
+  .anot-item { display: grid; grid-template-columns: auto 1fr auto; align-items: start; gap: 10px;
+    padding: 8px 10px; border: 1px solid #ecece6; border-radius: 12px; background: #fff; }
+  .anot-item.sel { border-color: #c3282e; box-shadow: 0 0 0 2px rgba(195,40,46,.12); }
+  .anot-num { width: 24px; height: 24px; border-radius: 999px; background: #c3282e; color: #fff;
+    font: 700 .8rem/24px "Mona Sans","Lato",sans-serif; text-align: center; }
+  .anot-txt { border: 0; resize: none; width: 100%; background: transparent; color: #222;
+    font: 400 .95rem/1.4 "Mona Sans","Lato",sans-serif; padding: 3px 0; overflow: hidden; }
+  .anot-txt:focus { outline: none; }
+  .anot-del { border: 0; background: transparent; color: #b4b4bc; cursor: pointer; font-size: 1rem; line-height: 1; padding: 4px; }
+  .anot-del:hover { color: #c3282e; }
+
+  /* Chinchetas dentro del SVG (contenido inyectado → global) */
+  :global(#anotCapa .pin) { cursor: grab; }
+  :global(#anotCapa .pin circle) { fill: #c3282e; stroke: #fff; stroke-width: 2.5; }
+  :global(#anotCapa .pin.sel circle) { stroke: #1b1b20; stroke-width: 3; }
+  :global(#anotCapa .pin text) { fill: #fff; text-anchor: middle; dominant-baseline: central;
+    font: 700 13px "Mona Sans","Lato",sans-serif; pointer-events: none; }
+
+  /* El botón flotante de WhatsApp tapaba la esquina del plano */
+  :global(.wa-fab) { display: none !important; }
+</style>
