@@ -326,11 +326,16 @@ const svg = `
 </Base>
 
 <style>
-  .li { padding: calc(var(--header-h) + 28px) 16px 80px; }
+  /* Página en blanco: esta herramienta no lleva la cabecera ni el pie oscuros
+     del sitio. Afecta solo a /interno/evento/ (el CSS se carga solo aquí). */
+  :global(body) { background: #ffffff; }
+  :global(.site-header), :global(.site-footer) { display: none; }
+
+  .li { padding: calc(var(--header-h) + 8px) 16px 80px; }
   .li__ancho { max-width: 1120px; margin: 0 auto; }
   .li__kicker { font-size: .78rem; font-weight: 700; letter-spacing: .14em;
     text-transform: uppercase; color: #a08043; margin: 0 0 6px; }
-  .li__h1 { font-size: 2rem; margin: 0 0 8px; }
+  .li__h1 { font-size: 2rem; margin: 0 0 8px; color: #15151a; }
   .li__intro { color: #55555e; max-width: 640px; margin: 0 0 22px; line-height: 1.5; }
 
   .plano { border-radius: 18px; overflow: hidden; background: #fff;
