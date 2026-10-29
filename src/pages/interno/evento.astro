@@ -25,6 +25,7 @@ const AMBAR: Col = { top: "#e08a3a", fx: "#b86a22", fy: "#8e4f16", edge: "#7a431
 const TECH: Col  = { top: "#7b7b84", fx: "#595961", fy: "#434349", edge: "#2f2f38" };
 const SILLA: Col = { top: "#aec3c6", fx: "#86a3a6", fy: "#6b878a", edge: "#5f7b7e" };
 const MESA: Col  = { top: "#b4966a", fx: "#917548", fy: "#6e5834", edge: "#5a4a33" };
+const ESCAL: Col = { top: "#cdb892", fx: "#a8926a", fy: "#836f4c", edge: "#6d5b3c" };
 
 // Una caja extruida: dibuja las dos caras vistas y la tapa (en ese orden).
 function caja(x0: number, y0: number, x1: number, y1: number, zb: number, h: number, c: Col) {
@@ -71,23 +72,38 @@ push(1.5, 0.25, 8, 2.7, 0, 0.6, ROJO);
   });
 }
 
-// Módulos técnicos a la derecha del escenario
-push(8.5, 0.35, 9.9, 1.5, 0, 0.9, TECH); // Control de eventos / pantalla
-push(8.5, 1.7, 9.9, 2.75, 0, 0.9, TECH); // DJ
-push(8.5, 2.95, 9.9, 4.05, 0, 0.9, TECH); // Luz
+// Zona técnica a la derecha: mesas con ordenadores encima (no cajas). De cerca
+// del escenario hacia fuera: control de eventos, DJ y control de luz; el DJ va
+// justo delante del control de luz.
+function escritorio(x0: number, y0: number, x1: number, y1: number, pcs: number) {
+  push(x0, y0, x1, y1, 0, 0.45, MESA);
+  const w = x1 - x0;
+  for (let i = 0; i < pcs; i++) {
+    const cx = x0 + (w * (i + 0.5)) / pcs - 0.22;
+    const py = y0 + (y1 - y0) * 0.45;
+    push(cx, py, cx + 0.44, py + 0.1, 0.45, 0.32, TECH);               // cuerpo del monitor
+    const car = [P(cx, py, 0.77), P(cx + 0.44, py, 0.77), P(cx + 0.44, py, 0.45), P(cx, py, 0.45)];
+    solidos.push({ k: cx + 0.44 + py + 0.48, s: `<polygon points="${pts(car)}" fill="#13324a"/>` }); // pantalla
+  }
+}
+escritorio(8.4, 0.5, 9.7, 1.45, 1);   // Control de eventos (pantalla del escenario)
+escritorio(8.4, 1.75, 9.7, 2.7, 1);   // DJ
+escritorio(8.4, 3.0, 9.7, 3.95, 1);   // Control de luz
 
 // Público: filas de sillas mirando al escenario (hacia −y)
 const fueraDe = (x: number, y: number) =>
   (x > 3.7 && x < 6.3 && y > 5.9 && y < 7.7) ||   // tarima de cámaras
-  (x > 3.5 && x < 6.5 && y > 7.8 && y < 9.1);      // mesa de regiduría
+  (x > 3.5 && x < 6.5 && y > 7.8 && y < 9.1) ||    // mesa de regiduría
+  (x > 8.2 && y < 4.2) ||                          // mesas técnicas (control/DJ/luz)
+  (x > 1.55 && x < 2.65 && y > 2.7 && y < 3.65);   // escaleras al escenario
 for (let fy = 3.4; fy < 11.1; fy += 0.78) {
   for (let fx = 1.1; fx < 8.7; fx += 0.66) {
     if (fueraDe(fx, fy)) continue;
     solidos.push({ k: fx + 0.42 + fy + 0.42, s: caja(fx, fy, fx + 0.44, fy + 0.44, 0, 0.17, SILLA) });
-    // respaldo, en el lado del escenario (−y)
-    const T = 0.34;
-    const resp = [P(fx, fy, T), P(fx + 0.44, fy, T), P(fx + 0.44, fy, 0.17), P(fx, fy, 0.17)];
-    solidos.push({ k: fx + 0.44 + fy + 0.001, s: `<polygon points="${pts(resp)}" fill="#7f9a9d"/>` });
+    // respaldo en el lado de la entrada (+y): así el público mira al escenario
+    const yb = fy + 0.44, T = 0.40;
+    const resp = [P(fx, yb, T), P(fx + 0.44, yb, T), P(fx + 0.44, yb, 0.17), P(fx, yb, 0.17)];
+    solidos.push({ k: fx + 0.44 + yb + 0.02, s: `<polygon points="${pts(resp)}" fill="#8aa6a9"/>` });
   }
 }
 
@@ -112,8 +128,50 @@ for (let i = 0; i < 2; i++) {
 // Escenario 2 (cerca de la entrada)
 push(2.5, 11.3, 7.5, 12.9, 0, 0.42, AMBAR);
 
+// Escaleras de acceso al escenario (peldaños que suben hasta la tarima, en el
+// frente izquierdo). Cada peldaño sube un poco y se acerca al escenario (−y).
+push(1.75, 3.30, 2.55, 3.55, 0, 0.20, ESCAL);
+push(1.75, 3.05, 2.55, 3.30, 0, 0.40, ESCAL);
+push(1.75, 2.80, 2.55, 3.05, 0, 0.60, ESCAL);
+
 solidos.sort((a, b) => a.k - b.k);
 const cuerpo = solidos.map((s) => s.s).join("");
+
+/* ── Estructura de luz (truss) sobre el escenario ────────────────────────
+   Un pórtico rectangular de barras por encima del escenario y la pantalla,
+   con focos colgando: amarillos en la barra frontal, azules sobre la pantalla
+   (como en el boceto). Se pinta encima de todo porque va en alto.          */
+function estructuraLuz() {
+  const x0 = 1.5, x1 = 8, yF = 2.9, yB = 0.1, TT = 4.3; // frente, fondo, altura
+  const barra = "#2b2b31", gw = 5;
+  const linea = (a: [number, number], b: [number, number], w = gw) =>
+    `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${barra}" stroke-width="${w}" stroke-linecap="round"/>`;
+  const q = (cx: number, cy: number, z: number) => P(cx, cy, z);
+  const esq = [[x0, yB], [x1, yB], [x1, yF], [x0, yF]] as [number, number][];
+  let s = "";
+  // patas
+  esq.forEach((c) => { s += linea(q(c[0], c[1], 0), q(c[0], c[1], TT)); });
+  // marco superior
+  for (let i = 0; i < 4; i++) {
+    const a = esq[i], b = esq[(i + 1) % 4];
+    s += linea(q(a[0], a[1], TT), q(b[0], b[1], TT));
+  }
+  // focos colgando de las dos barras largas
+  const foco = (cx: number, cy: number, col: string) => {
+    const top = P(cx, cy, TT), bot = P(cx, cy, TT - 0.5);
+    return `<line x1="${top[0]}" y1="${top[1]}" x2="${bot[0]}" y2="${bot[1]}" stroke="#2b2b31" stroke-width="3"/>` +
+           `<circle cx="${bot[0]}" cy="${bot[1]}" r="11" fill="${col}" opacity=".22"/>` +
+           `<circle cx="${bot[0]}" cy="${bot[1]}" r="5.5" fill="${col}" stroke="#2b2b31" stroke-width="1.2"/>`;
+  };
+  const N = 7;
+  for (let i = 0; i < N; i++) {
+    const cx = x0 + (x1 - x0) * (i + 0.5) / N;
+    s += foco(cx, yF, "#f4c21e"); // frontal, cálido
+    s += foco(cx, yB, "#2ea6e0"); // sobre la pantalla, frío
+  }
+  return s;
+}
+const trussSvg = estructuraLuz();
 
 /* ── Etiquetas con línea guía ────────────────────────────────────────────*/
 function etiqueta(ax: number, ay: number, lx: number, ly: number, lado: "L" | "R", titulo: string, sub = "") {
@@ -129,13 +187,15 @@ function etiqueta(ax: number, ay: number, lx: number, ly: number, lado: "L" | "R
 }
 const A = (x: number, y: number, z: number) => P(x, y, z);
 let etiquetas = "";
-etiquetas += etiqueta(...A(4.75, 0.3, 0.6), -555, -40, "L", "ESCENARIO PRINCIPAL");
+etiquetas += etiqueta(...A(1.5, 0.1, 4.3), -555, -58, "L", "LUZ", "Estructura sobre el escenario");
+etiquetas += etiqueta(...A(4.75, 0.3, 0.6), -555, 42, "L", "ESCENARIO PRINCIPAL");
+etiquetas += etiqueta(...A(2.15, 3.1, 0.5), -555, 118, "L", "ESCALERAS", "Acceso al escenario");
 etiquetas += etiqueta(...A(4.75, 0.15, 3.85), 150, -235, "R", "PANTALLA");
-etiquetas += etiqueta(...A(9.2, 0.9, 0.9), 430, 55, "R", "CONTROL DE EVENTOS", "Pantalla del escenario");
-etiquetas += etiqueta(...A(9.2, 2.2, 0.9), 430, 145, "R", "DJ");
-etiquetas += etiqueta(...A(9.2, 3.5, 0.9), 430, 225, "R", "LUZ");
-etiquetas += etiqueta(...A(5, 6.8, 0.8), -555, 150, "L", "TARIMA DE CÁMARAS", "3 cámaras");
-etiquetas += etiqueta(...A(5, 8.45, 0.5), 430, 335, "R", "REGIDURÍA", "2 ordenadores");
+etiquetas += etiqueta(...A(9.05, 0.95, 0.45), 430, 70, "R", "CONTROL DE EVENTOS", "Pantalla del escenario");
+etiquetas += etiqueta(...A(9.05, 2.2, 0.45), 430, 165, "R", "DJ");
+etiquetas += etiqueta(...A(9.05, 3.45, 0.45), 430, 245, "R", "CONTROL DE LUZ");
+etiquetas += etiqueta(...A(5, 6.8, 0.8), -555, 185, "L", "TARIMA DE CÁMARAS", "3 cámaras");
+etiquetas += etiqueta(...A(5, 8.45, 0.5), 430, 360, "R", "REGIDURÍA", "2 ordenadores");
 etiquetas += etiqueta(...A(1.6, 5.2, 0.2), -600, 320, "L", "PÚBLICO", "Butacas en filas");
 etiquetas += etiqueta(...A(5, 12.1, 0.42), -520, 445, "L", "ESCENARIO 2");
 etiquetas += etiqueta(...A(8.8, 13.6, 0), 60, 470, "R", "ENTRADA / ACCESO");
@@ -175,6 +235,9 @@ const svg = `
 
   <!-- Elementos -->
   ${cuerpo}
+
+  <!-- Estructura de luz (va en alto, por encima) -->
+  ${trussSvg}
 
   <!-- Etiquetas -->
   ${etiquetas}
